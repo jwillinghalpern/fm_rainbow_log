@@ -89,9 +89,7 @@ fn main() {
     loop {
         match rx.recv() {
             Ok(DebouncedEvent::Write(_)) => {
-                // let file = File::open(&path).unwrap();
-                // let mut reader = std::io::BufReader::new(&file);
-                // // only read new data since last read
+                // only read new data since last read
                 reader.seek(SeekFrom::Start(pos)).unwrap();
 
                 // move pos to end
