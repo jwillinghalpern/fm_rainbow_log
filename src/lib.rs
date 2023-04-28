@@ -12,6 +12,12 @@ use std::time::Duration;
 pub struct Config {
     #[arg(help = "The file to watch, should probably be path/to/Import.log")]
     file: String,
+
+    #[arg(long = "no-watch", help = "Don't watch for changes, just print once")]
+    no_watch: bool,
+
+    #[arg(long = "no-color", help = "Don't print color")]
+    no_color: bool,
 }
 
 fn replace_trailing_cr_with_crlf(buf: &mut String) {
@@ -34,9 +40,7 @@ fn is_timestamp(s: &str) -> bool {
     parse_datetime(s.as_bytes()).is_ok()
 }
 
-fn print_line(line: &str) {
-    // println!("{}", line);
-
+fn colorize_line(line: &str) -> String {
     let v = line.splitn(4, '\t').collect::<Vec<&str>>();
     let timestamp = *v.get(0).unwrap_or(&"");
     let filename = *v.get(1).unwrap_or(&"");
@@ -66,25 +70,35 @@ fn print_line(line: &str) {
             message.blue()
         )
     };
-
-    println!("{}", colored_line);
+    colored_line
 }
 
 pub fn run() {
     let config = Config::parse();
     let path = config.file;
 
-    let (tx, rx) = mpsc::channel();
-    let mut watcher = watcher(tx, Duration::from_millis(100)).unwrap();
-    watcher.watch(&path, RecursiveMode::NonRecursive).unwrap();
+    let print_fn = if config.no_color {
+        |line: &str| println!("{}", line)
+    } else {
+        |line: &str| println!("{}", colorize_line(line))
+    };
 
     let file = File::open(&path).unwrap();
     let mut reader = std::io::BufReader::new(&file);
     let mut buf = String::new();
+
     reader.read_to_string(&mut buf).unwrap();
     replace_trailing_cr_with_crlf(&mut buf);
+    buf.lines().for_each(print_fn);
     let mut pos = buf.len() as u64;
-    buf.lines().for_each(|line| print_line(line));
+
+    if config.no_watch {
+        return;
+    }
+
+    let (tx, rx) = mpsc::channel();
+    let mut watcher = watcher(tx, Duration::from_millis(100)).unwrap();
+    watcher.watch(&path, RecursiveMode::NonRecursive).unwrap();
 
     loop {
         match rx.recv() {
@@ -98,7 +112,7 @@ pub fn run() {
                 buf.clear();
                 reader.read_to_string(&mut buf).unwrap();
                 replace_trailing_cr_with_crlf(&mut buf);
-                buf.lines().for_each(|line| print_line(line));
+                buf.lines().for_each(print_fn);
             }
             Ok(_) => {}
             Err(err) => {
