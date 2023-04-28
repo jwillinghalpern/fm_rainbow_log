@@ -1,46 +1,54 @@
 use colored::Colorize;
 // TODO: migrate notify to v5?
+use iso8601::parsers::parse_datetime;
 use notify::{watcher, DebouncedEvent, RecursiveMode, Watcher};
 use std::fs::{self, File};
 use std::io::{Read, Seek, SeekFrom};
 use std::sync::mpsc;
 use std::time::Duration;
 
+fn is_timestamp(s: &str) -> bool {
+    let s = s.replace(" ", "T");
+    parse_datetime(s.as_bytes()).is_ok()
+}
 fn print_line(line: &str) {
-    // split line by \t and colorize each column differently using the colored crate:
-    // https://docs.rs/colored/2.0.0/colored/
+    let v = line.splitn(4, '\t').collect::<Vec<&str>>();
+    let timestamp = *v.get(0).unwrap_or(&"");
+    let filename = *v.get(1).unwrap_or(&"");
+    let code = *v.get(2).unwrap_or(&"");
+    let message = *v.get(3).unwrap_or(&"");
 
-    let columns = line.split("\t");
-    let mut colored_line = String::new();
-    let mut color = 0;
-    // TODO: highlight errors in red and bold
-    // TODO: use colored crate
-    let mut columns_iter = columns.enumerate();
-    while let Some((_idx, column)) = columns_iter.next() {
-        colored_line.push_str(&format!(
-            "{}{}\t",
-            column,
-            match color {
-                // 0 => "\x1b[0;31m",
-                0 => "\x1b[0;32m",
-                1 => "\x1b[0;33m",
-                2 => "\x1b[0;34m",
-                3 => "\x1b[0;35m",
-                4 => "\x1b[0;36m",
-                5 => "\x1b[0;37m",
-                _ => "\x1b[0m",
-            }
-        ));
-        color += 1;
-        if color > 6 {
-            color = 0;
-        }
-    }
-    colored_line.push_str("\x1b[0m");
+    let colored_line = if !is_timestamp(timestamp) {
+        println!("found non-timestamp line");
+        format!("{}", line.red())
+    } else if code != "0" {
+        format!(
+            "> {}\t{}\t{}\t{}",
+            timestamp.bright_red(),
+            filename.bright_red(),
+            code.bright_white().on_red(),
+            message.red()
+        )
+    } else {
+        format!(
+            "{}\t{}\t{}\t{}",
+            timestamp.green(),
+            filename.magenta(),
+            code.yellow(),
+            message.blue()
+        )
+        // "".to_string()
+    };
+
     println!("{}", colored_line);
 }
 
 fn main() {
+    // let s = "2023-04-27 20:50:10.648 -0700";
+    // println!("{}", is_timestamp(s));
+    // std::process::exit(1);
+
+    // TODO: use clap crate to specify input and help
     let path = std::env::args().nth(1).unwrap();
 
     let (tx, rx) = mpsc::channel();
@@ -52,7 +60,9 @@ fn main() {
 
     // TODO: print these in color
     // TODO: consider only printing the last few lines
-    print!("{}", contents);
+    // print!("{}", contents);
+    // contents.lines().for_each(|line| print_line(line));
+    contents.lines().for_each(|line| println!("{}", line));
 
     loop {
         match rx.recv() {

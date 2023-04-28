@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 colored = "2.0.0"
+iso8601 = "0.6.1"
 notify = "4.0.17"
