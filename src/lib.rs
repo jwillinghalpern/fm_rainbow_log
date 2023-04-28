@@ -1,6 +1,6 @@
 use clap::Parser;
 use colored::Colorize;
-// TODO: migrate notify to v5?
+// TODO: migrate notify to iso8601 v5?
 use iso8601::parsers::parse_datetime;
 use notify::{watcher, DebouncedEvent, RecursiveMode, Watcher};
 use std::fs::File;
@@ -113,17 +113,22 @@ pub fn run() {
 mod tests {
     use super::*;
 
-    // #[test]
-    // fn test_replace_trailing_cr_with_crlf() {
-    //     // let mut buf = String::from("foo\rbar\r\nbaz");
-    //     // replace_trailing_cr_with_crlf(&mut buf);
-    //     // assert_eq!(buf, "foo\r\nbar\r\nbaz");
-    //     todo!()
-    // }
+    #[test]
+    fn test_replace_trailing_cr_with_crlf() {
+        let mut buf = String::from("foo\rbar\r\nbaz\nbevis\n");
+        replace_trailing_cr_with_crlf(&mut buf);
+        assert_eq!(buf, "foo\r\nbar\r\nbaz\nbevis\n");
+    }
 
     #[test]
     fn test_is_timestamp() {
         assert!(is_timestamp("2021-01-01T00:00:00.000Z"));
         assert!(!is_timestamp("foo"));
     }
+
+    // #[test]
+    // fn test_print_line() {
+    //     // todo!()
+    //     unimplemented!("test print line")
+    // }
 }
