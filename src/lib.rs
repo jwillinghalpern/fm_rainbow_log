@@ -70,10 +70,7 @@ pub struct Config {
 }
 
 trait ToColorString {
-    fn colorize(&self) -> String;
-    fn print(&self) {
-        println!("{}", self.colorize());
-    }
+    fn to_color_string(&self) -> String;
 }
 
 struct ImportLogLine {
@@ -93,12 +90,6 @@ impl ToString for ImportLogLine {
             "{}\t{}\t{}\t{}",
             self.timestamp, self.filename, self.code, self.message
         )
-    }
-}
-
-impl ToColorString for ImportLogLine {
-    fn colorize(&self) -> String {
-        colorize_default(self)
     }
 }
 
@@ -152,22 +143,13 @@ enum LineType {
 }
 impl LineType {
     fn is_header(&self) -> bool {
-        match self {
-            LineType::Header(_) => true,
-            _ => false,
-        }
+        matches!(self, LineType::Header(_))
     }
     fn is_error(&self) -> bool {
-        match self {
-            LineType::Error(_) => true,
-            _ => false,
-        }
+        matches!(self, LineType::Error(_))
     }
     fn is_warning(&self) -> bool {
-        match self {
-            LineType::Warning(_) => true,
-            _ => false,
-        }
+        matches!(self, LineType::Warning(_))
     }
 }
 impl ToString for LineType {
@@ -182,7 +164,7 @@ impl ToString for LineType {
     }
 }
 impl ToColorString for LineType {
-    fn colorize(&self) -> String {
+    fn to_color_string(&self) -> String {
         match self {
             LineType::Error(line) => colorize_error(line),
             LineType::Header(line) => colorize_header(line),
@@ -195,7 +177,7 @@ impl ToColorString for LineType {
 
 fn parse_line(line: &str) -> LineType {
     let v = line.splitn(4, '\t').collect::<Vec<&str>>();
-    let timestamp = v.get(0).unwrap_or(&"").to_string();
+    let timestamp = v.first().unwrap_or(&"").to_string();
 
     let header = is_header(line);
     if is_timestamp(&timestamp) || header {
@@ -209,7 +191,7 @@ fn parse_line(line: &str) -> LineType {
             message,
         };
         if header {
-            return LineType::Header(line);
+            LineType::Header(line)
         } else if line.code == "0" {
             return if line.is_warning() {
                 LineType::Warning(line)
@@ -299,11 +281,11 @@ pub fn run() -> CustomResult {
         if config.no_color {
             println!("{}", line.to_string());
         } else {
-            println!("{}", line.colorize());
+            println!("{}", line.to_color_string());
         }
     };
 
-    let file = File::open(&path).map_err(|e| format!("couldn't open '{:?}', {}", path, e))?;
+    let file = File::open(path).map_err(|e| format!("couldn't open '{:?}', {}", path, e))?;
     let mut reader = io::BufReader::new(&file);
     let mut buf = String::new();
 
@@ -320,7 +302,7 @@ pub fn run() -> CustomResult {
     let mut debouncer = new_debouncer(Duration::from_millis(100), None, tx).unwrap();
     debouncer
         .watcher()
-        .watch(&path, RecursiveMode::NonRecursive)
+        .watch(path, RecursiveMode::NonRecursive)
         .unwrap();
 
     for res in rx {

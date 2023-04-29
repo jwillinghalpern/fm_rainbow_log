@@ -16,7 +16,7 @@ pub(crate) fn replace_trailing_cr_with_crlf(buf: &mut String) {
 }
 
 pub(crate) fn is_timestamp(s: &str) -> bool {
-    let s = s.replace(" ", "T");
+    let s = s.replace(' ', "T");
     parse_datetime(s.as_bytes()).is_ok()
 }
 
