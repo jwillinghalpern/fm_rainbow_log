@@ -13,4 +13,5 @@ clap = { version = "4.2.5", features = ["derive"] }
 colored = "2.0.0"
 dirs = "5.0.0"
 iso8601 = "0.6.1"
-notify = "4.0.17"
+notify = "5.1.0"
+notify-debouncer-mini = "0.2.1"

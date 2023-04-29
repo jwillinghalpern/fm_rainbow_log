@@ -6,8 +6,8 @@ mod utils;
 
 use clap::Parser;
 use colored::Colorize;
-// TODO: migrate notify to notify v5?
-use notify::{watcher, DebouncedEvent, RecursiveMode, Watcher};
+use notify::RecursiveMode;
+use notify_debouncer_mini::new_debouncer;
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
 use std::path::PathBuf;
@@ -364,26 +364,24 @@ pub fn run() -> CustomResult {
     let mut pos = buf.len() as u64;
 
     let (tx, rx) = mpsc::channel();
-    let mut watcher = watcher(tx, Duration::from_millis(100)).unwrap();
-    watcher.watch(&path, RecursiveMode::NonRecursive).unwrap();
+    let mut debouncer = new_debouncer(Duration::from_millis(100), None, tx).unwrap();
+    debouncer
+        .watcher()
+        .watch(&path, RecursiveMode::NonRecursive)
+        .unwrap();
 
-    loop {
-        match rx.recv() {
-            Ok(DebouncedEvent::Write(_)) => {
-                reader.seek(SeekFrom::Start(pos)).unwrap();
-                pos = file.metadata().unwrap().len();
+    for events in rx {
+        while let Ok(_) = events {
+            reader.seek(SeekFrom::Start(pos)).unwrap();
+            pos = file.metadata().unwrap().len();
 
-                buf.clear();
-                reader.read_to_string(&mut buf).unwrap();
-                buf.lines().for_each(handle_line);
-            }
-            Ok(_) => {}
-            Err(err) => {
-                eprintln!("Error: {:?}", err);
-                std::process::exit(1);
-            }
+            buf.clear();
+            reader.read_to_string(&mut buf).unwrap();
+            buf.lines().for_each(handle_line);
         }
     }
+
+    Ok(())
 }
 
 #[cfg(test)]
