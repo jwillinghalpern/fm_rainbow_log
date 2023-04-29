@@ -24,7 +24,7 @@ Furthermore, FileMaker calcs don't play nice with other CLI utilities like `tail
 
 ### Pre-compiled binaries
 
-Binaries will be available soon.
+Binaries are available in the Releases section of this repo.
 
 ### Build from source
 
