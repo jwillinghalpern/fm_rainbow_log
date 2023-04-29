@@ -1,9 +1,7 @@
 // TODO: check out clap_complete (and other related projects listed in the clap docs)
 //   - clap_mangen
-//   - clap_mangen
 // TODO: custom colors
-// TODO: highlight warnings
-//   - change default code color away from yellow and use that for warnings
+//   - for modern terminals, we can use truecolor. (Maybe we only support it for truecolor)
 mod utils;
 
 use clap::Parser;
