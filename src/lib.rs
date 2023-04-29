@@ -42,7 +42,7 @@ pub struct Config {
     #[arg(
         long = "docs-dir",
         short = 'd',
-        help = "Open log from Documents directory (default location for hosted files) instead of custom path"
+        help = "Open log from your local Documents directory (default location when working with hosted files) instead of custom path"
     )]
     use_docs_dir: bool,
 

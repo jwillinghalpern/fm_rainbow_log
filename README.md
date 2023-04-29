@@ -38,7 +38,7 @@ watch Import.log in current directory:
 fmrl
 ```
 
-watch Import.log in the Documents directory for hosted files:
+watch Import.log in your local Documents directory (default location when working with hosted files):
 
 ```bash
 fmrl --docs-dir
@@ -46,7 +46,7 @@ fmrl --docs-dir
 # fmrl -d
 ```
 
-watch in Documents directory for only errors and warnings:
+watch Import.log in your local Documents directory for only errors and warnings:
 
 ```bash
 fmrl --docs-dir --errors-only --warnings-only
