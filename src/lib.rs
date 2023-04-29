@@ -69,34 +69,26 @@ pub struct Config {
     //   - maybe some basic filters and a regex option?
 }
 
-trait Line {
-    fn get_colorized(&self) -> String;
-    fn get_no_color(&self) -> String;
-    fn print_no_color(&self) {
-        println!("{}", self.get_no_color());
-    }
+trait ToColorString {
+    fn colorize(&self) -> String;
     fn print(&self) {
-        println!("{}", self.get_colorized());
+        println!("{}", self.colorize());
     }
 }
-struct RegularLine {
+
+struct ImportLogLine {
     timestamp: String,
     filename: String,
     code: String,
     message: String,
 }
-impl Line for RegularLine {
-    fn get_colorized(&self) -> String {
-        format!(
-            "{}\t{}\t{}\t{}",
-            self.timestamp.green(),
-            self.filename.cyan(),
-            self.code.magenta(),
-            self.message.blue()
-        )
+impl ImportLogLine {
+    fn is_warning(&self) -> bool {
+        self.code.eq("0") && self.message.ends_with("already exists.")
     }
-
-    fn get_no_color(&self) -> String {
+}
+impl ToString for ImportLogLine {
+    fn to_string(&self) -> String {
         format!(
             "{}\t{}\t{}\t{}",
             self.timestamp, self.filename, self.code, self.message
@@ -104,74 +96,47 @@ impl Line for RegularLine {
     }
 }
 
-struct WarningLine {
-    timestamp: String,
-    filename: String,
-    code: String,
-    message: String,
-}
-impl Line for WarningLine {
-    fn get_colorized(&self) -> String {
-        format!(
-            "{}\t{}\t{}\t{}",
-            self.timestamp.black().on_yellow(),
-            self.filename.black().on_yellow(),
-            self.code.black().on_yellow(),
-            self.message
-        )
-    }
-
-    fn get_no_color(&self) -> String {
-        format!(
-            "{}\t{}\t{}\t{}",
-            self.timestamp, self.filename, self.code, self.message
-        )
+impl ToColorString for ImportLogLine {
+    fn colorize(&self) -> String {
+        colorize_default(self)
     }
 }
 
-struct ErrorLine {
-    timestamp: String,
-    filename: String,
-    code: String,
-    message: String,
+fn colorize_default(line: &ImportLogLine) -> String {
+    format!(
+        "{}\t{}\t{}\t{}",
+        line.timestamp.green(),
+        line.filename.cyan(),
+        line.code.magenta(),
+        line.message.blue()
+    )
 }
-impl Line for ErrorLine {
-    fn get_colorized(&self) -> String {
-        format!(
-            "{}\t{}\t{}\t{}",
-            self.timestamp.bright_white().on_red(),
-            // self.filename.bright_red(),
-            self.filename.bright_white().on_red(),
-            self.code.bright_white().on_red(),
-            // self.message.red()
-            self.message
-        )
-    }
-
-    fn get_no_color(&self) -> String {
-        format!(
-            "{}\t{}\t{}\t{}",
-            self.timestamp, self.filename, self.code, self.message
-        )
-    }
+fn colorize_header(line: &ImportLogLine) -> String {
+    format!(
+        "{}\t{}\t{}\t{}",
+        line.timestamp.green().underline(),
+        line.filename.cyan().underline(),
+        line.code.magenta().underline(),
+        line.message.blue().underline()
+    )
 }
-
-struct HeaderLine {
-    message: String,
+fn colorize_error(line: &ImportLogLine) -> String {
+    format!(
+        "{}\t{}\t{}\t{}",
+        line.timestamp.bright_white().on_red(),
+        line.filename.bright_white().on_red(),
+        line.code.bright_white().on_red(),
+        line.message
+    )
 }
-impl Line for HeaderLine {
-    fn get_no_color(&self) -> String {
-        format!("{}", self.message)
-    }
-    fn get_colorized(&self) -> String {
-        format!(
-            "{}\t{}\t{}\t{}",
-            "Timestamp".green().underline(),
-            "Filename".cyan().underline(),
-            "Error".magenta().underline(),
-            "Message".blue().underline(),
-        )
-    }
+fn colorize_warning(line: &ImportLogLine) -> String {
+    format!(
+        "{}\t{}\t{}\t{}",
+        line.timestamp.black().on_yellow(),
+        line.filename.black().on_yellow(),
+        line.code.black().on_yellow(),
+        line.message
+    )
 }
 
 fn is_header(line: &str) -> bool {
@@ -179,10 +144,10 @@ fn is_header(line: &str) -> bool {
 }
 
 enum LineType {
-    Regular(RegularLine),
-    Error(ErrorLine),
-    Warning(WarningLine),
-    Header(HeaderLine),
+    Success(ImportLogLine),
+    Error(ImportLogLine),
+    Warning(ImportLogLine),
+    Header(ImportLogLine),
     Other(String),
 }
 impl LineType {
@@ -205,23 +170,25 @@ impl LineType {
         }
     }
 }
-impl Line for LineType {
-    fn get_no_color(&self) -> String {
+impl ToString for LineType {
+    fn to_string(&self) -> String {
         match self {
-            LineType::Regular(line) => line.get_no_color(),
-            LineType::Error(line) => line.get_no_color(),
-            LineType::Header(line) => line.get_no_color(),
+            LineType::Error(line) => line.to_string(),
+            LineType::Header(line) => line.to_string(),
             LineType::Other(line) => line.to_string(),
-            LineType::Warning(line) => line.get_no_color(),
+            LineType::Success(line) => line.to_string(),
+            LineType::Warning(line) => line.to_string(),
         }
     }
-    fn get_colorized(&self) -> String {
+}
+impl ToColorString for LineType {
+    fn colorize(&self) -> String {
         match self {
-            LineType::Regular(line) => line.get_colorized(),
-            LineType::Error(line) => line.get_colorized(),
-            LineType::Header(line) => line.get_colorized(),
+            LineType::Error(line) => colorize_error(line),
+            LineType::Header(line) => colorize_header(line),
             LineType::Other(line) => line.to_string(),
-            LineType::Warning(line) => line.get_colorized(),
+            LineType::Success(line) => colorize_default(line),
+            LineType::Warning(line) => colorize_warning(line),
         }
     }
 }
@@ -230,43 +197,31 @@ fn parse_line(line: &str) -> LineType {
     let v = line.splitn(4, '\t').collect::<Vec<&str>>();
     let timestamp = v.get(0).unwrap_or(&"").to_string();
 
-    if is_timestamp(&timestamp) {
+    let header = is_header(line);
+    if is_timestamp(&timestamp) || header {
         let filename = v.get(1).unwrap_or(&"").to_string();
         let code = v.get(2).unwrap_or(&"").to_string();
         let message = v.get(3).unwrap_or(&"").to_string();
-        if code == "0" {
-            let is_warning = message.ends_with("already exists.");
-            if is_warning {
-                return LineType::Warning(WarningLine {
-                    timestamp,
-                    filename,
-                    code,
-                    message,
-                });
+        let mut line = ImportLogLine {
+            timestamp,
+            filename,
+            code,
+            message,
+        };
+        if header {
+            return LineType::Header(line);
+        } else if line.code == "0" {
+            return if line.is_warning() {
+                LineType::Warning(line)
             } else {
-                return LineType::Regular(RegularLine {
-                    timestamp,
-                    filename,
-                    code,
-                    message,
-                });
-            }
+                LineType::Success(line)
+            };
         } else {
-            let mut message = message;
-            replace_trailing_cr_with_crlf(&mut message);
-            return LineType::Error(ErrorLine {
-                timestamp,
-                filename,
-                code,
-                message,
-            });
+            replace_trailing_cr_with_crlf(&mut line.message);
+            LineType::Error(line)
         }
-    } else if is_header(&line) {
-        return LineType::Header(HeaderLine {
-            message: line.to_string(),
-        });
     } else {
-        return LineType::Other(line.to_string());
+        LineType::Other(line.to_string())
     }
 }
 
@@ -342,9 +297,9 @@ pub fn run() -> CustomResult {
             return;
         };
         if config.no_color {
-            line.print_no_color()
+            println!("{}", line.to_string());
         } else {
-            line.print()
+            println!("{}", line.colorize());
         }
     };
 
@@ -388,6 +343,9 @@ pub fn run() -> CustomResult {
     Ok(())
 }
 
+// ###################################################################################
+// Tests
+// ###################################################################################
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -401,7 +359,7 @@ mod tests {
 
         // regular
         let line = parse_line(format!("{}\t{}\t{}\t{}", ts, filename, code, message).as_str());
-        let LineType::Regular(val) = line else {
+        let LineType::Success(val) = line else {
             panic!("expected regular line");
         };
         assert!(
