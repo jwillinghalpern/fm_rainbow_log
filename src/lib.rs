@@ -21,7 +21,6 @@ type CustomResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Config {
-    // TODO: make file optional and default to Import.log in the OS's documents folder
     #[arg(
         help = "File to watch, e.g. be path/to/Import.log. Either specify the path here or via the --path arg. Leave both empty to use current directory.",
         conflicts_with = "use_docs_dir",
