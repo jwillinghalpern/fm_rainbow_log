@@ -231,7 +231,6 @@ fn parse_line(line: &str) -> LineType {
     let v = line.splitn(4, '\t').collect::<Vec<&str>>();
     let timestamp = v.get(0).unwrap_or(&"").to_string();
 
-    // TODO: use an enum to represent the different line types
     if is_timestamp(&timestamp) {
         let filename = v.get(1).unwrap_or(&"").to_string();
         let code = v.get(2).unwrap_or(&"").to_string();
