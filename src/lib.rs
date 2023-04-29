@@ -230,30 +230,40 @@ impl PathType {
     }
 }
 fn get_path(config: &Config) -> CustomResult<PathType> {
-    let path = config.path.as_deref();
-    match path {
-        Some(path) => Ok(PathType::CustomPath(PathBuf::from(path))),
-        None => {
-            if config.use_docs_dir {
-                let mut path = dirs::document_dir().ok_or("couldn't find documents directory")?;
-                path.push("Import.log");
-                if path.exists() {
-                    return Ok(PathType::DocsDir(path));
-                }
+    match config {
+        Config {
+            path: Some(path), ..
+        } => Ok(PathType::CustomPath(path.into())),
+
+        Config {
+            path_unnamed: Some(path),
+            ..
+        } => Ok(PathType::CustomPath(path.into())),
+
+        Config {
+            use_docs_dir: true, ..
+        } => {
+            let mut path = dirs::document_dir().ok_or("couldn't find documents directory")?;
+            path.push("Import.log");
+            if path.exists() {
+                Ok(PathType::DocsDir(path))
             } else {
-                let mut path = env::current_dir().or(Err("couldn't find current directory"))?;
-                path.push("Import.log");
-                if path.exists() {
-                    return Ok(PathType::CurrentDir(path));
-                }
+                Err("couldn't find Import.log in the documents directory. See --help".into())
             }
-            Err(
-                "couldn't find Import.log in the documents directory. Use --help for more info"
-                    .into(),
-            )
+        }
+
+        _ => {
+            let mut path = env::current_dir().or(Err("couldn't find current directory"))?;
+            path.push("Import.log");
+            if path.exists() {
+                Ok(PathType::CurrentDir(path))
+            } else {
+                Err("couldn't find Import.log in the current directory. See --help".into())
+            }
         }
     }
 }
+
 pub fn run() -> CustomResult {
     let config = Config::parse();
     let path_type = get_path(&config)?;
@@ -269,6 +279,7 @@ pub fn run() -> CustomResult {
         println!("{}", msg);
     }
 
+    // closure/fn to handle each line
     let handle_line = |line: &str| {
         let line = parse_line(line);
         let show_line = line.is_header()
@@ -289,15 +300,15 @@ pub fn run() -> CustomResult {
     let mut reader = io::BufReader::new(&file);
     let mut buf = String::new();
 
+    // read the initial file content
     reader.read_to_string(&mut buf).unwrap();
     buf.lines().for_each(handle_line);
-
     if config.no_watch {
         return Ok(());
     }
 
     let mut pos = buf.len() as u64;
-
+    // Watch the file for changes
     let (tx, rx) = mpsc::channel();
     let mut debouncer = new_debouncer(Duration::from_millis(100), None, tx).unwrap();
     debouncer
@@ -305,6 +316,7 @@ pub fn run() -> CustomResult {
         .watch(path, RecursiveMode::NonRecursive)
         .unwrap();
 
+    // Listen for messages passed from the debouncer thread
     for res in rx {
         match res {
             Ok(_) => {
