@@ -23,7 +23,7 @@ type CustomResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 pub struct Config {
     // TODO: make file optional and default to Import.log in the OS's documents folder
     #[arg(
-        help = "The file to watch, should probably be path/to/Import.log. you can specify the file here or with the --path flag",
+        help = "File to watch, e.g. be path/to/Import.log. Either specify the path here or via the --path arg. Leave both empty to use current directory.",
         conflicts_with = "use_docs_dir",
         conflicts_with = "path",
         value_names = &["PATH"],
@@ -33,7 +33,7 @@ pub struct Config {
     #[arg(
         long = "path",
         short = 'p',
-        help = "The file to watch, should probably be path/to/Import.log",
+        help = "File to watch, e.g. path/to/Import.log. You can either specify the withth here or via the [PATH] arg. Leave both empty to use current directory.",
         required = false,
         conflicts_with = "use_docs_dir",
         conflicts_with = "path_unnamed"
@@ -56,6 +56,7 @@ pub struct Config {
     #[arg(long, short, help = "Only print errors")]
     errors_only: bool,
     // how should filter be passed in? what if we want multiple filters?
+    //   - maybe some basic filters and a regex option?
 }
 
 trait Line {
