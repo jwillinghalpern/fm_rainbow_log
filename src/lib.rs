@@ -265,6 +265,9 @@ fn get_path(config: &Config) -> CustomResult<PathType> {
 }
 
 pub fn run() -> CustomResult {
+    #[cfg(target_os = "windows")]
+    colored::control::set_virtual_terminal(true).unwrap();
+
     let config = Config::parse();
     let path_type = get_path(&config)?;
 
