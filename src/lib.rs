@@ -327,3 +327,81 @@ pub fn run() -> CustomResult {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_line() {
+        let ts = "2020-05-01 12:00:00.000";
+        let filename = "/Users/username/Downloads/Import.log";
+        let code = "0";
+        let message = "Imported file";
+
+        // regular
+        let line = parse_line(format!("{}\t{}\t{}\t{}", ts, filename, code, message).as_str());
+        let LineType::Regular(val) = line else {
+            panic!("expected regular line");
+        };
+        assert!(
+            val.timestamp == ts
+                && val.filename == filename
+                && val.code == code
+                && val.message == message
+        );
+
+        // error
+        let code = "123";
+        let line = parse_line(format!("{}\t{}\t{}\t{}", ts, filename, code, message).as_str());
+        let LineType::Error(val) = line else {
+            panic!("expected Error line");
+        };
+        assert!(
+            val.timestamp == ts
+                && val.filename == filename
+                && val.code == code
+                && val.message == message
+        );
+
+        // other
+        let string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non nibh at neque vehicula accumsan quis hendrerit ligula. Integer vestibulum justo dolor, sit amet maximus mi euismod sed. Praesent rhoncus eros sed orci imperdiet sollicitudin. Proin ornare erat";
+        let LineType::Other(_) = parse_line(string) else {
+            panic!("expected Other line");
+        };
+
+        // header
+        let line = parse_line("lkjflkjf Timestamp\tFilename\tError\tMessage");
+        let LineType::Header(_) = line else {
+            panic!("expected Error line");
+        };
+    }
+
+    #[test]
+    fn parse_line_should_handle_trailing_crs() {
+        let ts = "2020-05-01 12:00:00.000";
+        let filename = "/Users/username/Downloads/Import.log";
+        let code = "123";
+        let message = "Imported file\ranother line\r a third line\r";
+        let line = parse_line(format!("{}\t{}\t{}\t{}", ts, filename, code, message).as_str());
+        let LineType::Error(val) = line else {
+            panic!("expected Error line");
+        };
+        assert_eq!(val.timestamp, ts);
+        assert_eq!(val.filename, filename);
+        assert_eq!(val.code, code);
+        assert_eq!(
+            val.message,
+            "Imported file\r\nanother line\r\n a third line\r"
+        );
+    }
+
+    #[test]
+    fn test_is_header() {
+        assert!(is_header(
+            "anythinghere-- Timestamp\tFilename\tError\tMessage"
+        ));
+        let line = "hello world";
+        assert!(!is_header(line));
+    }
+}
