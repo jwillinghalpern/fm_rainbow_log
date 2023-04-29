@@ -33,6 +33,7 @@ mod tests {
 
     #[test]
     fn test_is_timestamp() {
+        assert!(is_timestamp("2021-01-01 00:00:00.000Z"));
         assert!(is_timestamp("2021-01-01T00:00:00.000Z"));
         assert!(!is_timestamp("foo"));
     }

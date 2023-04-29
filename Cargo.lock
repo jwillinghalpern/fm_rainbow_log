@@ -172,15 +172,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "encoding_rs"
-version = "0.8.32"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "071a31f4ee85403370b58aca746f01041ede6f0da2730960ad001edc2b71b394"
-dependencies = [
- "cfg-if 1.0.0",
-]
-
-[[package]]
 name = "errno"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -214,13 +205,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "fm_log_tail"
+name = "fml"
 version = "0.1.0"
 dependencies = [
  "clap",
  "colored",
  "dirs",
- "encoding_rs",
  "iso8601",
  "notify",
 ]

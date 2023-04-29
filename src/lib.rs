@@ -8,6 +8,7 @@ mod utils;
 
 use clap::Parser;
 use colored::Colorize;
+// TODO: migrate notify to notify v5?
 use notify::{watcher, DebouncedEvent, RecursiveMode, Watcher};
 use std::fs::File;
 use std::io::{Read, Seek, SeekFrom};
@@ -25,9 +26,9 @@ pub struct Config {
     // TODO: make file optional and default to Import.log in the OS's documents folder
     #[arg(
         help = "The file to watch, should probably be path/to/Import.log. you can specify the file here or with the --path flag",
+        conflicts_with = "use_docs_dir",
         conflicts_with = "path",
-        value_names = &["PATH"]
-
+        value_names = &["PATH"],
     )]
     path_unnamed: Option<String>,
 
@@ -36,14 +37,15 @@ pub struct Config {
         short = 'p',
         help = "The file to watch, should probably be path/to/Import.log",
         required = false,
+        conflicts_with = "use_docs_dir",
         conflicts_with = "path_unnamed"
     )]
     path: Option<String>,
 
     #[arg(
-        long = "docs",
+        long = "docs-dir",
         short = 'd',
-        help = "Open Import.log from the Documents directory (for hosted files)"
+        help = "Open log from Documents directory (default location for hosted files) instead of custom path"
     )]
     use_docs_dir: bool,
 
@@ -68,7 +70,6 @@ trait Line {
         println!("{}", self.get_colorized());
     }
 }
-#[derive(Debug)]
 struct RegularLine {
     timestamp: String,
     filename: String,
@@ -80,8 +81,8 @@ impl Line for RegularLine {
         format!(
             "{}\t{}\t{}\t{}",
             self.timestamp.green(),
-            self.filename.magenta(),
-            self.code.yellow(),
+            self.filename.cyan(),
+            self.code.magenta(),
             self.message.blue()
         )
     }
@@ -93,14 +94,38 @@ impl Line for RegularLine {
         )
     }
 }
-#[derive(Debug)]
+
+struct WarningLine {
+    timestamp: String,
+    filename: String,
+    code: String,
+    message: String,
+}
+impl Line for WarningLine {
+    fn get_colorized(&self) -> String {
+        format!(
+            "{}\t{}\t{}\t{}",
+            self.timestamp.black().on_yellow(),
+            self.filename.black().on_yellow(),
+            self.code.black().on_yellow(),
+            self.message
+        )
+    }
+
+    fn get_no_color(&self) -> String {
+        format!(
+            "{}\t{}\t{}\t{}",
+            self.timestamp, self.filename, self.code, self.message
+        )
+    }
+}
+
 struct ErrorLine {
     timestamp: String,
     filename: String,
     code: String,
     message: String,
 }
-
 impl Line for ErrorLine {
     fn get_colorized(&self) -> String {
         format!(
@@ -122,7 +147,6 @@ impl Line for ErrorLine {
     }
 }
 
-#[derive(Debug)]
 struct HeaderLine {
     message: String,
 }
@@ -134,8 +158,8 @@ impl Line for HeaderLine {
         format!(
             "{}\t{}\t{}\t{}",
             "Timestamp".green().underline(),
-            "Filename".magenta().underline(),
-            "Error".yellow().underline(),
+            "Filename".cyan().underline(),
+            "Error".magenta().underline(),
             "Message".blue().underline(),
         )
     }
@@ -145,10 +169,10 @@ fn is_header(line: &str) -> bool {
     line.ends_with("Timestamp\tFilename\tError\tMessage")
 }
 
-#[derive(Debug)]
 enum LineType {
     Regular(RegularLine),
     Error(ErrorLine),
+    Warning(WarningLine),
     Header(HeaderLine),
     Other(String),
 }
@@ -173,6 +197,7 @@ impl Line for LineType {
             LineType::Error(line) => line.get_no_color(),
             LineType::Header(line) => line.get_no_color(),
             LineType::Other(line) => line.to_string(),
+            LineType::Warning(line) => line.get_no_color(),
         }
     }
     fn get_colorized(&self) -> String {
@@ -181,6 +206,7 @@ impl Line for LineType {
             LineType::Error(line) => line.get_colorized(),
             LineType::Header(line) => line.get_colorized(),
             LineType::Other(line) => line.to_string(),
+            LineType::Warning(line) => line.get_colorized(),
         }
     }
 }
@@ -195,12 +221,22 @@ fn parse_line(line: &str) -> LineType {
         let code = v.get(2).unwrap_or(&"").to_string();
         let message = v.get(3).unwrap_or(&"").to_string();
         if code == "0" {
-            return LineType::Regular(RegularLine {
-                timestamp,
-                filename,
-                code,
-                message,
-            });
+            let is_warning = message.ends_with("already exists.");
+            if is_warning {
+                return LineType::Warning(WarningLine {
+                    timestamp,
+                    filename,
+                    code,
+                    message,
+                });
+            } else {
+                return LineType::Regular(RegularLine {
+                    timestamp,
+                    filename,
+                    code,
+                    message,
+                });
+            }
         } else {
             let mut message = message;
             replace_trailing_cr_with_crlf(&mut message);
@@ -220,6 +256,7 @@ fn parse_line(line: &str) -> LineType {
     }
 }
 
+#[derive(Debug)]
 enum PathType {
     CustomPath(PathBuf),
     CurrentDir(PathBuf),
@@ -228,8 +265,8 @@ enum PathType {
 impl PathType {
     fn message(&self) -> String {
         match self {
-            PathType::CurrentDir(path) => format!("using current directory: {}", path.display()),
-            PathType::DocsDir(path) => format!("using documents directory: {}", path.display()),
+            PathType::CurrentDir(path) => format!("Using current directory: {}", path.display()),
+            PathType::DocsDir(path) => format!("Using documents directory: {}", path.display()),
             _ => "".to_string(),
         }
     }
@@ -268,9 +305,10 @@ fn get_path(config: &Config) -> CustomResult<PathType> {
 }
 pub fn run() -> CustomResult {
     let config = Config::parse();
-    let path_wrapper = get_path(&config)?;
-    let path = path_wrapper.path();
-    let msg = path_wrapper.message();
+    let path_type = get_path(&config)?;
+
+    let path = path_type.path();
+    let msg = path_type.message();
     if !msg.is_empty() {
         let msg = if config.no_color {
             msg

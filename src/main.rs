@@ -1,4 +1,4 @@
-use fm_log_tail::run;
+use fml::run;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     run()?;
