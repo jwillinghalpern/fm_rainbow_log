@@ -368,15 +368,21 @@ pub fn run() -> CustomResult {
         .watch(&path, RecursiveMode::NonRecursive)
         .unwrap();
 
-    for events in rx {
-        events.into_iter().for_each(|_| {
-            reader.seek(SeekFrom::Start(pos)).unwrap();
-            pos = file.metadata().unwrap().len();
+    for res in rx {
+        match res {
+            Ok(_) => {
+                reader.seek(SeekFrom::Start(pos)).unwrap();
+                pos = file.metadata().unwrap().len();
 
-            buf.clear();
-            reader.read_to_string(&mut buf).unwrap();
-            buf.lines().for_each(handle_line);
-        });
+                buf.clear();
+                reader.read_to_string(&mut buf).unwrap();
+                buf.lines().for_each(handle_line);
+            }
+            Err(err) => {
+                eprintln!("Error: {:?}", err);
+                std::process::exit(1);
+            }
+        }
     }
 
     Ok(())
