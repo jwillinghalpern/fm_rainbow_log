@@ -424,6 +424,20 @@ mod tests {
                 && val.message == message
         );
 
+        // warning
+        let code = "0";
+        let message = "something something ... already exists.";
+        let line = parse_line(format!("{}\t{}\t{}\t{}", ts, filename, code, message).as_str());
+        let LineType::Warning(val) = line else {
+            panic!("expected Warning line");
+        };
+        assert!(
+            val.timestamp == ts
+                && val.filename == filename
+                && val.code == code
+                && val.message == message
+        );
+
         // other
         let string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non nibh at neque vehicula accumsan quis hendrerit ligula. Integer vestibulum justo dolor, sit amet maximus mi euismod sed. Praesent rhoncus eros sed orci imperdiet sollicitudin. Proin ornare erat";
         let LineType::Other(_) = parse_line(string) else {
