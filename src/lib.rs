@@ -33,7 +33,7 @@ pub struct Config {
     #[arg(
         long = "path",
         short = 'p',
-        help = "File to watch, e.g. path/to/Import.log. You can either specify the withth here or via the [PATH] arg. Leave both empty to use current directory.",
+        help = "File to watch, e.g. path/to/Import.log. Either specify the path here or via the [PATH] arg. Leave both empty to use current directory.",
         required = false,
         conflicts_with = "use_docs_dir",
         conflicts_with = "path_unnamed"
@@ -53,8 +53,19 @@ pub struct Config {
     #[arg(long, help = "Don't print color")]
     no_color: bool,
 
-    #[arg(long, short, help = "Only print errors")]
+    #[arg(
+        long,
+        short,
+        help = "Only print errors, can be combined with warnings-only"
+    )]
     errors_only: bool,
+
+    #[arg(
+        long,
+        short,
+        help = "Only print warnings, can be combined with errors-only"
+    )]
+    warnings_only: bool,
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
 }
@@ -185,6 +196,12 @@ impl LineType {
     fn is_error(&self) -> bool {
         match self {
             LineType::Error(_) => true,
+            _ => false,
+        }
+    }
+    fn is_warning(&self) -> bool {
+        match self {
+            LineType::Warning(_) => true,
             _ => false,
         }
     }
@@ -319,7 +336,11 @@ pub fn run() -> CustomResult {
 
     let handle_line = |line: &str| {
         let line = parse_line(line);
-        if config.errors_only && !line.is_error() && !line.is_header() {
+        let show_line = line.is_header()
+            || (config.errors_only && line.is_error())
+            || (config.warnings_only && line.is_warning())
+            || (!config.errors_only && !config.warnings_only);
+        if !show_line {
             return;
         };
         if config.no_color {
