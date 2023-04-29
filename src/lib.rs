@@ -370,14 +370,14 @@ pub fn run() -> CustomResult {
         .unwrap();
 
     for events in rx {
-        while let Ok(_) = events {
+        events.into_iter().for_each(|_| {
             reader.seek(SeekFrom::Start(pos)).unwrap();
             pos = file.metadata().unwrap().len();
 
             buf.clear();
             reader.read_to_string(&mut buf).unwrap();
             buf.lines().for_each(handle_line);
-        }
+        });
     }
 
     Ok(())

@@ -1,6 +1,6 @@
 [package]
 name = "fml"
-version = "0.2.3"
+version = "0.2.4"
 edition = "2021"
 authors = ["Josh Willing Halpern <josh@willingapps.com>"]
 description = "A tool to watch FileMaker Import.log files for changes and colorize the output, highlighting errors and warnings."
