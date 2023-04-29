@@ -96,19 +96,19 @@ impl ToString for ImportLogLine {
 fn colorize_default(line: &ImportLogLine) -> String {
     format!(
         "{}\t{}\t{}\t{}",
-        line.timestamp.green(),
-        line.filename.cyan(),
-        line.code.magenta(),
-        line.message.blue()
+        line.timestamp.cyan(),
+        line.filename.green(),
+        line.code.bright_purple(),
+        line.message.bright_blue()
     )
 }
 fn colorize_header(line: &ImportLogLine) -> String {
     format!(
         "{}\t{}\t{}\t{}",
-        line.timestamp.green().underline(),
-        line.filename.cyan().underline(),
-        line.code.magenta().underline(),
-        line.message.blue().underline()
+        line.timestamp.cyan().underline(),
+        line.filename.green().underline(),
+        line.code.bright_purple().underline(),
+        line.message.bright_blue().underline()
     )
 }
 fn colorize_error(line: &ImportLogLine) -> String {
