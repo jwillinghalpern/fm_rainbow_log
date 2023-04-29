@@ -1,4 +1,4 @@
-use fml::run;
+use fmrl::run;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     run()?;

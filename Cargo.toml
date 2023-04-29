@@ -1,5 +1,5 @@
 [package]
-name = "fml"
+name = "fmrl"
 version = "0.2.6"
 edition = "2021"
 authors = ["Josh Willing Halpern <josh@willingapps.com>"]
