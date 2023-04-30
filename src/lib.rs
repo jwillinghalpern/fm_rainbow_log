@@ -82,6 +82,8 @@ pub struct Args {
     config_path: Option<String>,
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
+    #[arg(long, short, help = "Print a separator between each import operation")]
+    separator: bool,
 }
 
 struct ImportLogLine {
@@ -92,7 +94,14 @@ struct ImportLogLine {
 }
 impl ImportLogLine {
     fn contains_warning_text(&self) -> bool {
-        self.code.eq("0") && self.message.ends_with("already exists.")
+        self.code.eq("0")
+            && (self.message.ends_with("already exists.")
+                || self
+                    .message
+                    .ends_with("created and imported automatically."))
+    }
+    fn is_operation_start(&self) -> bool {
+        self.code.eq("0") && self.message.ends_with(" started")
     }
 }
 impl ToString for ImportLogLine {
@@ -309,13 +318,19 @@ pub fn run() -> CustomResult {
         } else {
             match line {
                 LineType::Success(line) => {
-                    let [a, b, c, d] = colorize_columns(
+                    let res = colorize_columns(
                         &line,
                         &timestamp_colorizer,
                         &filename_colorizer,
                         &error_colorizer,
                         &message_colorizer,
                     );
+                    let [a, b, c, d] = res;
+                    if args.separator && line.is_operation_start() {
+                        println!(
+                            "-----------------------------------------------------------------"
+                        );
+                    }
                     println!("{} {} {} {}", a, b, c, d);
                 }
                 LineType::Error(line) => {
@@ -337,20 +352,15 @@ pub fn run() -> CustomResult {
                     )
                 }
                 LineType::Header(line) => {
-                    let [a, b, c, d] = colorize_columns(
+                    let res = colorize_columns(
                         &line,
                         &timestamp_colorizer,
                         &filename_colorizer,
                         &error_colorizer,
                         &message_colorizer,
                     );
-                    println!(
-                        "{} {} {} {}",
-                        a.underline(),
-                        b.underline(),
-                        c.underline(),
-                        d.underline()
-                    );
+                    let [a, b, c, d] = res.map(|s| s.underline());
+                    println!("{} {} {} {}", a, b, c, d);
                 }
                 LineType::Other(line) => println!("{}", line.to_string()),
             }

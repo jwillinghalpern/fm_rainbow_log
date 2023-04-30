@@ -46,6 +46,12 @@ fmrl --docs-dir
 # fmrl -d
 ```
 
+print a separator between each import operation:
+
+```bash
+fmrl -s
+```
+
 watch for only errors and warnings:
 
 ```bash
