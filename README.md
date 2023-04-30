@@ -46,10 +46,10 @@ fmrl --docs-dir
 # fmrl -d
 ```
 
-watch Import.log in your local Documents directory for only errors and warnings:
+watch for only errors and warnings:
 
 ```bash
-fmrl --docs-dir --errors-only --warnings-only
+fmrl  --errors-only --warnings-only
 # or short version:
 # fmrl -d -e -w
 ```
@@ -60,16 +60,74 @@ show help (it's helpful)
 fmrl --help
 ```
 
+Specify custom colors [see section below for how to configure](#customize-colors-using-a-config-file)
+
+```bash
+fmrl -c path/to/fmrlrc.json
+```
+
 don't watch for changes, just print the log once:
 
 ```bash
 fmrl --no-watch
 ```
 
+### Customize colors using a config file
+
+To customize colors, create a json file somewhere on your computer (any name) and follow the following format. All keys are optional, e.g. you can omit "background for any field, or omit the field entirely.".
+
+```json
+{
+  "colors": {
+    "timestamp": {
+      "foreground": "bright white",
+      "background": "magenta"
+    },
+    "filename": {
+      "foreground": "black",
+      "background": "cyan"
+    },
+    "error": {
+      "foreground": "bright white",
+      "background": "bright green"
+    },
+    "message": {
+      "foreground": "bright white",
+      "background": "black"
+    }
+  }
+}
+```
+
+Then pass the path to that file to `fmrl` with the `-c` option:
+
+```bash
+fmrl -c path/to/fmrlrc.json
+```
+
+For now the only color options are ANSI colors, but I'd like to add RGB support in the future for terminals which support it:
+
+- black
+- red
+- green
+- yellow
+- blue
+- magenta
+- purple
+- cyan
+- white
+- bright black
+- bright red
+- bright green
+- bright yellow
+- bright blue
+- bright magenta
+- bright cyan
+- bright white
+
 ## Notes
 
-- For now `fmrl` only supports ANSI colors. Later I'd like to add customizable rgb support for terminals which support it.
-  - Meanwhile, most terminals let you customize the ANSI colors, so you can already change the colors to your liking!
+- Most terminals let you customize the ANSI colors, so feel free to modify the colors to your liking!
 - On Windows I've only tested PowerShell. There are certain cases where the color escape sequences don't display properly, and show garbled text. I'm not sure how to handle every edge case (please submit suggestions/pull requests if you do).
 - This is a WORK IN PROGRESS. Everything about it is subject to change, including the name and usage instructions.
 - The program panics if the Import.log file doesn't exist, this is intentional.

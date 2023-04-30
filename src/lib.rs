@@ -1,11 +1,14 @@
 // TODO: check out clap_complete (and other related projects listed in the clap docs)
 //   - clap_mangen
 // TODO: custom colors
-//   - for modern terminals, we can use truecolor. (Maybe we only support it for truecolor)
+//   - TODO: add rgb color support instead of just ANSI
+//   - TODO: add a default location to look for config file if -c is not specified
+mod config_file;
 mod utils;
 
-use clap::Parser;
-use colored::Colorize;
+use clap::{Parser, ValueHint};
+use colored::{ColoredString, Colorize};
+use config_file::ConfigColor;
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
 use std::fs::File;
@@ -16,16 +19,19 @@ use std::time::Duration;
 use std::{env, io};
 use utils::{is_timestamp, replace_trailing_cr_with_crlf};
 
+use crate::config_file::{get_config, Config};
+
 type CustomResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-pub struct Config {
+pub struct Args {
     #[arg(
         help = "File to watch, e.g. be path/to/Import.log. Either specify the path here or via the --path arg. Leave both empty to use current directory.",
         conflicts_with = "use_docs_dir",
         conflicts_with = "path",
         value_names = &["PATH"],
+        value_hint = ValueHint::FilePath,
     )]
     path_unnamed: Option<String>,
 
@@ -35,7 +41,8 @@ pub struct Config {
         help = "File to watch, e.g. path/to/Import.log. Either specify the path here or via the [PATH] arg. Leave both empty to use current directory.",
         required = false,
         conflicts_with = "use_docs_dir",
-        conflicts_with = "path_unnamed"
+        conflicts_with = "path_unnamed",
+        value_hint = ValueHint::FilePath,
     )]
     path: Option<String>,
 
@@ -65,12 +72,16 @@ pub struct Config {
         help = "Only print warnings, can be combined with errors-only"
     )]
     warnings_only: bool,
+
+    #[arg(
+        long = "config",
+        short = 'c',
+        help = "Path to config file for customizing colors",
+        value_name = "PATH"
+    )]
+    config_path: Option<String>,
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
-}
-
-trait ToColorString {
-    fn to_color_string(&self) -> String;
 }
 
 struct ImportLogLine {
@@ -80,7 +91,7 @@ struct ImportLogLine {
     message: String,
 }
 impl ImportLogLine {
-    fn is_warning(&self) -> bool {
+    fn contains_warning_text(&self) -> bool {
         self.code.eq("0") && self.message.ends_with("already exists.")
     }
 }
@@ -91,43 +102,6 @@ impl ToString for ImportLogLine {
             self.timestamp, self.filename, self.code, self.message
         )
     }
-}
-
-fn colorize_default(line: &ImportLogLine) -> String {
-    format!(
-        "{}\t{}\t{}\t{}",
-        line.timestamp.cyan(),
-        line.filename.green(),
-        line.code.bright_purple(),
-        line.message.bright_blue()
-    )
-}
-fn colorize_header(line: &ImportLogLine) -> String {
-    format!(
-        "{}\t{}\t{}\t{}",
-        line.timestamp.cyan().underline(),
-        line.filename.green().underline(),
-        line.code.bright_purple().underline(),
-        line.message.bright_blue().underline()
-    )
-}
-fn colorize_error(line: &ImportLogLine) -> String {
-    format!(
-        "{}\t{}\t{}\t{}",
-        line.timestamp.bright_white().on_red(),
-        line.filename.bright_white().on_red(),
-        line.code.bright_white().on_red(),
-        line.message
-    )
-}
-fn colorize_warning(line: &ImportLogLine) -> String {
-    format!(
-        "{}\t{}\t{}\t{}",
-        line.timestamp.black().on_yellow(),
-        line.filename.black().on_yellow(),
-        line.code.black().on_yellow(),
-        line.message
-    )
 }
 
 fn is_header(line: &str) -> bool {
@@ -163,18 +137,6 @@ impl ToString for LineType {
         }
     }
 }
-impl ToColorString for LineType {
-    fn to_color_string(&self) -> String {
-        match self {
-            LineType::Error(line) => colorize_error(line),
-            LineType::Header(line) => colorize_header(line),
-            LineType::Other(line) => line.to_string(),
-            LineType::Success(line) => colorize_default(line),
-            LineType::Warning(line) => colorize_warning(line),
-        }
-    }
-}
-
 fn parse_line(line: &str) -> LineType {
     let v = line.splitn(4, '\t').collect::<Vec<&str>>();
     let timestamp = v.first().unwrap_or(&"").to_string();
@@ -193,7 +155,7 @@ fn parse_line(line: &str) -> LineType {
         if header {
             LineType::Header(line)
         } else if line.code == "0" {
-            return if line.is_warning() {
+            return if line.contains_warning_text() {
                 LineType::Warning(line)
             } else {
                 LineType::Success(line)
@@ -229,18 +191,18 @@ impl PathType {
         }
     }
 }
-fn get_path(config: &Config) -> CustomResult<PathType> {
-    match config {
-        Config {
+fn get_path(ars: &Args) -> CustomResult<PathType> {
+    match ars {
+        Args {
             path: Some(path), ..
         } => Ok(PathType::CustomPath(path.into())),
 
-        Config {
+        Args {
             path_unnamed: Some(path),
             ..
         } => Ok(PathType::CustomPath(path.into())),
 
-        Config {
+        Args {
             use_docs_dir: true, ..
         } => {
             let mut path = dirs::document_dir().ok_or("couldn't find documents directory")?;
@@ -264,17 +226,61 @@ fn get_path(config: &Config) -> CustomResult<PathType> {
     }
 }
 
+fn get_default_colorizer(
+    config_color: ConfigColor,
+    default_foreground: String,
+) -> impl Fn(&str) -> ColoredString {
+    move |line: &str| {
+        let foreground = if config_color.foreground.is_empty() {
+            default_foreground.as_str()
+        } else {
+            config_color.foreground.as_str()
+        };
+        let background = if config_color.background.is_empty() {
+            ""
+        } else {
+            config_color.background.as_str()
+        };
+
+        let mut res = line.color(foreground);
+        if !background.is_empty() {
+            res = res.on_color(background)
+        }
+        res
+    }
+}
+
+fn colorize_columns(
+    line: &ImportLogLine,
+    timestamp_colorizer: &impl Fn(&str) -> ColoredString,
+    filename_colorizer: &impl Fn(&str) -> ColoredString,
+    error_colorizer: &impl Fn(&str) -> ColoredString,
+    message_colorizer: &impl Fn(&str) -> ColoredString,
+) -> [ColoredString; 4] {
+    let ts = timestamp_colorizer(&line.timestamp);
+    let filename = filename_colorizer(&line.filename);
+    let error = error_colorizer(&line.code);
+    let msg = message_colorizer(&line.message);
+    [ts, filename, error, msg]
+}
+
 pub fn run() -> CustomResult {
     #[cfg(target_os = "windows")]
     colored::control::set_virtual_terminal(true).unwrap();
 
-    let config = Config::parse();
-    let path_type = get_path(&config)?;
+    let args = Args::parse();
+    let path_type = get_path(&args)?;
+
+    let config = if let Some(config_path) = args.config_path {
+        get_config(&config_path)?
+    } else {
+        Config::default()
+    };
 
     let path = path_type.path();
     let msg = path_type.message();
     if !msg.is_empty() {
-        let msg = if config.no_color {
+        let msg = if args.no_color {
             msg
         } else {
             msg.green().bold().underline().to_string()
@@ -282,20 +288,72 @@ pub fn run() -> CustomResult {
         println!("{}", msg);
     }
 
+    // get colorizer for each field:
+    let timestamp_colorizer = get_default_colorizer(config.colors.timestamp, "cyan".to_string());
+    let filename_colorizer = get_default_colorizer(config.colors.filename, "green".to_string());
+    let error_colorizer = get_default_colorizer(config.colors.error, "bright magenta".to_string());
+    let message_colorizer = get_default_colorizer(config.colors.message, "bright blue".to_string());
+
     // closure/fn to handle each line
     let handle_line = |line: &str| {
         let line = parse_line(line);
         let show_line = line.is_header()
-            || (config.errors_only && line.is_error())
-            || (config.warnings_only && line.is_warning())
-            || (!config.errors_only && !config.warnings_only);
+            || (args.errors_only && line.is_error())
+            || (args.warnings_only && line.is_warning())
+            || (!args.errors_only && !args.warnings_only);
         if !show_line {
             return;
         };
-        if config.no_color {
+        if args.no_color {
             println!("{}", line.to_string());
         } else {
-            println!("{}", line.to_color_string());
+            match line {
+                LineType::Success(line) => {
+                    let [a, b, c, d] = colorize_columns(
+                        &line,
+                        &timestamp_colorizer,
+                        &filename_colorizer,
+                        &error_colorizer,
+                        &message_colorizer,
+                    );
+                    println!("{} {} {} {}", a, b, c, d);
+                }
+                LineType::Error(line) => {
+                    println!(
+                        "{} {} {} {}",
+                        line.timestamp.bright_white().on_red(),
+                        line.filename.bright_white().on_red(),
+                        line.code.bright_white().on_red(),
+                        line.message
+                    );
+                }
+                LineType::Warning(line) => {
+                    println!(
+                        "{} {} {} {}",
+                        line.timestamp.black().on_yellow(),
+                        line.filename.black().on_yellow(),
+                        line.code.black().on_yellow(),
+                        line.message
+                    )
+                }
+                LineType::Header(line) => {
+                    let [a, b, c, d] = colorize_columns(
+                        &line,
+                        &timestamp_colorizer,
+                        &filename_colorizer,
+                        &error_colorizer,
+                        &message_colorizer,
+                    );
+                    println!(
+                        "{} {} {} {}",
+                        a.underline(),
+                        b.underline(),
+                        c.underline(),
+                        d.underline()
+                    );
+                }
+                LineType::Other(line) => println!("{}", line.to_string()),
+            }
         }
     };
 
@@ -306,7 +364,7 @@ pub fn run() -> CustomResult {
     // read the initial file content
     reader.read_to_string(&mut buf).unwrap();
     buf.lines().for_each(handle_line);
-    if config.no_watch {
+    if args.no_watch {
         return Ok(());
     }
 
