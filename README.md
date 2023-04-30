@@ -24,7 +24,7 @@ Furthermore, FileMaker calcs don't play nice with other CLI utilities like `tail
 
 ### Pre-compiled binaries
 
-Binaries are available in the Releases section of this repo.
+Binaries are available in the [Releases](https://github.com/jwillinghalpern/fm_rainbow_log/releases) section of this repo. Download the latest `fmrl_x_x_x.zip` file, and choose the right binary for your computer.
 
 ### Build from source
 
