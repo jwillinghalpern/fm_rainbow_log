@@ -191,8 +191,8 @@ impl PathType {
         }
     }
 }
-fn get_path(ars: &Args) -> CustomResult<PathType> {
-    match ars {
+fn get_path(args: &Args) -> CustomResult<PathType> {
+    match args {
         Args {
             path: Some(path), ..
         } => Ok(PathType::CustomPath(path.into())),
