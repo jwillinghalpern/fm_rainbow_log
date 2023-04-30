@@ -1,8 +1,3 @@
-// TODO: check out clap_complete (and other related projects listed in the clap docs)
-//   - clap_mangen
-// TODO: custom colors
-//   - TODO: add rgb color support instead of just ANSI
-//   - TODO: add a default location to look for config file if -c is not specified
 mod config_file;
 mod utils;
 
