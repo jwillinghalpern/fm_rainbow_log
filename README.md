@@ -26,6 +26,8 @@ Furthermore, FileMaker calcs don't play nice with other CLI utilities like `tail
 
 Binaries are available in the [Releases](https://github.com/jwillinghalpern/fm_rainbow_log/releases) section of this repo. Download the latest `fmrl_x_x_x.zip` file, and choose the right binary for your computer.
 
+NOTE: On MacOS, the first time you run the program you'll encounter a security warning. [See here](./readme-files/macos-security.md)
+
 ### Via 🦀 rust/cargo way (alternative to pre-compiled binaries)
 
 ```bash
