@@ -26,9 +26,19 @@ Furthermore, FileMaker calcs don't play nice with other CLI utilities like `tail
 
 Binaries are available in the [Releases](https://github.com/jwillinghalpern/fm_rainbow_log/releases) section of this repo. Download the latest `fmrl_x_x_x.zip` file, and choose the right binary for your computer.
 
-### Build from source
+### Via 🦀 rust/cargo way (alternative to pre-compiled binaries)
 
-If you like 🦀 Rust, and have cargo/rustup installed, then simply clone this repo, cd to the directory, and run `cargo build --release`. The fresh-built binary will be at `target/release/fmrl`.
+```bash
+cargo install --git https://github.com/jwillinghalpern/fm_rainbow_log.git
+```
+
+To update your local installation from this repo, re-run the above command any time.
+
+If you don't have cargo, [follow this one step](https://doc.rust-lang.org/cargo/getting-started/installation.html)
+
+### Development/contribution
+
+Simply clone this repo, cd to the directory, and run `cargo run` to test in debug mode. If you are planning a big feature or change, please open an issue first to discuss.
 
 ## Usage
 
