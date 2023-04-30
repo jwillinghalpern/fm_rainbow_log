@@ -51,7 +51,7 @@ watch for only errors and warnings:
 ```bash
 fmrl  --errors-only --warnings-only
 # or short version:
-# fmrl -d -e -w
+# fmrl -e -w
 ```
 
 show help (it's helpful)
