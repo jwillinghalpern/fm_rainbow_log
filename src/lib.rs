@@ -6,9 +6,11 @@
 mod config_file;
 mod utils;
 
+use crate::config_file::get_config;
+use crate::config_file::ConfigColor;
+use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use clap::{Parser, ValueHint};
 use colored::{ColoredString, Colorize};
-use config_file::ConfigColor;
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
 use std::fs::File;
@@ -17,9 +19,6 @@ use std::path::PathBuf;
 use std::sync::mpsc;
 use std::time::Duration;
 use std::{env, io};
-use utils::{is_timestamp, replace_trailing_cr_with_crlf};
-
-use crate::config_file::{get_config, Config};
 
 type CustomResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -280,11 +279,7 @@ pub fn run() -> CustomResult {
     let args = Args::parse();
     let path_type = get_path(&args)?;
 
-    let config = if let Some(config_path) = args.config_path {
-        get_config(&config_path)?
-    } else {
-        Config::default()
-    };
+    let config = get_config(args.config_path.as_deref())?;
 
     let path = path_type.path();
     let msg = path_type.message();

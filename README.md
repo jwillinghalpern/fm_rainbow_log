@@ -69,7 +69,7 @@ fmrl --help
 Specify custom colors [see section below for how to configure](#customize-colors-using-a-config-file)
 
 ```bash
-fmrl -c path/to/fmrlrc.json
+fmrl -c path/to/config.json
 ```
 
 don't watch for changes, just print the log once:
@@ -108,8 +108,15 @@ To customize colors, create a json file somewhere on your computer (any name) an
 Then pass the path to that file to `fmrl` with the `-c` option:
 
 ```bash
-fmrl -c path/to/fmrlrc.json
+fmrl -c path/to/config.json
 ```
+
+_NOTE: if you always want to use the same custom configuration, you can save the file in your config directory at these locations and then fmrl will use that by default:_
+
+- Mac: `$HOME/Library/Application Support/fm_rainbow_log/config.json`
+  - example: /Users/Alice/Library/Application Support/fm_rainbow_log/config.json
+- Windows: `{FOLDERID_RoamingAppData}\fm_rainbow_log\config.json`
+  - example: C:\Users\Alice\AppData\Roaming\fm_rainbow_log\config.json
 
 For now the only color options are ANSI colors, but I'd like to add RGB support in the future for terminals which support it:
 

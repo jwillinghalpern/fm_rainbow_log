@@ -1,3 +1,4 @@
 /target
 Import.log
 *.fmp12
+.fmrlrc*.json
