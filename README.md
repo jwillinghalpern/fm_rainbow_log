@@ -160,4 +160,3 @@ For now the only color options are ANSI colors, but I'd like to add RGB support 
 - Most terminals let you customize the ANSI colors, so feel free to modify the colors to your liking!
 - On Windows I've only tested PowerShell. There are certain cases where the color escape sequences don't display properly, and show garbled text. I'm not sure how to handle every edge case (please submit suggestions/pull requests if you do).
 - This is a WORK IN PROGRESS. Everything about it is subject to change, including the name and usage instructions.
-- The program panics if the Import.log file doesn't exist, this is intentional.
