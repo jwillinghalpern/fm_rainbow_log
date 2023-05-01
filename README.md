@@ -18,11 +18,13 @@ Furthermore, FileMaker calcs don't play nice with other CLI utilities like `tail
 
 ## Installation
 
+If installing locally, I prefer using cargo (described below), becuase it streamlines updates and avoids macos permission issues. But pre-compiled binaries are also available.
+
+### Via pre-compiled binaries
+
 1. Copy the `fmrl` binary (see below) to a directory in your PATH. For example, `/usr/local/bin` on macOS.
     - To see the folders in your PATH, run this in your terminal: `echo $PATH | sed -E 's/:/\n/g'`
 2. Restart your terminal and type `fmrl --help`.
-
-### Via pre-compiled binaries
 
 Binaries are available in the [Releases](https://github.com/jwillinghalpern/fm_rainbow_log/releases) section of this repo. Download the latest `fmrl_x_x_x.zip` file, and choose the right binary for your computer.
 
