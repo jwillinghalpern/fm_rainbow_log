@@ -78,6 +78,12 @@ pub struct Args {
     //   - maybe some basic filters and a regex option?
     #[arg(long, short, help = "Print a separator between each import operation")]
     separator: bool,
+
+    #[arg(
+        long,
+        help = "Create log file if missing. This happens automatically when using the --docs-dir option."
+    )]
+    create: bool,
 }
 
 struct ImportLogLine {
@@ -210,21 +216,26 @@ fn get_path(args: &Args) -> CustomResult<PathType> {
         } => {
             let mut path = dirs::document_dir().ok_or("couldn't find documents directory")?;
             path.push("Import.log");
-            if path.exists() {
-                Ok(PathType::DocsDir(path))
-            } else {
-                Err("couldn't find Import.log in the documents directory. See --help".into())
+            if !path.exists() {
+                File::create(&path)
+                    .map_err(|_| "couldn't create Import.log in documents directory")?;
             }
+            Ok(PathType::DocsDir(path))
         }
 
         _ => {
-            let mut path = env::current_dir().or(Err("couldn't find current directory"))?;
+            // TODO: I'm not crazy about the idea of creating Import.log in any folder `fmrl` is run from. Ideally it would just wait for the file to be created by FMP and then start reading it after that.
+            let mut path = env::current_dir().map_err(|_| "couldn't find current directory")?;
             path.push("Import.log");
-            if path.exists() {
-                Ok(PathType::CurrentDir(path))
-            } else {
-                Err("couldn't find Import.log in the current directory. See --help".into())
+            if !path.exists() {
+                if args.create {
+                    File::create(&path)
+                        .map_err(|_| "couldn't create Import.log in current directory.")?;
+                } else {
+                    return Err("couldn't find Import.log in current directory. Use the --create flag to create it automatically.".into());
+                }
             }
+            Ok(PathType::CurrentDir(path))
         }
     }
 }
@@ -352,7 +363,7 @@ pub fn run() -> CustomResult {
                     let [a, b, c, d] = res.map(|s| s.underline());
                     println!("{} {} {} {}", a, b, c, d);
                 }
-                LineType::Other(line) => println!("{}", line.to_string()),
+                LineType::Other(line) => println!("{}", line),
             }
         }
     };

@@ -1,6 +1,5 @@
 use colored::Colorize;
 use serde::Deserialize;
-use serde_json;
 use std::{fs::File, io::Read};
 
 #[derive(Deserialize, Debug, Default)]
@@ -26,7 +25,7 @@ pub(crate) struct Config {
 
 fn get_default_config_path() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
     Ok(dirs::config_dir()
-        .ok_or_else(|| "couldn't find config directory")?
+        .ok_or("couldn't find config directory")?
         .join("fm_rainbow_log")
         .join("config.json"))
 }
