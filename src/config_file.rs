@@ -20,6 +20,10 @@ pub(crate) struct ConfigColorFields {
 #[derive(Deserialize, Debug, Default)]
 #[serde(default)]
 pub(crate) struct Config {
+    pub(crate) show_separator: bool,
+    pub(crate) use_documents_directory: bool,
+    pub(crate) errors_only: bool,
+    pub(crate) warnings_only: bool,
     pub(crate) colors: ConfigColorFields,
 }
 
@@ -45,8 +49,12 @@ pub(crate) fn get_config(config_path: Option<&str>) -> Result<Config, Box<dyn st
         };
         println!(
             "{} {}",
-            "Loaded custom config from".bright_blue().underline(),
-            config_path.to_string_lossy().bright_blue().underline()
+            "Loaded custom config from".bright_blue().underline().bold(),
+            config_path
+                .to_string_lossy()
+                .bright_blue()
+                .underline()
+                .bold()
         );
         config_path
     };

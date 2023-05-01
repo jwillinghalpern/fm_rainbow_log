@@ -6,6 +6,7 @@ use crate::config_file::ConfigColor;
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use clap::{Parser, ValueHint};
 use colored::{ColoredString, Colorize};
+use config_file::Config;
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
 use std::fs::File;
@@ -192,6 +193,19 @@ impl PathType {
             _ => "".to_string(),
         }
     }
+    fn print_message(&self, no_color: bool) {
+        let msg = self.message();
+        if msg.is_empty() {
+            println!("{}", self.message());
+        } else {
+            let msg = if no_color {
+                msg
+            } else {
+                msg.green().bold().underline().to_string()
+            };
+            println!("{}", msg);
+        }
+    }
     fn path(&self) -> &PathBuf {
         match self {
             PathType::CustomPath(path) => path,
@@ -278,25 +292,31 @@ fn colorize_columns(
     [ts, filename, error, msg]
 }
 
+fn update_args_from_config(args: &mut Args, config: &Config) {
+    if config.errors_only {
+        args.errors_only = true;
+    }
+    if config.warnings_only {
+        args.warnings_only = true;
+    }
+    if config.show_separator {
+        args.separator = true;
+    }
+    if config.use_documents_directory && args.path.is_none() && args.path_unnamed.is_none() {
+        args.use_docs_dir = true;
+    }
+}
+
 pub fn run() -> CustomResult {
     #[cfg(target_os = "windows")]
     colored::control::set_virtual_terminal(true).unwrap();
-
-    let args = Args::parse();
-    let path_type = get_path(&args)?;
-
+    let mut args = Args::parse();
     let config = get_config(args.config_path.as_deref())?;
+    update_args_from_config(&mut args, &config);
 
+    let path_type = get_path(&args)?;
     let path = path_type.path();
-    let msg = path_type.message();
-    if !msg.is_empty() {
-        let msg = if args.no_color {
-            msg
-        } else {
-            msg.green().bold().underline().to_string()
-        };
-        println!("{}", msg);
-    }
+    path_type.print_message(args.no_color);
 
     // get colorizer for each field:
     let timestamp_colorizer = get_default_colorizer(config.colors.timestamp, "cyan".to_string());

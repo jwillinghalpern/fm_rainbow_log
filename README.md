@@ -78,7 +78,7 @@ show help (it's helpful)
 fmrl --help
 ```
 
-Specify custom colors [see section below for how to configure](#customize-colors-using-a-config-file)
+Specify custom colors [see section below for how to configure](#customize-colors-and-options-using-a-config-file)
 
 ```bash
 fmrl -c path/to/config.json
@@ -90,12 +90,16 @@ don't watch for changes, just print the log once:
 fmrl --no-watch
 ```
 
-### Customize colors using a config file
+### Customize colors and options using a config file
 
-To customize colors, create a json file somewhere on your computer (any name) and follow the following format. All keys are optional, e.g. you can omit "background for any field, or omit the field entirely.".
+To customize colors and default options, create a json file somewhere on your computer (any name) and follow the following format. All keys are optional, e.g. you can omit "background for any field, or omit the field entirely.".
 
 ```json
 {
+  "show_separator": false,
+  "use_documents_directory": false,
+  "errors_only": false,
+  "warnings_only": false,
   "colors": {
     "timestamp": {
       "foreground": "bright white",
