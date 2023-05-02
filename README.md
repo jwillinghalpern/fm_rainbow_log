@@ -18,11 +18,13 @@ Furthermore, FileMaker calcs don't play nice with other CLI utilities like `tail
 
 ## Installation
 
+If installing locally, I prefer using cargo (described below), becuase it streamlines updates and avoids macos permission issues. But pre-compiled binaries are also available.
+
+### Via pre-compiled binaries
+
 1. Copy the `fmrl` binary (see below) to a directory in your PATH. For example, `/usr/local/bin` on macOS.
     - To see the folders in your PATH, run this in your terminal: `echo $PATH | sed -E 's/:/\n/g'`
 2. Restart your terminal and type `fmrl --help`.
-
-### Via pre-compiled binaries
 
 Binaries are available in the [Releases](https://github.com/jwillinghalpern/fm_rainbow_log/releases) section of this repo. Download the latest `fmrl_x_x_x.zip` file, and choose the right binary for your computer.
 
@@ -160,4 +162,3 @@ For now the only color options are ANSI colors, but I'd like to add RGB support 
 - Most terminals let you customize the ANSI colors, so feel free to modify the colors to your liking!
 - On Windows I've only tested PowerShell. There are certain cases where the color escape sequences don't display properly, and show garbled text. I'm not sure how to handle every edge case (please submit suggestions/pull requests if you do).
 - This is a WORK IN PROGRESS. Everything about it is subject to change, including the name and usage instructions.
-- The program panics if the Import.log file doesn't exist, this is intentional.
