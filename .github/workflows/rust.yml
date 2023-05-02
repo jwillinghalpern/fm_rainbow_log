@@ -1,0 +1,112 @@
+name: Rust
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch: # Allow manual invocation of the workflow
+
+env:
+  CARGO_TERM_COLOR: always
+  PKG_NAME: fmrl
+
+jobs:
+  build-win:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install latest rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          profile: minimal
+          override: true
+      - name: Build
+        run: cargo build --all --release
+      - name: Compress
+        run: Compress-Archive target/release/${{ env.PKG_NAME }}.exe -DestinationPath target/release/${{ env.PKG_NAME }}_windows.zip
+      # - name: Run tests
+      #   run: cargo test --verbose
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: target/release/${{ env.PKG_NAME }}_windows.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-mac-intel:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install latest rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-apple-darwin
+          profile: minimal
+          default: true
+          override: true
+      - name: Build for mac
+        run: cargo build --release && strip target/release/${{ env.PKG_NAME }} && zip -j target/release/${{ env.PKG_NAME }}_mac_intel.zip target/release/${{ env.PKG_NAME }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            target/release/${{ env.PKG_NAME }}_mac_intel.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-mac-applesilicon:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install latest rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: aarch64-apple-darwin
+          profile: minimal
+          default: true
+          override: true
+      - name: Build for mac
+        run: SDKROOT=$(xcrun -sdk macosx --show-sdk-path) MACOSX_DEPLOYMENT_TARGET=$(xcrun -sdk macosx --show-sdk-platform-version) cargo build --release --target=aarch64-apple-darwin && zip -j target/release/${{ env.PKG_NAME }}_mac_applesilicon.zip target/aarch64-apple-darwin/release/${{ env.PKG_NAME }}
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            target/release/${{ env.PKG_NAME }}_mac_applesilicon.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
