@@ -26,7 +26,7 @@ If installing locally, I prefer using cargo (described below), becuase it stream
     - To see the folders in your PATH, run this in your terminal: `echo $PATH | sed -E 's/:/\n/g'`
 2. Restart your terminal and type `fmrl --help`.
 
-Binaries are available in the [Releases](https://github.com/jwillinghalpern/fm_rainbow_log/releases) section of this repo. Download the latest `fmrl_x_x_x.zip` file, and choose the right binary for your computer.
+Binaries are available in the [Releases](https://github.com/jwillinghalpern/fm_rainbow_log/releases) section of this repo.
 
 NOTE: On MacOS, the first time you run the program you'll encounter a security warning. [See here](./readme-files/macos-security.md)
 
