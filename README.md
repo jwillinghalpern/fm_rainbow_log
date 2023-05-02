@@ -92,6 +92,16 @@ don't watch for changes, just print the log once:
 fmrl --no-watch
 ```
 
+generate an auto-completion script (store somewhere in your $fpath):
+
+```bash
+# zsh example. Omit "zsh" to see options.
+fmrl --completion zsh
+
+# here's where I put it
+fmrl --completion zsh > ~/.oh-my-zsh/completions/_fm_rainbow_log
+```
+
 ### Customize colors and options using a config file
 
 To customize colors and default options, create a json file somewhere on your computer (any name) and follow the following format. All keys are optional, e.g. you can omit "background for any field, or omit the field entirely.".

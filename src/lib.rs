@@ -1,10 +1,10 @@
 mod config_file;
 mod utils;
 
-use crate::config_file::get_config;
-use crate::config_file::ConfigColor;
+use crate::config_file::{get_config, ConfigColor};
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
-use clap::{Parser, ValueHint};
+use clap::{Command, CommandFactory, Parser, ValueHint};
+use clap_complete::{generate, Generator, Shell};
 use colored::{ColoredString, Colorize};
 use config_file::Config;
 use notify::RecursiveMode;
@@ -85,6 +85,9 @@ pub struct Args {
         help = "Create log file if missing. This happens automatically when using the --docs-dir option."
     )]
     create: bool,
+
+    #[arg(long, help = "generate completion script")]
+    completion: Option<Shell>,
 }
 
 struct ImportLogLine {
@@ -307,10 +310,22 @@ fn update_args_from_config(args: &mut Args, config: &Config) {
     }
 }
 
+fn generate_completion_script<G: Generator>(gen: G, cmd: &mut Command) {
+    generate(gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
+}
+
 pub fn run() -> CustomResult {
     #[cfg(target_os = "windows")]
     colored::control::set_virtual_terminal(true).unwrap();
+
     let mut args = Args::parse();
+    if let Some(gen) = args.completion {
+        // let mut gen = Generator::new(generator);
+        let mut cmd = Args::command();
+        generate_completion_script(gen, &mut cmd);
+        return Ok(());
+    }
+
     let config = get_config(args.config_path.as_deref())?;
     update_args_from_config(&mut args, &config);
 
