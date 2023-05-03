@@ -98,19 +98,22 @@ struct ImportLogLine {
 }
 impl ImportLogLine {
     fn contains_warning_text(&self) -> bool {
-        let warning_rules = vec![
+        if !self.is_error() {
+            return false;
+        }
+        let warning_checks = vec![
             // already exists.
             |msg: &str| msg.ends_with("already exists."),
             |msg: &str| msg.ends_with("이미 존재합니다."),
             // created and imported automatically.
             |msg: &str| msg.ends_with("created and imported automatically."),
         ];
-        self.code == "0" && warning_rules.iter().any(|rule| rule(&self.message))
+        warning_checks.iter().any(|check| check(&self.message))
     }
     fn is_operation_start(&self) -> bool {
-        self.code == "0" && self.message.ends_with(" started")
+        !self.is_error() && self.message.ends_with(" started")
     }
-    fn contains_error_code(&self) -> bool {
+    fn is_error(&self) -> bool {
         self.code != "0"
     }
 }
@@ -181,7 +184,7 @@ fn parse_line(line: &str) -> LineType {
     };
     if found_header {
         LineType::Header(line)
-    } else if line.contains_error_code() {
+    } else if line.is_error() {
         replace_trailing_cr_with_crlf(&mut line.message);
         LineType::Error(line)
     } else if line.contains_warning_text() {
@@ -352,6 +355,7 @@ pub fn run() -> CustomResult {
 
     let path_type = get_path(&args)?;
     let path = path_type.path();
+    println!("Reading from: {}", path.display());
     path_type.print_message(args.no_color);
 
     // get colorizer for each field:
