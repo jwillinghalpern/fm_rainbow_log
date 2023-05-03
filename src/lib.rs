@@ -227,40 +227,52 @@ impl PathType {
     }
 }
 fn get_path(args: &Args) -> CustomResult<PathType> {
+    let create_if_missing = |path: &PathBuf, force: bool| -> CustomResult<()> {
+        if !path.exists() {
+            if args.create || force {
+                File::create(&path)
+                    .map_err(|_| format!("couldn't create Import.log at {}.", path.display()))?;
+            } else {
+                return Err(format!("couldn't find Import.log in this location. Use the --create flag to create it automatically. {}", path.display()).into());
+            }
+        }
+        Ok(())
+    };
+
     match args {
         Args {
             path: Some(path), ..
-        } => Ok(PathType::CustomPath(path.into())),
+        } => {
+            let pathbuf = PathBuf::from(path);
+            create_if_missing(&pathbuf, false)?;
+            Ok(PathType::CustomPath(pathbuf))
+        }
 
         Args {
             path_unnamed: Some(path),
             ..
-        } => Ok(PathType::CustomPath(path.into())),
+        } => {
+            let pathbuf = PathBuf::from(path);
+            create_if_missing(&pathbuf, false)?;
+            Ok(PathType::CustomPath(pathbuf))
+        }
 
         Args {
             use_docs_dir: true, ..
         } => {
-            let mut path = dirs::document_dir().ok_or("couldn't find documents directory")?;
-            path.push("Import.log");
-            if !path.exists() {
-                File::create(&path)
-                    .map_err(|_| "couldn't create Import.log in documents directory")?;
-            }
+            let path = dirs::document_dir()
+                .ok_or("couldn't find documents directory")?
+                .join("Import.log");
+            create_if_missing(&path, true)?;
             Ok(PathType::DocsDir(path))
         }
 
         _ => {
             // TODO: I'm not crazy about the idea of creating Import.log in any folder `fmrl` is run from. Ideally it would just wait for the file to be created by FMP and then start reading it after that.
-            let mut path = env::current_dir().map_err(|_| "couldn't find current directory")?;
-            path.push("Import.log");
-            if !path.exists() {
-                if args.create {
-                    File::create(&path)
-                        .map_err(|_| "couldn't create Import.log in current directory.")?;
-                } else {
-                    return Err("couldn't find Import.log in current directory. Use the --create flag to create it automatically.".into());
-                }
-            }
+            let path = env::current_dir()
+                .map_err(|_| "couldn't find current directory")?
+                .join("Import.log");
+            create_if_missing(&path, false)?;
             Ok(PathType::CurrentDir(path))
         }
     }
