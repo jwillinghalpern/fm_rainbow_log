@@ -266,15 +266,13 @@ impl PathType {
     fn print_message(&self, no_color: bool) {
         let msg = self.message();
         if msg.is_empty() {
-            println!("{}", self.message());
-        } else {
-            let msg = if no_color {
-                msg
-            } else {
-                msg.green().bold().underline().to_string()
-            };
-            println!("{}", msg);
+            return;
         }
+        if no_color {
+            println!("{}", msg);
+        } else {
+            println!("{}", msg.green().bold().underline().to_string());
+        };
     }
     fn path(&self) -> &PathBuf {
         match self {
