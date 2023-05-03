@@ -229,51 +229,40 @@ impl PathType {
         }
     }
 }
-fn get_path(args: &Args) -> CustomResult<PathType> {
-    let create_if_missing = |pathbuf: &PathBuf, force: bool| -> CustomResult<()> {
-        if !pathbuf.exists() {
-            if args.create || force {
-                File::create(&pathbuf)
-                    .map_err(|_| format!("couldn't create Import.log at {}.", pathbuf.display()))?;
-            } else {
-                return Err(format!("couldn't find Import.log in this location. Use the --create flag to create it automatically. {}", pathbuf.display()).into());
-            }
-        }
-        Ok(())
-    };
 
+fn create_file_if_missing(path: &PathBuf, force: bool) -> CustomResult<()> {
+    if !path.exists() {
+        if force {
+            File::create(&path)
+                .map_err(|_| format!("couldn't create Import.log at {}.", path.display()))?;
+        } else {
+            return Err(format!("couldn't find Import.log in this location. Use the --create flag to create it automatically. {}", path.display()).into());
+        }
+    }
+    Ok(())
+}
+
+fn get_path_type(args: &Args) -> CustomResult<PathType> {
     match args {
         Args {
             path: Some(path), ..
-        } => {
-            let pathbuf = PathBuf::from(path);
-            create_if_missing(&pathbuf, false)?;
-            Ok(PathType::CustomPath(pathbuf))
-        }
+        } => Ok(PathType::CustomPath(path.into())),
         Args {
             path_unnamed: Some(path),
             ..
-        } => {
-            let pathbuf = PathBuf::from(path);
-            create_if_missing(&pathbuf, false)?;
-            Ok(PathType::CustomPath(pathbuf))
-        }
+        } => Ok(PathType::CustomPath(path.into())),
         Args {
             use_docs_dir: true, ..
         } => {
             let pathbuf = dirs::document_dir()
                 .ok_or("couldn't find documents directory")?
                 .join("Import.log");
-            // NOTE: docs dir is the only folder where we force create the file. The others require the --create flag.
-            create_if_missing(&pathbuf, true)?;
             Ok(PathType::DocsDir(pathbuf))
         }
-        // default to current dir
         _ => {
             let pathbuf = env::current_dir()
                 .map_err(|_| "couldn't find current directory")?
                 .join("Import.log");
-            create_if_missing(&pathbuf, false)?;
             Ok(PathType::CurrentDir(pathbuf))
         }
     }
@@ -351,8 +340,14 @@ pub fn run() -> CustomResult {
     let config = get_config(args.config_path.as_deref())?;
     update_args_from_config(&mut args, &config);
 
-    let path_type = get_path(&args)?;
+    let path_type = get_path_type(&args)?;
     let path = path_type.path();
+
+    // NOTE: docs dir is the only folder where we force create the file. The others require the --create flag.
+    create_file_if_missing(
+        path,
+        args.create || matches!(path_type, PathType::DocsDir(_)),
+    )?;
     println!("Reading from: {}", path.display());
     path_type.print_message(args.no_color);
 
