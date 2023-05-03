@@ -105,10 +105,13 @@ impl ImportLogLine {
             // created and imported automatically.
             |msg: &str| msg.ends_with("created and imported automatically."),
         ];
-        self.code.eq("0") && warning_rules.iter().any(|rule| rule(&self.message))
+        self.code == "0" && warning_rules.iter().any(|rule| rule(&self.message))
     }
     fn is_operation_start(&self) -> bool {
-        self.code.eq("0") && self.message.ends_with(" started")
+        self.code == "0" && self.message.ends_with(" started")
+    }
+    fn contains_error_code(&self) -> bool {
+        self.code != "0"
     }
 }
 impl ToString for ImportLogLine {
@@ -163,30 +166,28 @@ fn parse_line(line: &str) -> LineType {
     // check timestamp before header because it's much more common
     let found_timestamp = is_timestamp(&timestamp);
     let found_header = !found_timestamp && is_header(line);
-    if found_timestamp || found_header {
-        let filename = v.get(1).unwrap_or(&"").to_string();
-        let code = v.get(2).unwrap_or(&"").to_string();
-        let message = v.get(3).unwrap_or(&"").to_string();
-        let mut line = ImportLogLine {
-            timestamp,
-            filename,
-            code,
-            message,
-        };
-        if found_header {
-            LineType::Header(line)
-        } else if line.code == "0" {
-            return if line.contains_warning_text() {
-                LineType::Warning(line)
-            } else {
-                LineType::Success(line)
-            };
-        } else {
-            replace_trailing_cr_with_crlf(&mut line.message);
-            LineType::Error(line)
-        }
+    if !found_timestamp && !found_header {
+        return LineType::Other(line.to_string());
+    }
+
+    let filename = v.get(1).unwrap_or(&"").to_string();
+    let code = v.get(2).unwrap_or(&"").to_string();
+    let message = v.get(3).unwrap_or(&"").to_string();
+    let mut line = ImportLogLine {
+        timestamp,
+        filename,
+        code,
+        message,
+    };
+    if found_header {
+        LineType::Header(line)
+    } else if line.contains_error_code() {
+        replace_trailing_cr_with_crlf(&mut line.message);
+        LineType::Error(line)
+    } else if line.contains_warning_text() {
+        LineType::Warning(line)
     } else {
-        LineType::Other(line.to_string())
+        LineType::Success(line)
     }
 }
 
