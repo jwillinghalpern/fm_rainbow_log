@@ -98,11 +98,14 @@ struct ImportLogLine {
 }
 impl ImportLogLine {
     fn contains_warning_text(&self) -> bool {
-        self.code.eq("0")
-            && (self.message.ends_with("already exists.")
-                || self
-                    .message
-                    .ends_with("created and imported automatically."))
+        let warning_rules = vec![
+            // already exists.
+            |msg: &str| msg.ends_with("already exists."),
+            |msg: &str| msg.ends_with("이미 존재합니다."),
+            // created and imported automatically.
+            |msg: &str| msg.ends_with("created and imported automatically."),
+        ];
+        self.code.eq("0") && warning_rules.iter().any(|rule| rule(&self.message))
     }
     fn is_operation_start(&self) -> bool {
         self.code.eq("0") && self.message.ends_with(" started")
@@ -118,7 +121,11 @@ impl ToString for ImportLogLine {
 }
 
 fn is_header(line: &str) -> bool {
-    line.ends_with("Timestamp\tFilename\tError\tMessage")
+    let headers = vec![
+        "Timestamp\tFilename\tError\tMessage",
+        "타임 스탬프	파일 이름	오류	메시지",
+    ];
+    headers.iter().any(|h| line.ends_with(h))
 }
 
 enum LineType {
@@ -153,9 +160,10 @@ impl ToString for LineType {
 fn parse_line(line: &str) -> LineType {
     let v = line.splitn(4, '\t').collect::<Vec<&str>>();
     let timestamp = v.first().unwrap_or(&"").to_string();
-
-    let header = is_header(line);
-    if is_timestamp(&timestamp) || header {
+    // check timestamp before header because it's much more common
+    let found_timestamp = is_timestamp(&timestamp);
+    let found_header = !found_timestamp && is_header(line);
+    if found_timestamp || found_header {
         let filename = v.get(1).unwrap_or(&"").to_string();
         let code = v.get(2).unwrap_or(&"").to_string();
         let message = v.get(3).unwrap_or(&"").to_string();
@@ -165,7 +173,7 @@ fn parse_line(line: &str) -> LineType {
             code,
             message,
         };
-        if header {
+        if found_header {
             LineType::Header(line)
         } else if line.code == "0" {
             return if line.contains_warning_text() {
@@ -531,10 +539,12 @@ mod tests {
 
     #[test]
     fn test_is_header() {
+        // TODO: we should create files containing a list of headers and non-headers
         assert!(is_header(
             "anythinghere-- Timestamp\tFilename\tError\tMessage"
         ));
         let line = "hello world";
         assert!(!is_header(line));
+        assert!(is_header("lkjflkjfljf - 타임 스탬프	파일 이름	오류	메시지"))
     }
 }
