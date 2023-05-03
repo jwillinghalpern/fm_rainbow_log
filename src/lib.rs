@@ -98,15 +98,61 @@ struct ImportLogLine {
 }
 impl ImportLogLine {
     fn contains_warning_text(&self) -> bool {
-        if !self.is_error() {
+        if self.is_error() {
             return false;
         }
         let warning_checks = vec![
-            // already exists.
-            |msg: &str| msg.ends_with("already exists."),
-            |msg: &str| msg.ends_with("이미 존재합니다."),
-            // created and imported automatically.
-            |msg: &str| msg.ends_with("created and imported automatically."),
+            // ————————————————————————————————————————————————
+            // ————————————————————————————————————————————————
+            |msg: &str| msg.ends_with("already exists."), // en
+            |msg: &str| msg.ends_with("bereits existiert."), // de
+            |msg: &str| msg.contains("ya existe"),        // es
+            |msg: &str| msg.ends_with("existe déjà."),    // fr
+            |msg: &str| msg.contains("esiste già") || msg.ends_with("già esistente."), // it
+            |msg: &str| msg.contains("としてインポートされました。"), // ja
+            |msg: &str| {
+                msg.contains("이미 존재합니다")
+                    || msg.contains("인 값 목록이 이미 존재함).")
+                    || msg.contains("은(는) 이미 존재합니다).")
+            }, // ko
+            |msg: &str| msg.ends_with("bestaat."),        // nl
+            |msg: &str| msg.contains("já existe"),        // pt
+            |msg: &str| msg.ends_with("redan finns."),    // sv
+            |msg: &str| msg.contains("名为"),             // zh
+            // ————————————————————————————————————————————————
+            // ————————————————————————————————————————————————
+            |msg: &str| msg.ends_with("created and imported automatically."), // en
+            |msg: &str| msg.ends_with("automatisch erstellt und importiert."), // de
+            |msg: &str| msg.ends_with("creada e importada automáticamente."), // es
+            |msg: &str| msg.ends_with("créée et importée automatiquement."),  // fr
+            |msg: &str| msg.ends_with("creato e importato automaticamente."), // it
+            |msg: &str| msg.contains("自動的に作成およびインポートされたファイル参照"), // ja
+            |msg: &str| msg.contains("자동으로 생성되고 가져왔습니다."),      // ko
+            |msg: &str| msg.ends_with("is automatisch gemaakt en geïmporteerd."), // nl
+            |msg: &str| msg.ends_with("criada e importada automaticamente."), // pt
+            |msg: &str| msg.ends_with("skapades och importerades automatiskt."), // sv
+            |msg: &str| msg.contains("自动创建并导入丢失的文件参考"),         // zh
+            // ————————————————————————————————————————————————
+            // ————————————————————————————————————————————————
+            |msg: &str| msg.ends_with("used instead since it refers to the same file."), // en
+            |msg: &str| {
+                msg.ends_with("stattdessen verwendet, da er sich auf die gleiche Datei bezieht.")
+                // de
+            },
+            |msg: &str| msg.ends_with("ya que se refiere al mismo archivo."), // es
+            |msg: &str| {
+                msg.ends_with("utilisée en remplacement, car elle fait référence au même fichier.")
+                // fr
+            },
+            |msg: &str| msg.ends_with("perché si riferisce allo stesso file."), // it
+            |msg: &str| msg.contains("同じファイルを参照しているため、ファイル参照"), // ja
+            |msg: &str| msg.contains("같은 파일을 참조하므로 대신 파일 참조"),  // ko
+            |msg: &str| {
+                msg.ends_with("worden gebruikt omdat deze naar hetzelfde bestand verwijst.")
+            }, // nl
+            |msg: &str| msg.ends_with("foi usada, pois faz referência ao mesmo arquivo."), // pt
+            |msg: &str| msg.ends_with("används i stället, eftersom den hänvisar till samma fil."), // sv
+            |msg: &str| msg.contains("因为参考同一文件，所以使用文件参考"), // zh
         ];
         warning_checks.iter().any(|check| check(&self.message))
     }
@@ -128,8 +174,17 @@ impl ToString for ImportLogLine {
 
 fn is_header(line: &str) -> bool {
     let headers = vec![
-        "Timestamp\tFilename\tError\tMessage",
-        "타임 스탬프	파일 이름	오류	메시지",
+        "Timestamp\tFilename\tError\tMessage",             // en
+        "Zeitstempel	Dateiname	Fehler	Meldung",               // de
+        "Fecha y hora	Nombre de archivo	Error	Mensaje",       // es
+        "Horodatage	NomFichier	Erreur	Message",               // fr
+        "Indicatore data e ora	Nomefile	Errore	Messaggio",    // it
+        "タイムスタンプ	ファイル名	エラー	メッセージ",        // ja
+        "타임 스탬프	파일 이름	오류	메시지",                  // ko
+        "Tijdstempel	Bestandsnaam	Fout	Bericht",              // nl
+        "Carimbo de data/hora	Nome do arquivo	Erro	Mensagem", // pt
+        "Tidsstämpel	Filnamn	Fel	Meddelande",                 // sv
+        "时间戳	文件名	错误	信息",                            // zh
     ];
     headers.iter().any(|h| line.ends_with(h))
 }
