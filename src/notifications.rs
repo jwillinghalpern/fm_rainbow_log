@@ -1,4 +1,4 @@
-use notify_rust::{Notification, Timeout};
+use notify_rust::Notification;
 use std::sync::mpsc::{self, Receiver, Sender};
 use std::thread;
 use std::time::{Duration, Instant};
@@ -39,15 +39,12 @@ fn send_notification(error_count: usize, warning_count: usize) {
     Notification::new()
         .summary(summary)
         .body(&body)
-        // // icon will only work on windows. I should pick one that is likely on most computers (powershell?)
-        // .icon("firefox")
-        .timeout(Timeout::Milliseconds(6000)) //milliseconds
         .show()
         .unwrap();
 }
 
 pub(crate) fn process_messages(logs_rx: Receiver<NotificationType>) {
-    let debounce_interval = Duration::from_millis(1000);
+    let debounce_interval = Duration::from_millis(500);
     let mut last_processed_time = Instant::now();
     let mut warning_count = 0;
     let mut error_count = 0;
@@ -65,6 +62,10 @@ pub(crate) fn process_messages(logs_rx: Receiver<NotificationType>) {
                 NotificationType::Error => error_count += 1,
                 NotificationType::Warning => warning_count += 1,
             }
+            // Reset timer in case multiple items are pasted in quick succession
+            //   or the log is backed up. This will to group more messages together.
+            //   We could even add some time like `+ Duration::from_millis(250)` to wait longer.
+            last_processed_time = Instant::now();
         }
     }
 }
