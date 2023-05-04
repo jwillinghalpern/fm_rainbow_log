@@ -8,6 +8,14 @@ pub(crate) enum NotificationType {
     Warning,
 }
 
+fn get_s(n: usize) -> &'static str {
+    if n == 1 {
+        ""
+    } else {
+        "s"
+    }
+}
+
 fn send_notification(error_count: usize, warning_count: usize) {
     let summary = if error_count > 0 {
         "🌈❌ fmrl Errors"
@@ -18,15 +26,15 @@ fn send_notification(error_count: usize, warning_count: usize) {
     };
     let mut body = String::new();
     if error_count > 0 {
-        let s = if error_count == 1 { "" } else { "s" };
-        body.push_str(format!("{} error{}", error_count, s).as_str());
+        let s = get_s(error_count);
+        body.push_str(format!("{error_count} error{s}").as_str());
     };
     if warning_count > 0 {
         if !body.is_empty() {
             body.push_str(" and ");
         }
-        let s = if warning_count == 1 { "" } else { "s" };
-        body.push_str(format!("{} warning{}", warning_count, s).as_str());
+        let s = get_s(warning_count);
+        body.push_str(format!("{warning_count} warning{s}").as_str());
     };
     Notification::new()
         .summary(summary)
