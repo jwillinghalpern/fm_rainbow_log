@@ -2,13 +2,12 @@ mod config_file;
 mod notifications;
 mod utils;
 
-use crate::config_file::{get_config, ConfigColor};
+use crate::config_file::{get_config, update_args_from_config, ConfigColor};
 use crate::notifications::NotificationType;
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use clap::{Command, CommandFactory, Parser, ValueHint};
 use clap_complete::{generate, Generator, Shell};
 use colored::{ColoredString, Colorize};
-use config_file::Config;
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
 use std::fs::File;
@@ -362,21 +361,6 @@ fn colorize_columns(
     let error = error_colorizer(&line.code);
     let msg = message_colorizer(&line.message);
     [ts, filename, error, msg]
-}
-
-fn update_args_from_config(args: &mut Args, config: &Config) {
-    if config.errors_only {
-        args.errors_only = true;
-    }
-    if config.warnings_only {
-        args.warnings_only = true;
-    }
-    if config.show_separator {
-        args.separator = true;
-    }
-    if config.use_documents_directory && args.path.is_none() && args.path_unnamed.is_none() {
-        args.use_docs_dir = true;
-    }
 }
 
 fn generate_completion_script<G: Generator>(gen: G, cmd: &mut Command) {
