@@ -110,19 +110,31 @@ impl ImportLogLine {
             // ————————————————————————————————————————————————
             |msg: &str| msg.ends_with("already exists."), // en
             |msg: &str| msg.ends_with("bereits existiert."), // de
-            |msg: &str| msg.contains("ya existe"),        // es
-            |msg: &str| msg.ends_with("existe déjà."),    // fr
-            |msg: &str| msg.contains("esiste già") || msg.ends_with("già esistente."), // it
-            |msg: &str| msg.contains("としてインポートされました。"), // ja
             |msg: &str| {
-                msg.contains("이미 존재합니다")
-                    || msg.contains("인 값 목록이 이미 존재함).")
-                    || msg.contains("은(는) 이미 존재합니다).")
+                msg.ends_with("ya existe.")
+                    || msg.contains("” pues ya existe un")
+                    || msg.contains("” porque ya existe un")
+            }, // es
+            |msg: &str| msg.ends_with("existe déjà."),    // fr
+            |msg: &str| msg.ends_with("già esistente.") || msg.contains("esiste già"), // it
+            |msg: &str| {
+                msg.ends_with("はすでに存在します。")
+                    || msg.ends_with("としてインポートされました。")
+            }, // ja
+            |msg: &str| {
+                msg.ends_with("이미 존재합니다.")
+                    || msg.ends_with("이미 존재합니다..") // I'm not sure if the trailing doubledot is a typo in the test data or not
+                    || msg.ends_with("”인 값 목록이 이미 존재함).")
+                    || msg.ends_with("”은(는) 이미 존재합니다).")
             }, // ko
             |msg: &str| msg.ends_with("bestaat."),        // nl
-            |msg: &str| msg.contains("já existe"),        // pt
+            |msg: &str| {
+                msg.ends_with("já existe.")
+                    || msg.contains("”, pois já existe uma função nomeada ")
+                    || msg.contains("já existe uma lista de valor com nome “")
+            }, // pt
             |msg: &str| msg.ends_with("redan finns."),    // sv
-            |msg: &str| msg.contains("名为"),             // zh
+            |msg: &str| msg.contains("名为 “"),           // zh
             // ————————————————————————————————————————————————
             // ————————————————————————————————————————————————
             |msg: &str| msg.ends_with("created and imported automatically."), // en
@@ -161,7 +173,21 @@ impl ImportLogLine {
         warning_checks.iter().any(|check| check(&self.message))
     }
     fn is_operation_start(&self) -> bool {
-        !self.is_error() && self.message.ends_with(" started")
+        !self.is_error()
+            && (
+                self.message.ends_with(" begonnen") // de
+            || self.message.ends_with(" started") // en
+            || self.message.ends_with(" iniciada") // es
+            || (self.message.ends_with(" démarrée") || self.message.ends_with(" démarrées") )// fr
+            || (self.message.ends_with(" avviata") || self.message.ends_with(" avviate") )// it
+            || (self.message.ends_with(" のインポートを開始しました") || self.message.ends_with("インポート処理が開始されました") )// ja
+            || (self.message.ends_with(" 가져오기가 시작됨") || self.message.ends_with("가져오기 작업 시작됨") ) // ko
+            || self.message.ends_with(" gestart") // nl
+            || self.message.ends_with(" iniciada") || self.message.ends_with(" iniciadas")// pt
+            || self.message.ends_with(" startats")// sv
+            || (self.message.starts_with("开始从剪贴板导") || self.message.starts_with("导入操作已开始"))
+                // zh
+            )
     }
     fn is_error(&self) -> bool {
         self.code != "0"
@@ -209,6 +235,14 @@ impl LineType {
     }
     fn is_warning(&self) -> bool {
         matches!(self, LineType::Warning(_))
+    }
+    #[cfg(test)]
+    fn is_success(&self) -> bool {
+        matches!(self, LineType::Success(_))
+    }
+    #[cfg(test)]
+    fn is_other(&self) -> bool {
+        matches!(self, LineType::Other(_))
     }
 }
 impl ToString for LineType {
@@ -435,11 +469,11 @@ pub fn run() -> CustomResult {
                             "-----------------------------------------------------------------"
                         );
                     }
-                    println!("{} {} {} {}", a, b, c, d);
+                    println!("{}\t{}\t{}\t{}", a, b, c, d);
                 }
                 LineType::Error(line) => {
                     println!(
-                        "{} {} {} {}",
+                        "{}\t{}\t{}\t{}",
                         line.timestamp.bright_white().on_red(),
                         line.filename.bright_white().on_red(),
                         line.code.bright_white().on_red(),
@@ -452,7 +486,7 @@ pub fn run() -> CustomResult {
                 }
                 LineType::Warning(line) => {
                     println!(
-                        "{} {} {} {}",
+                        "{}\t{}\t{}\t{}",
                         line.timestamp.black().on_yellow(),
                         line.filename.black().on_yellow(),
                         line.code.black().on_yellow(),
@@ -472,7 +506,7 @@ pub fn run() -> CustomResult {
                         &message_colorizer,
                     );
                     let [a, b, c, d] = res.map(|s| s.underline());
-                    println!("{} {} {} {}", a, b, c, d);
+                    println!("{}\t{}\t{}\t{}", a, b, c, d);
                 }
                 LineType::Other(line) => println!("{}", line),
             }
@@ -605,6 +639,75 @@ mod tests {
             val.message,
             "Imported file\r\nanother line\r\n a third line\r"
         );
+    }
+    // ————————————————————————————————————————————————————————————————————————————————
+    // parse_line tests
+    // ————————————————————————————————————————————————————————————————————————————————
+    const BASE_PATH: &str = "tests/inputs";
+    fn apply_to_each_file(f: impl Fn(&str)) {
+        let prefixes = [
+            "de", "en", "es", "fr", "it", "ja", "ko", "nl", "pt", "sv", "zh",
+        ];
+        prefixes.iter().for_each(|prefix| {
+            println!("prefix: {}", prefix);
+            let filename = format!("{}-Import.log", prefix);
+            let path = PathBuf::from(BASE_PATH).join(filename);
+            let mut file = File::open(path).unwrap();
+            let mut buf = String::new();
+            file.read_to_string(&mut buf).unwrap();
+            f(buf.as_str());
+        });
+    }
+
+    #[test]
+    fn parse_line_examples() {
+        apply_to_each_file(|buf| {
+            let lines = buf.lines();
+            let results = lines.map(|line| parse_line(line)).collect::<Vec<_>>();
+            let count_success = results.iter().filter(|r| r.is_success()).count();
+            let count_error = results.iter().filter(|r| r.is_error()).count();
+            let count_warning = results.iter().filter(|r| r.is_warning()).count();
+            let count_other = results.iter().filter(|r| r.is_other()).count();
+            let count_header = results.iter().filter(|r| r.is_header()).count();
+            assert_eq!(count_success, 38);
+            assert_eq!(count_error, 2);
+            assert_eq!(count_warning, 9);
+            assert_eq!(count_other, 0);
+            assert_eq!(count_header, 1);
+        })
+    }
+
+    #[test]
+    fn test_is_operation_start() {
+        apply_to_each_file(|buf| {
+            let lines = buf.lines();
+            let results = lines.map(|line| parse_line(line)).collect::<Vec<_>>();
+            let count_operation_start = results
+                .iter()
+                .filter(|r| match r {
+                    LineType::Success(val) => val.is_operation_start(),
+                    _ => false,
+                })
+                .count();
+            assert_eq!(count_operation_start, 12);
+        })
+    }
+
+    #[test]
+    fn avoid_false_positives() {
+        let path = PathBuf::from(BASE_PATH).join("false-positives.log");
+        let mut buf = String::new();
+        File::open(path).unwrap().read_to_string(&mut buf).unwrap();
+        let lines = buf.lines();
+        let results = lines.map(|line| parse_line(line)).collect::<Vec<_>>();
+        println!(
+            "{:?}",
+            results.iter().map(|r| r.to_string()).collect::<Vec<_>>()
+        );
+        let count_error = results.iter().filter(|r| r.is_error()).count();
+        let count_warning = results.iter().filter(|r| r.is_warning()).count();
+        assert_eq!(count_error, 0);
+        assert_eq!(count_warning, 0);
     }
 
     #[test]

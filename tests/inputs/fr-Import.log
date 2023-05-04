@@ -1,0 +1,50 @@
+﻿Horodatage	NomFichier	Erreur	Message
+2023-05-03 09:04:24.348 +0200	fr-fm-import-warning-generator.fmp12	0	Importation de actions de script depuis le presse-papiers démarrée
+2023-05-03 09:04:24.350 +0200	Missing EDS::2::Ouvrir fichier	114	Référence de fichier “ 24FC13BC-3F47-43C5-AC2D-E1DD07C486EA ” manquante.
+2023-05-03 09:04:24.351 +0200	Missing EDS::2::Ouvrir fichier	0	Référence de fichier manquante “ 24FC13BC-3F47-43C5-AC2D-E1DD07C486EA ” créée et importée automatiquement.
+2023-05-03 09:04:24.351 +0200	Missing EDS	0	actions de script importés : 1
+2023-05-03 09:04:24.351 +0200	fr-fm-import-warning-generator.fmp12	0	Importation terminée
+2023-05-03 09:04:30.062 +0200	fr-fm-import-warning-generator.fmp12	0	Importation de actions de script depuis le presse-papiers démarrée
+2023-05-03 09:04:30.063 +0200	Missing EDS::3::Ouvrir fichier	114	Référence de fichier “ B8CF07CF-F8E1-4C93-933A-362051DC254C ” manquante.
+2023-05-03 09:04:30.063 +0200	Missing EDS::3::Ouvrir fichier	0	Référence de fichier “ WillBeReused ” utilisée en remplacement, car elle fait référence au même fichier.
+2023-05-03 09:04:30.064 +0200	Missing EDS	0	actions de script importés : 1
+2023-05-03 09:04:30.064 +0200	fr-fm-import-warning-generator.fmp12	0	Importation terminée
+2023-05-03 09:04:46.965 +0200	fr-fm-import-warning-generator.fmp12	0	Opérations d'importation démarrées
+2023-05-03 09:04:46.966 +0200	fr-fm-import-warning-generator.fmp12	0	Importation de rubriques depuis le presse-papiers démarrée
+2023-05-03 09:04:46.967 +0200	MyTable	0	La rubrique “MyField” a été importée sous le nom “MyField 2” car une rubrique nommée “MyField” existe déjà.
+2023-05-03 09:04:46.968 +0200	MyTable	0	rubriques importés : 1
+2023-05-03 09:04:46.969 +0200	fr-fm-import-warning-generator.fmp12	0	Importation terminée
+2023-05-03 09:04:50.641 +0200	fr-fm-import-warning-generator.fmp12	0	Importation de tables depuis le presse-papiers démarrée
+2023-05-03 09:04:50.642 +0200	fr-fm-import-warning-generator.fmp12	0	La table “MyTable” a été importée sous le nom “MyTable 3” car une table ou une occurrence de table nommée “MyTable” existe déjà.
+2023-05-03 09:04:50.644 +0200	MyTable 3	0	rubriques importés : 2
+2023-05-03 09:04:50.644 +0200	fr-fm-import-warning-generator.fmp12	0	tables importés : 1
+2023-05-03 09:04:50.644 +0200	fr-fm-import-warning-generator.fmp12	0	Importation terminée
+2023-05-03 09:05:13.223 +0200	fr-fm-import-warning-generator.fmp12	0	Opérations d'importation validées
+2023-05-03 09:05:13.223 +0200	fr-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:05:16.621 +0200	fr-fm-import-warning-generator.fmp12	0	Importation de scripts depuis le presse-papiers démarrée
+2023-05-03 09:05:16.623 +0200	fr-fm-import-warning-generator.fmp12	0	Le script “MyScript” a été importé sous le nom “MyScript 2” car un script nommé “MyScript” existe déjà.
+2023-05-03 09:05:16.627 +0200	MyScript 2	0	actions de script importés : 0
+2023-05-03 09:05:16.630 +0200	fr-fm-import-warning-generator.fmp12	0	scripts importés : 1
+2023-05-03 09:05:16.631 +0200	fr-fm-import-warning-generator.fmp12	0	Importation terminée
+2023-05-03 09:05:27.179 +0200	fr-fm-import-warning-generator.fmp12	0	Opérations d'importation démarrées
+2023-05-03 09:05:27.180 +0200	fr-fm-import-warning-generator.fmp12	0	Importation de fonctions personnalisées depuis le presse-papiers démarrée
+2023-05-03 09:05:27.181 +0200	fr-fm-import-warning-generator.fmp12	0	La fonction “MyCF” a été importée sous le nom “MyCF 2” car une fonction nommée “MyCF” existe déjà.
+2023-05-03 09:05:27.182 +0200	fr-fm-import-warning-generator.fmp12	0	fonctions personnalisées importés : 1
+2023-05-03 09:05:27.182 +0200	fr-fm-import-warning-generator.fmp12	0	Importation terminée
+2023-05-03 09:05:33.684 +0200	fr-fm-import-warning-generator.fmp12	0	Opérations d'importation validées
+2023-05-03 09:05:33.685 +0200	fr-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:05:42.180 +0200	fr-fm-import-warning-generator.fmp12	0	Importation de listes de valeurs depuis le presse-papiers démarrée
+2023-05-03 09:05:42.181 +0200	fr-fm-import-warning-generator.fmp12	0	Liste de valeurs "MyValueList" importée sous le nom "MyValueList 2", car une liste de valeurs appelée "MyValueList" existe déjà.
+2023-05-03 09:05:42.182 +0200	fr-fm-import-warning-generator.fmp12	0	listes de valeurs importés : 1
+2023-05-03 09:05:42.182 +0200	fr-fm-import-warning-generator.fmp12	0	Importation terminée
+2023-05-03 09:05:49.921 +0200	fr-fm-import-warning-generator.fmp12	0	Importation de thèmes depuis le presse-papiers démarrée
+2023-05-03 09:05:49.925 +0200	fr-fm-import-warning-generator.fmp12	0	Thème “MyTheme” importé sous le nom de “MyTheme 2” car un thème nommé “MyTheme” existe déjà.
+2023-05-03 09:05:49.947 +0200	fr-fm-import-warning-generator.fmp12	0	thèmes importés : 1
+2023-05-03 09:05:49.948 +0200	fr-fm-import-warning-generator.fmp12	0	Importation terminée
+2023-05-03 09:19:24.217 +0200	fr-fm-import-warning-generator.fmp12	0	Opérations d'importation démarrées
+2023-05-03 09:19:24.218 +0200	fr-fm-import-warning-generator.fmp12	0	Importation de rubriques depuis le presse-papiers démarrée
+2023-05-03 09:19:24.219 +0200	MyTable	0	La rubrique “MyField” a été importée sous le nom “MyField 3” car une rubrique nommée “MyField” existe déjà.
+2023-05-03 09:19:24.220 +0200	MyTable	0	rubriques importés : 1
+2023-05-03 09:19:24.221 +0200	fr-fm-import-warning-generator.fmp12	0	Importation terminée
+2023-05-03 09:19:26.246 +0200	fr-fm-import-warning-generator.fmp12	0	Opérations d'importation annulées
+2023-05-03 09:19:26.246 +0200	fr-fm-import-warning-generator.fmp12	0	==================================================================

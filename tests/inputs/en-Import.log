@@ -1,0 +1,50 @@
+﻿Timestamp	Filename	Error	Message
+2023-05-03 08:58:37.211 +0200	en-fm-import-warning-generator.fmp12	0	Import of script steps from clipboard started
+2023-05-03 08:58:37.214 +0200	Missing EDS::2::Open File	114	File reference “DA9FD4AF-B5E2-41CE-807F-ECA0A9CF44C1” missing.
+2023-05-03 08:58:37.214 +0200	Missing EDS::2::Open File	0	Missing file reference “DA9FD4AF-B5E2-41CE-807F-ECA0A9CF44C1” created and imported automatically.
+2023-05-03 08:58:37.215 +0200	Missing EDS	0	script steps imported : 1
+2023-05-03 08:58:37.215 +0200	en-fm-import-warning-generator.fmp12	0	Import completed
+2023-05-03 08:58:57.039 +0200	en-fm-import-warning-generator.fmp12	0	Import of script steps from clipboard started
+2023-05-03 08:58:57.040 +0200	Missing EDS::3::Open File	114	File reference “C24EF2BF-0299-4670-ADBD-D80803CABCED” missing.
+2023-05-03 08:58:57.040 +0200	Missing EDS::3::Open File	0	File reference “WillBeReused” used instead since it refers to the same file.
+2023-05-03 08:58:57.040 +0200	Missing EDS	0	script steps imported : 1
+2023-05-03 08:58:57.040 +0200	en-fm-import-warning-generator.fmp12	0	Import completed
+2023-05-03 08:59:17.663 +0200	en-fm-import-warning-generator.fmp12	0	Import operations started
+2023-05-03 08:59:17.664 +0200	en-fm-import-warning-generator.fmp12	0	Import of fields from clipboard started
+2023-05-03 08:59:17.665 +0200	MyTable	0	Field “MyField” imported as “MyField 2” since a field named “MyField” already exists.
+2023-05-03 08:59:17.666 +0200	MyTable	0	fields imported : 1
+2023-05-03 08:59:17.666 +0200	en-fm-import-warning-generator.fmp12	0	Import completed
+2023-05-03 08:59:22.433 +0200	en-fm-import-warning-generator.fmp12	0	Import of tables from clipboard started
+2023-05-03 08:59:22.434 +0200	en-fm-import-warning-generator.fmp12	0	Table “MyTable” imported as “MyTable 3” since a table or table occurrence named “MyTable” already exists.
+2023-05-03 08:59:22.437 +0200	MyTable 3	0	fields imported : 2
+2023-05-03 08:59:22.437 +0200	en-fm-import-warning-generator.fmp12	0	tables imported : 1
+2023-05-03 08:59:22.438 +0200	en-fm-import-warning-generator.fmp12	0	Import completed
+2023-05-03 08:59:24.048 +0200	en-fm-import-warning-generator.fmp12	0	Import operations committed
+2023-05-03 08:59:24.048 +0200	en-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 08:59:31.208 +0200	en-fm-import-warning-generator.fmp12	0	Import of scripts from clipboard started
+2023-05-03 08:59:31.210 +0200	en-fm-import-warning-generator.fmp12	0	Script “MyScript” imported as “MyScript 2” since a script named “MyScript” already exists.
+2023-05-03 08:59:31.216 +0200	MyScript 2	0	script steps imported : 0
+2023-05-03 08:59:31.219 +0200	en-fm-import-warning-generator.fmp12	0	scripts imported : 1
+2023-05-03 08:59:31.220 +0200	en-fm-import-warning-generator.fmp12	0	Import completed
+2023-05-03 08:59:38.947 +0200	en-fm-import-warning-generator.fmp12	0	Import operations started
+2023-05-03 08:59:38.948 +0200	en-fm-import-warning-generator.fmp12	0	Import of custom functions from clipboard started
+2023-05-03 08:59:38.948 +0200	en-fm-import-warning-generator.fmp12	0	Function “MyCF” imported as “MyCF 2” since a function named “MyCF” already exists.
+2023-05-03 08:59:38.949 +0200	en-fm-import-warning-generator.fmp12	0	custom functions imported : 1
+2023-05-03 08:59:38.949 +0200	en-fm-import-warning-generator.fmp12	0	Import completed
+2023-05-03 08:59:42.141 +0200	en-fm-import-warning-generator.fmp12	0	Import operations committed
+2023-05-03 08:59:42.141 +0200	en-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 08:59:49.327 +0200	en-fm-import-warning-generator.fmp12	0	Import of value lists from clipboard started
+2023-05-03 08:59:49.327 +0200	en-fm-import-warning-generator.fmp12	0	Value list “MyValueList” imported as “MyValueList 2” since a value list named “MyValueList” already exists.
+2023-05-03 08:59:49.328 +0200	en-fm-import-warning-generator.fmp12	0	value lists imported : 1
+2023-05-03 08:59:49.328 +0200	en-fm-import-warning-generator.fmp12	0	Import completed
+2023-05-03 09:00:01.071 +0200	en-fm-import-warning-generator.fmp12	0	Import of themes from clipboard started
+2023-05-03 09:00:01.074 +0200	en-fm-import-warning-generator.fmp12	0	Theme “MyTheme” imported as “MyTheme 2” since a theme named “MyTheme” already exists.
+2023-05-03 09:00:01.095 +0200	en-fm-import-warning-generator.fmp12	0	themes imported : 1
+2023-05-03 09:00:01.096 +0200	en-fm-import-warning-generator.fmp12	0	Import completed
+2023-05-03 09:18:06.592 +0200	en-fm-import-warning-generator.fmp12	0	Import operations started
+2023-05-03 09:18:06.593 +0200	en-fm-import-warning-generator.fmp12	0	Import of fields from clipboard started
+2023-05-03 09:18:06.595 +0200	MyTable	0	Field “MyField” imported as “MyField 3” since a field named “MyField” already exists.
+2023-05-03 09:18:06.596 +0200	MyTable	0	fields imported : 1
+2023-05-03 09:18:06.596 +0200	en-fm-import-warning-generator.fmp12	0	Import completed
+2023-05-03 09:18:10.911 +0200	en-fm-import-warning-generator.fmp12	0	Import operations canceled
+2023-05-03 09:18:10.911 +0200	en-fm-import-warning-generator.fmp12	0	==================================================================

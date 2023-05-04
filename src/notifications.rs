@@ -16,7 +16,7 @@ fn get_s(n: usize) -> &'static str {
     }
 }
 
-fn send_notification(error_count: usize, warning_count: usize) {
+fn create_notification(error_count: usize, warning_count: usize) -> Notification {
     let summary = if error_count > 0 {
         "❌ fmrl Errors 🌈"
     } else if warning_count > 0 {
@@ -36,14 +36,17 @@ fn send_notification(error_count: usize, warning_count: usize) {
         let s = get_s(warning_count);
         body.push_str(format!("{warning_count} warning{s}").as_str());
     };
-    Notification::new()
-        .summary(summary)
-        .body(&body)
-        .show()
-        .unwrap();
+    Notification::new().summary(summary).body(&body).finalize()
 }
 
-pub(crate) fn process_messages(logs_rx: Receiver<NotificationType>) {
+fn send_notification(notification: Notification) {
+    notification.show().unwrap();
+}
+
+fn process_messages(
+    logs_rx: Receiver<NotificationType>,
+    notification_sender: &dyn Fn(Notification),
+) {
     let debounce_interval = Duration::from_millis(500);
     let mut last_processed_time = Instant::now();
     let mut warning_count = 0;
@@ -52,7 +55,8 @@ pub(crate) fn process_messages(logs_rx: Receiver<NotificationType>) {
         let elapsed_time = last_processed_time.elapsed();
         if elapsed_time >= debounce_interval {
             if warning_count > 0 || error_count > 0 {
-                send_notification(error_count, warning_count);
+                let notification = create_notification(error_count, warning_count);
+                notification_sender(notification);
                 warning_count = 0;
                 error_count = 0;
             }
@@ -72,6 +76,88 @@ pub(crate) fn process_messages(logs_rx: Receiver<NotificationType>) {
 
 pub(crate) fn listen(notif_rx: Receiver<NotificationType>) {
     thread::spawn(move || {
-        process_messages(notif_rx);
+        process_messages(notif_rx, &send_notification);
     });
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_s() {
+        assert_eq!(get_s(0), "s");
+        assert_eq!(get_s(1), "");
+        assert_eq!(get_s(2), "s");
+    }
+
+    #[test]
+    fn test_create_notification() {
+        let n = create_notification(0, 0);
+        assert_eq!(n.summary, "");
+        assert_eq!(n.body, "");
+        let n = create_notification(1, 0);
+        assert_eq!(n.summary, "🌈❌ fmrl Errors");
+        assert_eq!(n.body, "1 error");
+        let n = create_notification(0, 1);
+        assert_eq!(n.summary, "🌈⚠️ fmrl Warnings");
+        assert_eq!(n.body, "1 warning");
+        let n = create_notification(1, 1);
+        assert_eq!(n.summary, "🌈❌ fmrl Errors");
+        assert_eq!(n.body, "1 error and 1 warning");
+        let n = create_notification(2, 3);
+        assert_eq!(n.summary, "🌈❌ fmrl Errors");
+        assert_eq!(n.body, "2 errors and 3 warnings");
+    }
+
+    #[test]
+    fn test_process_messages() {
+        use std::sync::mpsc;
+        let (msg_tx, msg_rx) = mpsc::channel();
+        let (desktop_notifs_tx, desktop_notifs_rx) = mpsc::channel();
+
+        // mock_sender used so we don't actually send desktop notifications while testing
+        let mock_sender = move |n| desktop_notifs_tx.send(n).unwrap();
+        // we still must listen for and process messages in a separate thread or else we'll block
+        thread::spawn(move || {
+            process_messages(msg_rx, &mock_sender);
+        });
+
+        let short_gap = Duration::from_millis(50);
+        let long_gap = Duration::from_millis(550);
+
+        // 1
+        msg_tx.send(NotificationType::Error).unwrap();
+        msg_tx.send(NotificationType::Warning).unwrap();
+        msg_tx.send(NotificationType::Warning).unwrap();
+        std::thread::sleep(short_gap); // msgs before and after should still be batched for short delay
+        msg_tx.send(NotificationType::Error).unwrap();
+        msg_tx.send(NotificationType::Error).unwrap();
+        std::thread::sleep(short_gap); // msgs before and after should still be batched for short delay
+        msg_tx.send(NotificationType::Warning).unwrap();
+        msg_tx.send(NotificationType::Warning).unwrap();
+        // 2
+        std::thread::sleep(long_gap);
+        msg_tx.send(NotificationType::Warning).unwrap();
+        // 3
+        std::thread::sleep(long_gap);
+        msg_tx.send(NotificationType::Error).unwrap();
+        msg_tx.send(NotificationType::Error).unwrap();
+
+        // 1
+        let actual = desktop_notifs_rx.recv().unwrap();
+        let expected = create_notification(3, 4);
+        assert_eq!(actual.summary, expected.summary);
+        assert_eq!(actual.body, expected.body);
+        // 2
+        let actual = desktop_notifs_rx.recv().unwrap();
+        let expected = create_notification(0, 1);
+        assert_eq!(actual.summary, expected.summary);
+        assert_eq!(actual.body, expected.body);
+        // 3
+        let actual = desktop_notifs_rx.recv().unwrap();
+        let expected = create_notification(2, 0);
+        assert_eq!(actual.summary, expected.summary);
+        assert_eq!(actual.body, expected.body);
+    }
 }

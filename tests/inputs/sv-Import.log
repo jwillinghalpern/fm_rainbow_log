@@ -1,0 +1,50 @@
+﻿Tidsstämpel	Filnamn	Fel	Meddelande
+2023-05-03 09:15:25.180 +0200	sv-fm-import-warning-generator.fmp12	0	Import av scriptsteg från urklipp har startats
+2023-05-03 09:15:25.182 +0200	Missing EDS::2::Öppna fil	114	Filreferensen “443CB76F-E91C-46F8-A205-839F5BF793B7” saknas.
+2023-05-03 09:15:25.183 +0200	Missing EDS::2::Öppna fil	0	Saknad filreferens “443CB76F-E91C-46F8-A205-839F5BF793B7” skapades och importerades automatiskt.
+2023-05-03 09:15:25.183 +0200	Missing EDS	0	scriptsteg importerade : 1
+2023-05-03 09:15:25.183 +0200	sv-fm-import-warning-generator.fmp12	0	Importen slutförd
+2023-05-03 09:15:28.420 +0200	sv-fm-import-warning-generator.fmp12	0	Import av scriptsteg från urklipp har startats
+2023-05-03 09:15:28.421 +0200	Missing EDS::3::Öppna fil	114	Filreferensen “DEA96935-D5AC-43AB-A575-6C58D7F85999” saknas.
+2023-05-03 09:15:28.422 +0200	Missing EDS::3::Öppna fil	0	Filreferensen “WillBeReused” används i stället, eftersom den hänvisar till samma fil.
+2023-05-03 09:15:28.422 +0200	Missing EDS	0	scriptsteg importerade : 1
+2023-05-03 09:15:28.422 +0200	sv-fm-import-warning-generator.fmp12	0	Importen slutförd
+2023-05-03 09:15:33.082 +0200	sv-fm-import-warning-generator.fmp12	0	Importåtgärder har startats
+2023-05-03 09:15:33.083 +0200	sv-fm-import-warning-generator.fmp12	0	Import av fält från urklipp har startats
+2023-05-03 09:15:33.084 +0200	MyTable	0	Fältet “MyField” importeras som “MyField 2” eftersom ett fält med namnet “MyField” redan finns.
+2023-05-03 09:15:33.085 +0200	MyTable	0	fält importerade : 1
+2023-05-03 09:15:33.085 +0200	sv-fm-import-warning-generator.fmp12	0	Importen slutförd
+2023-05-03 09:15:35.992 +0200	sv-fm-import-warning-generator.fmp12	0	Import av tabeller från urklipp har startats
+2023-05-03 09:15:35.994 +0200	sv-fm-import-warning-generator.fmp12	0	Tabellen “MyTable” importeras som “MyTable 3” eftersom en tabell eller tabellförekomst med namnet “MyTable” redan finns.
+2023-05-03 09:15:35.996 +0200	MyTable 3	0	fält importerade : 2
+2023-05-03 09:15:35.996 +0200	sv-fm-import-warning-generator.fmp12	0	tabeller importerade : 1
+2023-05-03 09:15:35.996 +0200	sv-fm-import-warning-generator.fmp12	0	Importen slutförd
+2023-05-03 09:15:41.172 +0200	sv-fm-import-warning-generator.fmp12	0	Importåtgärder har genomförts
+2023-05-03 09:15:41.173 +0200	sv-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:15:43.224 +0200	sv-fm-import-warning-generator.fmp12	0	Import av scripts från urklipp har startats
+2023-05-03 09:15:43.225 +0200	sv-fm-import-warning-generator.fmp12	0	Scriptet “MyScript” importeras som “MyScript 2” eftersom ett script med namnet “MyScript” redan finns.
+2023-05-03 09:15:43.226 +0200	MyScript 2	0	scriptsteg importerade : 0
+2023-05-03 09:15:43.226 +0200	sv-fm-import-warning-generator.fmp12	0	scripts importerade : 1
+2023-05-03 09:15:43.226 +0200	sv-fm-import-warning-generator.fmp12	0	Importen slutförd
+2023-05-03 09:15:50.183 +0200	sv-fm-import-warning-generator.fmp12	0	Importåtgärder har startats
+2023-05-03 09:15:50.183 +0200	sv-fm-import-warning-generator.fmp12	0	Import av anpassade funktioner från urklipp har startats
+2023-05-03 09:15:50.184 +0200	sv-fm-import-warning-generator.fmp12	0	Funktionen “MyCF” importeras som “MyCF 2” eftersom en funktion med namnet “MyCF” redan finns.
+2023-05-03 09:15:50.184 +0200	sv-fm-import-warning-generator.fmp12	0	anpassade funktioner importerade : 1
+2023-05-03 09:15:50.185 +0200	sv-fm-import-warning-generator.fmp12	0	Importen slutförd
+2023-05-03 09:15:57.930 +0200	sv-fm-import-warning-generator.fmp12	0	Importåtgärder har genomförts
+2023-05-03 09:15:57.931 +0200	sv-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:16:04.731 +0200	sv-fm-import-warning-generator.fmp12	0	Import av värdelistor från urklipp har startats
+2023-05-03 09:16:04.732 +0200	sv-fm-import-warning-generator.fmp12	0	Värdelistan “MyValueList” importeras som “MyValueList 2” eftersom en värdelista med namnet “MyValueList” redan finns.
+2023-05-03 09:16:04.733 +0200	sv-fm-import-warning-generator.fmp12	0	värdelistor importerade : 1
+2023-05-03 09:16:04.733 +0200	sv-fm-import-warning-generator.fmp12	0	Importen slutförd
+2023-05-03 09:16:12.563 +0200	sv-fm-import-warning-generator.fmp12	0	Import av Teman från urklipp har startats
+2023-05-03 09:16:12.567 +0200	sv-fm-import-warning-generator.fmp12	0	Tema “MyTheme” har importerats som “MyTheme 2” eftersom ett tema med namnet “MyTheme” redan finns.
+2023-05-03 09:16:12.591 +0200	sv-fm-import-warning-generator.fmp12	0	Teman importerade : 1
+2023-05-03 09:16:12.591 +0200	sv-fm-import-warning-generator.fmp12	0	Importen slutförd
+2023-05-03 09:23:07.141 +0200	sv-fm-import-warning-generator.fmp12	0	Importåtgärder har startats
+2023-05-03 09:23:07.142 +0200	sv-fm-import-warning-generator.fmp12	0	Import av fält från urklipp har startats
+2023-05-03 09:23:07.143 +0200	MyTable	0	Fältet “MyField” importeras som “MyField 3” eftersom ett fält med namnet “MyField” redan finns.
+2023-05-03 09:23:07.144 +0200	MyTable	0	fält importerade : 1
+2023-05-03 09:23:07.144 +0200	sv-fm-import-warning-generator.fmp12	0	Importen slutförd
+2023-05-03 09:23:11.025 +0200	sv-fm-import-warning-generator.fmp12	0	Importåtgärder har avbrutits
+2023-05-03 09:23:11.025 +0200	sv-fm-import-warning-generator.fmp12	0	==================================================================

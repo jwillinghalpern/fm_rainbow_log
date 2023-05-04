@@ -1,0 +1,50 @@
+﻿Indicatore data e ora	Nomefile	Errore	Messaggio
+2023-05-03 09:06:44.017 +0200	it-fm-import-warning-generator.fmp12	0	Importazione di istruzioni di script da clipboard avviata
+2023-05-03 09:06:44.019 +0200	Missing EDS::2::Apri file	114	Riferimento al file “59402A2C-954D-4281-BDBB-8190FAB1E539” mancante.
+2023-05-03 09:06:44.020 +0200	Missing EDS::2::Apri file	0	Riferimento al file mancante “59402A2C-954D-4281-BDBB-8190FAB1E539” creato e importato automaticamente.
+2023-05-03 09:06:44.020 +0200	Missing EDS	0	istruzioni di script importati: 1
+2023-05-03 09:06:44.020 +0200	it-fm-import-warning-generator.fmp12	0	Importazione completata
+2023-05-03 09:06:47.883 +0200	it-fm-import-warning-generator.fmp12	0	Importazione di istruzioni di script da clipboard avviata
+2023-05-03 09:06:47.884 +0200	Missing EDS::3::Apri file	114	Riferimento al file “720C4671-DF64-43F1-8EA5-30AF7226B8E2” mancante.
+2023-05-03 09:06:47.884 +0200	Missing EDS::3::Apri file	0	Utilizzare il riferimento al file “WillBeReused” perché si riferisce allo stesso file.
+2023-05-03 09:06:47.884 +0200	Missing EDS	0	istruzioni di script importati: 1
+2023-05-03 09:06:47.885 +0200	it-fm-import-warning-generator.fmp12	0	Importazione completata
+2023-05-03 09:06:53.341 +0200	it-fm-import-warning-generator.fmp12	0	Operazioni di importazione avviate
+2023-05-03 09:06:53.342 +0200	it-fm-import-warning-generator.fmp12	0	Importazione di campi da clipboard avviata
+2023-05-03 09:06:53.342 +0200	MyTable	0	Campo “MyField” importato come “MyField 2” poichè esiste già un campo “MyField”.
+2023-05-03 09:06:53.343 +0200	MyTable	0	campi importati: 1
+2023-05-03 09:06:53.343 +0200	it-fm-import-warning-generator.fmp12	0	Importazione completata
+2023-05-03 09:06:57.032 +0200	it-fm-import-warning-generator.fmp12	0	Importazione di tabelle da clipboard avviata
+2023-05-03 09:06:57.034 +0200	it-fm-import-warning-generator.fmp12	0	Tabella “MyTable” importata come “MyTable 3” poichè esiste già una tabella o ricorrenza di tabella “MyTable”.
+2023-05-03 09:06:57.035 +0200	MyTable 3	0	campi importati: 2
+2023-05-03 09:06:57.035 +0200	it-fm-import-warning-generator.fmp12	0	tabelle importati: 1
+2023-05-03 09:06:57.036 +0200	it-fm-import-warning-generator.fmp12	0	Importazione completata
+2023-05-03 09:07:28.646 +0200	it-fm-import-warning-generator.fmp12	0	Operazioni di importazione salvate
+2023-05-03 09:07:28.647 +0200	it-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:07:31.337 +0200	it-fm-import-warning-generator.fmp12	0	Importazione di script da clipboard avviata
+2023-05-03 09:07:31.338 +0200	it-fm-import-warning-generator.fmp12	0	Script “MyScript” importato come “MyScript 2” poichè esiste già uno script “MyScript”.
+2023-05-03 09:07:31.338 +0200	MyScript 2	0	istruzioni di script importati: 0
+2023-05-03 09:07:31.339 +0200	it-fm-import-warning-generator.fmp12	0	script importati: 1
+2023-05-03 09:07:31.339 +0200	it-fm-import-warning-generator.fmp12	0	Importazione completata
+2023-05-03 09:07:41.160 +0200	it-fm-import-warning-generator.fmp12	0	Operazioni di importazione avviate
+2023-05-03 09:07:41.161 +0200	it-fm-import-warning-generator.fmp12	0	Importazione di funzioni personalizzate da clipboard avviata
+2023-05-03 09:07:41.162 +0200	it-fm-import-warning-generator.fmp12	0	Funzione “MyCF” importata come “MyCF 2”: nome funzione “MyCF” già esistente.
+2023-05-03 09:07:41.163 +0200	it-fm-import-warning-generator.fmp12	0	funzioni personalizzate importati: 1
+2023-05-03 09:07:41.163 +0200	it-fm-import-warning-generator.fmp12	0	Importazione completata
+2023-05-03 09:07:43.316 +0200	it-fm-import-warning-generator.fmp12	0	Operazioni di importazione salvate
+2023-05-03 09:07:43.317 +0200	it-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:07:48.690 +0200	it-fm-import-warning-generator.fmp12	0	Importazione di liste valori da clipboard avviata
+2023-05-03 09:07:48.691 +0200	it-fm-import-warning-generator.fmp12	0	Lista valori “MyValueList” importata come “MyValueList 2” poiché esiste già una lista valori “MyValueList”.
+2023-05-03 09:07:48.691 +0200	it-fm-import-warning-generator.fmp12	0	liste valori importati: 1
+2023-05-03 09:07:48.692 +0200	it-fm-import-warning-generator.fmp12	0	Importazione completata
+2023-05-03 09:07:57.661 +0200	it-fm-import-warning-generator.fmp12	0	Importazione di temi da clipboard avviata
+2023-05-03 09:07:57.665 +0200	it-fm-import-warning-generator.fmp12	0	Tema "MyTheme" importato come "MyTheme 2" poiché esiste già un tema "MyTheme".
+2023-05-03 09:07:57.687 +0200	it-fm-import-warning-generator.fmp12	0	temi importati: 1
+2023-05-03 09:07:57.688 +0200	it-fm-import-warning-generator.fmp12	0	Importazione completata
+2023-05-03 09:19:40.899 +0200	it-fm-import-warning-generator.fmp12	0	Operazioni di importazione avviate
+2023-05-03 09:19:40.899 +0200	it-fm-import-warning-generator.fmp12	0	Importazione di campi da clipboard avviata
+2023-05-03 09:19:40.900 +0200	MyTable	0	Campo “MyField” importato come “MyField 3” poichè esiste già un campo “MyField”.
+2023-05-03 09:19:40.901 +0200	MyTable	0	campi importati: 1
+2023-05-03 09:19:40.902 +0200	it-fm-import-warning-generator.fmp12	0	Importazione completata
+2023-05-03 09:19:52.414 +0200	it-fm-import-warning-generator.fmp12	0	Operazioni di importazione annullate
+2023-05-03 09:19:52.415 +0200	it-fm-import-warning-generator.fmp12	0	==================================================================

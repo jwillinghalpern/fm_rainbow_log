@@ -1,0 +1,50 @@
+﻿Zeitstempel	Dateiname	Fehler	Meldung
+2023-05-03 09:00:53.305 +0200	de-fm-import-warning-generator.fmp12	0	Import von Scriptbefehle aus Zwischenablage begonnen
+2023-05-03 09:00:53.307 +0200	Missing EDS::2::Datei öffnen	114	Dateiverweis “11F4E38A-BE96-4B26-8143-F89B3A6C9F4E” fehlt.
+2023-05-03 09:00:53.307 +0200	Missing EDS::2::Datei öffnen	0	Fehlender Dateiverweis “11F4E38A-BE96-4B26-8143-F89B3A6C9F4E” automatisch erstellt und importiert.
+2023-05-03 09:00:53.308 +0200	Missing EDS	0	Scriptbefehle importiert: 1
+2023-05-03 09:00:53.308 +0200	de-fm-import-warning-generator.fmp12	0	Import abgeschlossen
+2023-05-03 09:00:56.304 +0200	de-fm-import-warning-generator.fmp12	0	Import von Scriptbefehle aus Zwischenablage begonnen
+2023-05-03 09:00:56.305 +0200	Missing EDS::3::Datei öffnen	114	Dateiverweis “9403930F-17D6-456A-AD11-36CCCB40E9CE” fehlt.
+2023-05-03 09:00:56.305 +0200	Missing EDS::3::Datei öffnen	0	Dateiverweis “WillBeReused” stattdessen verwendet, da er sich auf die gleiche Datei bezieht.
+2023-05-03 09:00:56.305 +0200	Missing EDS	0	Scriptbefehle importiert: 1
+2023-05-03 09:00:56.305 +0200	de-fm-import-warning-generator.fmp12	0	Import abgeschlossen
+2023-05-03 09:01:04.553 +0200	de-fm-import-warning-generator.fmp12	0	Importvorgänge begonnen
+2023-05-03 09:01:04.554 +0200	de-fm-import-warning-generator.fmp12	0	Import von Felder aus Zwischenablage begonnen
+2023-05-03 09:01:04.554 +0200	MyTable	0	Feld “MyField” importiert als “MyField 2”, da ein Feld “MyField” bereits existiert.
+2023-05-03 09:01:04.555 +0200	MyTable	0	Felder importiert: 1
+2023-05-03 09:01:04.555 +0200	de-fm-import-warning-generator.fmp12	0	Import abgeschlossen
+2023-05-03 09:01:07.793 +0200	de-fm-import-warning-generator.fmp12	0	Import von Tabellen aus Zwischenablage begonnen
+2023-05-03 09:01:07.795 +0200	de-fm-import-warning-generator.fmp12	0	Tabelle “MyTable” importiert als “MyTable 3”, da eine Tabelle bzw. ein Tabellenauftreten “MyTable” bereits existiert.
+2023-05-03 09:01:07.796 +0200	MyTable 3	0	Felder importiert: 2
+2023-05-03 09:01:07.797 +0200	de-fm-import-warning-generator.fmp12	0	Tabellen importiert: 1
+2023-05-03 09:01:07.797 +0200	de-fm-import-warning-generator.fmp12	0	Import abgeschlossen
+2023-05-03 09:01:10.669 +0200	de-fm-import-warning-generator.fmp12	0	Importvorgänge bestätigt
+2023-05-03 09:01:10.670 +0200	de-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:01:13.613 +0200	de-fm-import-warning-generator.fmp12	0	Import von Scripts aus Zwischenablage begonnen
+2023-05-03 09:01:13.614 +0200	de-fm-import-warning-generator.fmp12	0	Script “MyScript” importiert als “MyScript 2”, da ein Script “MyScript” bereits existiert.
+2023-05-03 09:01:13.614 +0200	MyScript 2	0	Scriptbefehle importiert: 0
+2023-05-03 09:01:13.615 +0200	de-fm-import-warning-generator.fmp12	0	Scripts importiert: 1
+2023-05-03 09:01:13.615 +0200	de-fm-import-warning-generator.fmp12	0	Import abgeschlossen
+2023-05-03 09:01:28.233 +0200	de-fm-import-warning-generator.fmp12	0	Importvorgänge begonnen
+2023-05-03 09:01:28.233 +0200	de-fm-import-warning-generator.fmp12	0	Import von Eigene Funktionen aus Zwischenablage begonnen
+2023-05-03 09:01:28.234 +0200	de-fm-import-warning-generator.fmp12	0	Funktion “MyCF” importiert als “MyCF 2”, da eine Funktion “MyCF” bereits existiert.
+2023-05-03 09:01:28.235 +0200	de-fm-import-warning-generator.fmp12	0	Eigene Funktionen importiert: 1
+2023-05-03 09:01:28.235 +0200	de-fm-import-warning-generator.fmp12	0	Import abgeschlossen
+2023-05-03 09:01:30.414 +0200	de-fm-import-warning-generator.fmp12	0	Importvorgänge bestätigt
+2023-05-03 09:01:30.415 +0200	de-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:01:37.758 +0200	de-fm-import-warning-generator.fmp12	0	Import von Wertelisten aus Zwischenablage begonnen
+2023-05-03 09:01:37.759 +0200	de-fm-import-warning-generator.fmp12	0	Werteliste “MyValueList” importiert als “MyValueList 2”, da eine Werteliste “MyValueList” bereits existiert.
+2023-05-03 09:01:37.760 +0200	de-fm-import-warning-generator.fmp12	0	Wertelisten importiert: 1
+2023-05-03 09:01:37.760 +0200	de-fm-import-warning-generator.fmp12	0	Import abgeschlossen
+2023-05-03 09:01:46.665 +0200	de-fm-import-warning-generator.fmp12	0	Import von Designs aus Zwischenablage begonnen
+2023-05-03 09:01:46.668 +0200	de-fm-import-warning-generator.fmp12	0	Design „MyTheme“ wurde als „MyTheme 2“ importiert, da ein Design „MyTheme“ bereits existiert.
+2023-05-03 09:01:46.689 +0200	de-fm-import-warning-generator.fmp12	0	Designs importiert: 1
+2023-05-03 09:01:46.690 +0200	de-fm-import-warning-generator.fmp12	0	Import abgeschlossen
+2023-05-03 09:18:45.249 +0200	de-fm-import-warning-generator.fmp12	0	Importvorgänge begonnen
+2023-05-03 09:18:45.249 +0200	de-fm-import-warning-generator.fmp12	0	Import von Felder aus Zwischenablage begonnen
+2023-05-03 09:18:45.250 +0200	MyTable	0	Feld “MyField” importiert als “MyField 3”, da ein Feld “MyField” bereits existiert.
+2023-05-03 09:18:45.251 +0200	MyTable	0	Felder importiert: 1
+2023-05-03 09:18:45.251 +0200	de-fm-import-warning-generator.fmp12	0	Import abgeschlossen
+2023-05-03 09:18:49.750 +0200	de-fm-import-warning-generator.fmp12	0	Importvorgänge abgebrochen
+2023-05-03 09:18:49.751 +0200	de-fm-import-warning-generator.fmp12	0	==================================================================

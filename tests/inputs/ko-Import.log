@@ -1,0 +1,50 @@
+﻿타임 스탬프	파일 이름	오류	메시지
+2023-05-03 09:10:59.610 +0200	ko-fm-import-warning-generator.fmp12	0	클립보드에서 스크립트 단계 가져오기가 시작됨
+2023-05-03 09:10:59.612 +0200	Missing EDS::2::파일 열기	114	파일 참조 “93F788A8-0573-4E0D-B548-DEAA2ADDB98F”이(가) 누락되었습니다.
+2023-05-03 09:10:59.613 +0200	Missing EDS::2::파일 열기	0	유실된 파일 참조 “93F788A8-0573-4E0D-B548-DEAA2ADDB98F”이(가) 자동으로 생성되고 가져왔습니다.
+2023-05-03 09:10:59.613 +0200	Missing EDS	0	가져온 스크립트 단계 : 1
+2023-05-03 09:10:59.613 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 완료됨
+2023-05-03 09:11:04.498 +0200	ko-fm-import-warning-generator.fmp12	0	클립보드에서 스크립트 단계 가져오기가 시작됨
+2023-05-03 09:11:04.499 +0200	Missing EDS::3::파일 열기	114	파일 참조 “5E7BB455-E750-482F-BA29-33FA17D00184”이(가) 누락되었습니다.
+2023-05-03 09:11:04.499 +0200	Missing EDS::3::파일 열기	0	같은 파일을 참조하므로 대신 파일 참조 “WillBeReused”이(가) 사용됩니다.
+2023-05-03 09:11:04.499 +0200	Missing EDS	0	가져온 스크립트 단계 : 1
+2023-05-03 09:11:04.499 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 완료됨
+2023-05-03 09:11:10.782 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 작업 시작됨
+2023-05-03 09:11:10.783 +0200	ko-fm-import-warning-generator.fmp12	0	클립보드에서 필드 가져오기가 시작됨
+2023-05-03 09:11:10.785 +0200	MyTable	0	“MyField” 필드를 “MyField 2”(으)로 가져옵니다. “MyField”인 이름의 필드는 이미 존재합니다.
+2023-05-03 09:11:10.786 +0200	MyTable	0	가져온 필드 : 1
+2023-05-03 09:11:10.786 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 완료됨
+2023-05-03 09:11:14.877 +0200	ko-fm-import-warning-generator.fmp12	0	클립보드에서 테이블 가져오기가 시작됨
+2023-05-03 09:11:14.878 +0200	ko-fm-import-warning-generator.fmp12	0	“MyTable” 테이블을 “MyTable 3”(으)로 가져옵니다. “MyTable”인 이름의 테이블 또는 테이블 항목은 이미 존재합니다.
+2023-05-03 09:11:14.880 +0200	MyTable 3	0	가져온 필드 : 2
+2023-05-03 09:11:14.880 +0200	ko-fm-import-warning-generator.fmp12	0	가져온 테이블 : 1
+2023-05-03 09:11:14.880 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 완료됨
+2023-05-03 09:11:21.347 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 작업 커밋됨
+2023-05-03 09:11:21.347 +0200	ko-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:11:29.652 +0200	ko-fm-import-warning-generator.fmp12	0	클립보드에서 스크립트 가져오기가 시작됨
+2023-05-03 09:11:29.654 +0200	ko-fm-import-warning-generator.fmp12	0	“MyScript” 스크립트를 “MyScript 2”(으)로 가져옵니다. “MyScript”인 이름의 스크립트는 이미 존재합니다.
+2023-05-03 09:11:29.659 +0200	MyScript 2	0	가져온 스크립트 단계 : 0
+2023-05-03 09:11:29.662 +0200	ko-fm-import-warning-generator.fmp12	0	가져온 스크립트 : 1
+2023-05-03 09:11:29.663 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 완료됨
+2023-05-03 09:11:39.177 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 작업 시작됨
+2023-05-03 09:11:39.177 +0200	ko-fm-import-warning-generator.fmp12	0	클립보드에서 사용자 설정 함수 가져오기가 시작됨
+2023-05-03 09:11:39.178 +0200	ko-fm-import-warning-generator.fmp12	0	“MyCF” 함수를 “MyCF 2”(으)로 가져옵니다. “MyCF”인 이름의 함수는 이미 존재합니다..
+2023-05-03 09:11:39.178 +0200	ko-fm-import-warning-generator.fmp12	0	가져온 사용자 설정 함수 : 1
+2023-05-03 09:11:39.178 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 완료됨
+2023-05-03 09:11:41.078 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 작업 커밋됨
+2023-05-03 09:11:41.079 +0200	ko-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:11:57.957 +0200	ko-fm-import-warning-generator.fmp12	0	클립보드에서 값 목록 가져오기가 시작됨
+2023-05-03 09:11:57.958 +0200	ko-fm-import-warning-generator.fmp12	0	값 목록 “MyValueList”을(를) “MyValueList 2”(으)로 가져왔습니다(이름이 “MyValueList”인 값 목록이 이미 존재함).
+2023-05-03 09:11:57.959 +0200	ko-fm-import-warning-generator.fmp12	0	가져온 값 목록 : 1
+2023-05-03 09:11:57.959 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 완료됨
+2023-05-03 09:12:06.433 +0200	ko-fm-import-warning-generator.fmp12	0	클립보드에서 테마 가져오기가 시작됨
+2023-05-03 09:12:06.437 +0200	ko-fm-import-warning-generator.fmp12	0	테마 “MyTheme”을(를) “MyTheme 2”(으)로 가져왔습니다(테마 이름 “MyTheme”은(는) 이미 존재합니다).
+2023-05-03 09:12:06.462 +0200	ko-fm-import-warning-generator.fmp12	0	가져온 테마 : 1
+2023-05-03 09:12:06.463 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 완료됨
+2023-05-03 09:22:12.166 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 작업 시작됨
+2023-05-03 09:22:12.167 +0200	ko-fm-import-warning-generator.fmp12	0	클립보드에서 필드 가져오기가 시작됨
+2023-05-03 09:22:12.168 +0200	MyTable	0	“MyField” 필드를 “MyField 3”(으)로 가져옵니다. “MyField”인 이름의 필드는 이미 존재합니다.
+2023-05-03 09:22:12.169 +0200	MyTable	0	가져온 필드 : 1
+2023-05-03 09:22:12.169 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 완료됨
+2023-05-03 09:22:13.880 +0200	ko-fm-import-warning-generator.fmp12	0	가져오기 작업 취소됨
+2023-05-03 09:22:13.880 +0200	ko-fm-import-warning-generator.fmp12	0	==================================================================

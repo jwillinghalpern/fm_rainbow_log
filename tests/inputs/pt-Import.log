@@ -1,0 +1,50 @@
+﻿Carimbo de data/hora	Nome do arquivo	Erro	Mensagem
+2023-05-03 09:14:07.620 +0200	pt-fm-import-warning-generator.fmp12	0	Importação de etapas de script da área de transferência iniciada
+2023-05-03 09:14:07.622 +0200	Missing EDS::2::Abrir arquivo	114	Referência de arquivo “FCB3063A-D97E-4FF4-8AF5-68AD9E57CC6B” faltando.
+2023-05-03 09:14:07.623 +0200	Missing EDS::2::Abrir arquivo	0	Faltando referência de arquivo “FCB3063A-D97E-4FF4-8AF5-68AD9E57CC6B” criada e importada automaticamente.
+2023-05-03 09:14:07.623 +0200	Missing EDS	0	etapas de script importados : 1
+2023-05-03 09:14:07.623 +0200	pt-fm-import-warning-generator.fmp12	0	Importação concluída
+2023-05-03 09:14:11.548 +0200	pt-fm-import-warning-generator.fmp12	0	Importação de etapas de script da área de transferência iniciada
+2023-05-03 09:14:11.549 +0200	Missing EDS::3::Abrir arquivo	114	Referência de arquivo “D7476C8A-EA75-4AF9-8F76-6FEEA7CECC51” faltando.
+2023-05-03 09:14:11.549 +0200	Missing EDS::3::Abrir arquivo	0	A referência de arquivo “WillBeReused” foi usada, pois faz referência ao mesmo arquivo.
+2023-05-03 09:14:11.550 +0200	Missing EDS	0	etapas de script importados : 1
+2023-05-03 09:14:11.550 +0200	pt-fm-import-warning-generator.fmp12	0	Importação concluída
+2023-05-03 09:14:16.947 +0200	pt-fm-import-warning-generator.fmp12	0	Operações de importação iniciadas
+2023-05-03 09:14:16.948 +0200	pt-fm-import-warning-generator.fmp12	0	Importação de campos da área de transferência iniciada
+2023-05-03 09:14:16.949 +0200	MyTable	0	Campo “MyField” foi importado como “MyField 2” pois um campo nomeado “MyField” já existe.
+2023-05-03 09:14:16.950 +0200	MyTable	0	campos importados : 1
+2023-05-03 09:14:16.950 +0200	pt-fm-import-warning-generator.fmp12	0	Importação concluída
+2023-05-03 09:14:19.992 +0200	pt-fm-import-warning-generator.fmp12	0	Importação de tabelas da área de transferência iniciada
+2023-05-03 09:14:19.993 +0200	pt-fm-import-warning-generator.fmp12	0	A tabela “MyTable” foi importada como “MyTable 3”, pois uma tabela ou ocorrência de tabela nomeada “MyTable” já existe.
+2023-05-03 09:14:19.995 +0200	MyTable 3	0	campos importados : 2
+2023-05-03 09:14:19.995 +0200	pt-fm-import-warning-generator.fmp12	0	tabelas importados : 1
+2023-05-03 09:14:19.995 +0200	pt-fm-import-warning-generator.fmp12	0	Importação concluída
+2023-05-03 09:14:23.058 +0200	pt-fm-import-warning-generator.fmp12	0	Operações de importação confirmadas
+2023-05-03 09:14:23.058 +0200	pt-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:14:28.288 +0200	pt-fm-import-warning-generator.fmp12	0	Importação de scripts da área de transferência iniciada
+2023-05-03 09:14:28.289 +0200	pt-fm-import-warning-generator.fmp12	0	O script “MyScript” foi importado como “MyScript 2”, pois um script nomeado “MyScript” já existe.
+2023-05-03 09:14:28.289 +0200	MyScript 2	0	etapas de script importados : 0
+2023-05-03 09:14:28.290 +0200	pt-fm-import-warning-generator.fmp12	0	scripts importados : 1
+2023-05-03 09:14:28.290 +0200	pt-fm-import-warning-generator.fmp12	0	Importação concluída
+2023-05-03 09:14:36.221 +0200	pt-fm-import-warning-generator.fmp12	0	Operações de importação iniciadas
+2023-05-03 09:14:36.222 +0200	pt-fm-import-warning-generator.fmp12	0	Importação de funções personalizadas da área de transferência iniciada
+2023-05-03 09:14:36.223 +0200	pt-fm-import-warning-generator.fmp12	0	A função “MyCF” foi importada como “MyCF 2”, pois já existe uma função nomeada “MyCF”.
+2023-05-03 09:14:36.223 +0200	pt-fm-import-warning-generator.fmp12	0	funções personalizadas importados : 1
+2023-05-03 09:14:36.224 +0200	pt-fm-import-warning-generator.fmp12	0	Importação concluída
+2023-05-03 09:14:37.854 +0200	pt-fm-import-warning-generator.fmp12	0	Operações de importação confirmadas
+2023-05-03 09:14:37.855 +0200	pt-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:14:47.500 +0200	pt-fm-import-warning-generator.fmp12	0	Importação de listas de valores da área de transferência iniciada
+2023-05-03 09:14:47.501 +0200	pt-fm-import-warning-generator.fmp12	0	Lista de valor “MyValueList” importada como “MyValueList 2”; já existe uma lista de valor com nome “MyValueList”.
+2023-05-03 09:14:47.501 +0200	pt-fm-import-warning-generator.fmp12	0	listas de valores importados : 1
+2023-05-03 09:14:47.501 +0200	pt-fm-import-warning-generator.fmp12	0	Importação concluída
+2023-05-03 09:14:55.584 +0200	pt-fm-import-warning-generator.fmp12	0	Importação de temas da área de transferência iniciada
+2023-05-03 09:14:55.588 +0200	pt-fm-import-warning-generator.fmp12	0	Tema “MyTheme” importado como “MyTheme 2” visto que um tema com o nome “MyTheme” já existe.
+2023-05-03 09:14:55.611 +0200	pt-fm-import-warning-generator.fmp12	0	temas importados : 1
+2023-05-03 09:14:55.612 +0200	pt-fm-import-warning-generator.fmp12	0	Importação concluída
+2023-05-03 09:22:45.616 +0200	pt-fm-import-warning-generator.fmp12	0	Operações de importação iniciadas
+2023-05-03 09:22:45.617 +0200	pt-fm-import-warning-generator.fmp12	0	Importação de campos da área de transferência iniciada
+2023-05-03 09:22:45.618 +0200	MyTable	0	Campo “MyField” foi importado como “MyField 3” pois um campo nomeado “MyField” já existe.
+2023-05-03 09:22:45.619 +0200	MyTable	0	campos importados : 1
+2023-05-03 09:22:45.619 +0200	pt-fm-import-warning-generator.fmp12	0	Importação concluída
+2023-05-03 09:22:47.592 +0200	pt-fm-import-warning-generator.fmp12	0	Operações de importação canceladas
+2023-05-03 09:22:47.593 +0200	pt-fm-import-warning-generator.fmp12	0	==================================================================

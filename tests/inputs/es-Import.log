@@ -1,0 +1,50 @@
+﻿Fecha y hora	Nombre de archivo	Error	Mensaje
+2023-05-03 09:02:38.929 +0200	es-fm-import-warning-generator.fmp12	0	Importación de pasos de guión desde el portapapeles iniciada
+2023-05-03 09:02:38.930 +0200	Missing EDS::2::Abrir archivo	114	Falta la referencia del archivo “AEA8A574-3FD3-41BB-AEEE-3472C54E3A7C”.
+2023-05-03 09:02:38.931 +0200	Missing EDS::2::Abrir archivo	0	Falta la referencia de archivo “AEA8A574-3FD3-41BB-AEEE-3472C54E3A7C” creada e importada automáticamente.
+2023-05-03 09:02:38.931 +0200	Missing EDS	0	pasos de guión importados : 1
+2023-05-03 09:02:38.931 +0200	es-fm-import-warning-generator.fmp12	0	Importación completada
+2023-05-03 09:02:46.109 +0200	es-fm-import-warning-generator.fmp12	0	Importación de pasos de guión desde el portapapeles iniciada
+2023-05-03 09:02:46.110 +0200	Missing EDS::3::Abrir archivo	114	Falta la referencia del archivo “C3EF5A8A-E1C3-4DE0-B2B7-2C0D05F6622A”.
+2023-05-03 09:02:46.111 +0200	Missing EDS::3::Abrir archivo	0	Se utilizó en su lugar la referencia del archivo “WillBeReused” ya que se refiere al mismo archivo.
+2023-05-03 09:02:46.111 +0200	Missing EDS	0	pasos de guión importados : 1
+2023-05-03 09:02:46.111 +0200	es-fm-import-warning-generator.fmp12	0	Importación completada
+2023-05-03 09:02:51.674 +0200	es-fm-import-warning-generator.fmp12	0	Importación de operaciones iniciada
+2023-05-03 09:02:51.675 +0200	es-fm-import-warning-generator.fmp12	0	Importación de campos desde el portapapeles iniciada
+2023-05-03 09:02:51.676 +0200	MyTable	0	Campo “MyField” importado como “MyField 2” pues ya existe un campo llamado “MyField”.
+2023-05-03 09:02:51.677 +0200	MyTable	0	campos importados : 1
+2023-05-03 09:02:51.678 +0200	es-fm-import-warning-generator.fmp12	0	Importación completada
+2023-05-03 09:02:55.980 +0200	es-fm-import-warning-generator.fmp12	0	Importación de tablas desde el portapapeles iniciada
+2023-05-03 09:02:55.982 +0200	es-fm-import-warning-generator.fmp12	0	Tabla “MyTable” importada como “MyTable 3” pues ya existe una tabla o una ocurrencia de tabla llamada “MyTable”.
+2023-05-03 09:02:55.983 +0200	MyTable 3	0	campos importados : 2
+2023-05-03 09:02:55.984 +0200	es-fm-import-warning-generator.fmp12	0	tablas importados : 1
+2023-05-03 09:02:55.984 +0200	es-fm-import-warning-generator.fmp12	0	Importación completada
+2023-05-03 09:02:58.903 +0200	es-fm-import-warning-generator.fmp12	0	Importación de operaciones consignada
+2023-05-03 09:02:58.904 +0200	es-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:03:03.857 +0200	es-fm-import-warning-generator.fmp12	0	Importación de guiones desde el portapapeles iniciada
+2023-05-03 09:03:03.858 +0200	es-fm-import-warning-generator.fmp12	0	Guión “MyScript” importado como “MyScript 2” pues ya existe un guión llamado “MyScript”.
+2023-05-03 09:03:03.858 +0200	MyScript 2	0	pasos de guión importados : 0
+2023-05-03 09:03:03.859 +0200	es-fm-import-warning-generator.fmp12	0	guiones importados : 1
+2023-05-03 09:03:03.859 +0200	es-fm-import-warning-generator.fmp12	0	Importación completada
+2023-05-03 09:03:21.931 +0200	es-fm-import-warning-generator.fmp12	0	Importación de operaciones iniciada
+2023-05-03 09:03:21.932 +0200	es-fm-import-warning-generator.fmp12	0	Importación de funciones personalizadas desde el portapapeles iniciada
+2023-05-03 09:03:21.933 +0200	es-fm-import-warning-generator.fmp12	0	La función “MyCF” se ha importado como “MyCF 2” ya que la función llamada “MyCF” ya existe.
+2023-05-03 09:03:21.934 +0200	es-fm-import-warning-generator.fmp12	0	funciones personalizadas importados : 1
+2023-05-03 09:03:21.934 +0200	es-fm-import-warning-generator.fmp12	0	Importación completada
+2023-05-03 09:03:24.388 +0200	es-fm-import-warning-generator.fmp12	0	Importación de operaciones consignada
+2023-05-03 09:03:24.389 +0200	es-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:03:29.865 +0200	es-fm-import-warning-generator.fmp12	0	Importación de listas de valores desde el portapapeles iniciada
+2023-05-03 09:03:29.867 +0200	es-fm-import-warning-generator.fmp12	0	La lista de valores “MyValueList” se ha importado como “MyValueList 2”, ya que la lista con el nombre “MyValueList” ya existe.
+2023-05-03 09:03:29.867 +0200	es-fm-import-warning-generator.fmp12	0	listas de valores importados : 1
+2023-05-03 09:03:29.868 +0200	es-fm-import-warning-generator.fmp12	0	Importación completada
+2023-05-03 09:03:37.261 +0200	es-fm-import-warning-generator.fmp12	0	Importación de temas desde el portapapeles iniciada
+2023-05-03 09:03:37.264 +0200	es-fm-import-warning-generator.fmp12	0	El Tema “MyTheme” se ha importado como “MyTheme 2” porque ya existe un tema con el nombre “MyTheme”.
+2023-05-03 09:03:37.288 +0200	es-fm-import-warning-generator.fmp12	0	temas importados : 1
+2023-05-03 09:03:37.289 +0200	es-fm-import-warning-generator.fmp12	0	Importación completada
+2023-05-03 09:19:07.868 +0200	es-fm-import-warning-generator.fmp12	0	Importación de operaciones iniciada
+2023-05-03 09:19:07.869 +0200	es-fm-import-warning-generator.fmp12	0	Importación de campos desde el portapapeles iniciada
+2023-05-03 09:19:07.869 +0200	MyTable	0	Campo “MyField” importado como “MyField 3” pues ya existe un campo llamado “MyField”.
+2023-05-03 09:19:07.870 +0200	MyTable	0	campos importados : 1
+2023-05-03 09:19:07.871 +0200	es-fm-import-warning-generator.fmp12	0	Importación completada
+2023-05-03 09:19:10.631 +0200	es-fm-import-warning-generator.fmp12	0	Importación de operaciones cancelada
+2023-05-03 09:19:10.632 +0200	es-fm-import-warning-generator.fmp12	0	==================================================================

@@ -1,0 +1,50 @@
+﻿Tijdstempel	Bestandsnaam	Fout	Bericht
+2023-05-03 09:12:42.704 +0200	nl-fm-import-warning-generator.fmp12	0	Importeren van scriptstappen vanuit klembord is gestart
+2023-05-03 09:12:42.705 +0200	Missing EDS::2::Bestand openen	114	De bestandsverwijzing “464A0081-2576-48D6-A392-C07CCD82CD18” ontbreekt.
+2023-05-03 09:12:42.706 +0200	Missing EDS::2::Bestand openen	0	De ontbrekende bestandsverwijzing “464A0081-2576-48D6-A392-C07CCD82CD18” is automatisch gemaakt en geïmporteerd.
+2023-05-03 09:12:42.706 +0200	Missing EDS	0	scriptstappen geïmporteerd: 1
+2023-05-03 09:12:42.706 +0200	nl-fm-import-warning-generator.fmp12	0	Import voltooid
+2023-05-03 09:12:46.528 +0200	nl-fm-import-warning-generator.fmp12	0	Importeren van scriptstappen vanuit klembord is gestart
+2023-05-03 09:12:46.529 +0200	Missing EDS::3::Bestand openen	114	De bestandsverwijzing “0E81006A-5557-4B1C-B5A8-74110400CA99” ontbreekt.
+2023-05-03 09:12:46.529 +0200	Missing EDS::3::Bestand openen	0	In plaats daarvan zal de bestandsverwijzing “WillBeReused” worden gebruikt omdat deze naar hetzelfde bestand verwijst.
+2023-05-03 09:12:46.529 +0200	Missing EDS	0	scriptstappen geïmporteerd: 1
+2023-05-03 09:12:46.529 +0200	nl-fm-import-warning-generator.fmp12	0	Import voltooid
+2023-05-03 09:12:54.192 +0200	nl-fm-import-warning-generator.fmp12	0	Importbewerkingen gestart
+2023-05-03 09:12:54.192 +0200	nl-fm-import-warning-generator.fmp12	0	Importeren van velden vanuit klembord is gestart
+2023-05-03 09:12:54.193 +0200	MyTable	0	Het veld “MyField” is als “MyField 2” geïmporteerd omdat er al een veld met de naam “MyField” bestaat.
+2023-05-03 09:12:54.194 +0200	MyTable	0	velden geïmporteerd: 1
+2023-05-03 09:12:54.194 +0200	nl-fm-import-warning-generator.fmp12	0	Import voltooid
+2023-05-03 09:12:57.792 +0200	nl-fm-import-warning-generator.fmp12	0	Importeren van tabellen vanuit klembord is gestart
+2023-05-03 09:12:57.794 +0200	nl-fm-import-warning-generator.fmp12	0	De tabel “MyTable” is als “MyTable 3” geïmporteerd omdat er al een tabel of tabelvermelding met de naam “MyTable” bestaat.
+2023-05-03 09:12:57.795 +0200	MyTable 3	0	velden geïmporteerd: 2
+2023-05-03 09:12:57.796 +0200	nl-fm-import-warning-generator.fmp12	0	tabellen geïmporteerd: 1
+2023-05-03 09:12:57.796 +0200	nl-fm-import-warning-generator.fmp12	0	Import voltooid
+2023-05-03 09:12:59.739 +0200	nl-fm-import-warning-generator.fmp12	0	Importbewerkingen vastgelegd
+2023-05-03 09:12:59.739 +0200	nl-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:13:19.078 +0200	nl-fm-import-warning-generator.fmp12	0	Importeren van scripts vanuit klembord is gestart
+2023-05-03 09:13:19.079 +0200	nl-fm-import-warning-generator.fmp12	0	Het script “MyScript” is als “MyScript 2” geïmporteerd omdat er al een script met de naam “MyScript” bestaat.
+2023-05-03 09:13:19.079 +0200	MyScript 2	0	scriptstappen geïmporteerd: 0
+2023-05-03 09:13:19.080 +0200	nl-fm-import-warning-generator.fmp12	0	scripts geïmporteerd: 1
+2023-05-03 09:13:19.080 +0200	nl-fm-import-warning-generator.fmp12	0	Import voltooid
+2023-05-03 09:13:26.531 +0200	nl-fm-import-warning-generator.fmp12	0	Importbewerkingen gestart
+2023-05-03 09:13:26.532 +0200	nl-fm-import-warning-generator.fmp12	0	Importeren van eigen functies vanuit klembord is gestart
+2023-05-03 09:13:26.532 +0200	nl-fm-import-warning-generator.fmp12	0	De functie “MyCF” is als “MyCF 2” geïmporteerd omdat er al een functie met de naam “MyCF” bestaat.
+2023-05-03 09:13:26.533 +0200	nl-fm-import-warning-generator.fmp12	0	eigen functies geïmporteerd: 1
+2023-05-03 09:13:26.533 +0200	nl-fm-import-warning-generator.fmp12	0	Import voltooid
+2023-05-03 09:13:28.127 +0200	nl-fm-import-warning-generator.fmp12	0	Importbewerkingen vastgelegd
+2023-05-03 09:13:28.128 +0200	nl-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:13:35.307 +0200	nl-fm-import-warning-generator.fmp12	0	Importeren van invoerlijsten vanuit klembord is gestart
+2023-05-03 09:13:35.308 +0200	nl-fm-import-warning-generator.fmp12	0	Invoerlijst “MyValueList” is als “MyValueList 2” geïmporteerd omdat er al een invoerlijst met de naam “MyValueList” bestaat.
+2023-05-03 09:13:35.309 +0200	nl-fm-import-warning-generator.fmp12	0	invoerlijsten geïmporteerd: 1
+2023-05-03 09:13:35.309 +0200	nl-fm-import-warning-generator.fmp12	0	Import voltooid
+2023-05-03 09:13:42.509 +0200	nl-fm-import-warning-generator.fmp12	0	Importeren van thema's vanuit klembord is gestart
+2023-05-03 09:13:42.512 +0200	nl-fm-import-warning-generator.fmp12	0	Het thema “MyTheme” is als “MyTheme 2” geïmporteerd aangezien er al een thema genaamd “MyTheme” bestaat.
+2023-05-03 09:13:42.532 +0200	nl-fm-import-warning-generator.fmp12	0	thema's geïmporteerd: 1
+2023-05-03 09:13:42.532 +0200	nl-fm-import-warning-generator.fmp12	0	Import voltooid
+2023-05-03 09:22:29.039 +0200	nl-fm-import-warning-generator.fmp12	0	Importbewerkingen gestart
+2023-05-03 09:22:29.040 +0200	nl-fm-import-warning-generator.fmp12	0	Importeren van velden vanuit klembord is gestart
+2023-05-03 09:22:29.041 +0200	MyTable	0	Het veld “MyField” is als “MyField 3” geïmporteerd omdat er al een veld met de naam “MyField” bestaat.
+2023-05-03 09:22:29.042 +0200	MyTable	0	velden geïmporteerd: 1
+2023-05-03 09:22:29.042 +0200	nl-fm-import-warning-generator.fmp12	0	Import voltooid
+2023-05-03 09:22:31.335 +0200	nl-fm-import-warning-generator.fmp12	0	Importbewerkingen geannuleerd
+2023-05-03 09:22:31.336 +0200	nl-fm-import-warning-generator.fmp12	0	==================================================================

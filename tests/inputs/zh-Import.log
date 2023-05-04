@@ -1,0 +1,50 @@
+﻿时间戳	文件名	错误	信息
+2023-05-03 09:16:35.141 +0200	zh-fm-import-warning-generator.fmp12	0	开始从剪贴板导入脚本步骤 
+2023-05-03 09:16:35.142 +0200	Missing EDS::2::打开文件	114	文件参考 “A11864D4-2EA9-47A0-BEFB-5D4FD26F970F” 丢失。
+2023-05-03 09:16:35.143 +0200	Missing EDS::2::打开文件	0	自动创建并导入丢失的文件参考 “A11864D4-2EA9-47A0-BEFB-5D4FD26F970F”。
+2023-05-03 09:16:35.143 +0200	Missing EDS	0	导入脚本步骤: 1
+2023-05-03 09:16:35.144 +0200	zh-fm-import-warning-generator.fmp12	0	导入完成
+2023-05-03 09:16:39.968 +0200	zh-fm-import-warning-generator.fmp12	0	开始从剪贴板导入脚本步骤 
+2023-05-03 09:16:39.970 +0200	Missing EDS::3::打开文件	114	文件参考 “93F362DB-0459-4D1A-BE36-9CF2FBEEE7D0” 丢失。
+2023-05-03 09:16:39.970 +0200	Missing EDS::3::打开文件	0	因为参考同一文件，所以使用文件参考 “WillBeReused”。
+2023-05-03 09:16:39.970 +0200	Missing EDS	0	导入脚本步骤: 1
+2023-05-03 09:16:39.970 +0200	zh-fm-import-warning-generator.fmp12	0	导入完成
+2023-05-03 09:16:44.526 +0200	zh-fm-import-warning-generator.fmp12	0	导入操作已开始
+2023-05-03 09:16:44.527 +0200	zh-fm-import-warning-generator.fmp12	0	开始从剪贴板导入字段 
+2023-05-03 09:16:44.528 +0200	MyTable	0	名为 “MyField” 的字段已存在，因此字段 “MyField” 以名称 “MyField 2” 导入。
+2023-05-03 09:16:44.529 +0200	MyTable	0	导入字段: 1
+2023-05-03 09:16:44.529 +0200	zh-fm-import-warning-generator.fmp12	0	导入完成
+2023-05-03 09:16:48.053 +0200	zh-fm-import-warning-generator.fmp12	0	开始从剪贴板导入表 
+2023-05-03 09:16:48.054 +0200	zh-fm-import-warning-generator.fmp12	0	名为 “MyTable” 的表或表摹本已存在，因此表 “MyTable” 以名称 “MyTable 3” 导入。
+2023-05-03 09:16:48.055 +0200	MyTable 3	0	导入字段: 2
+2023-05-03 09:16:48.055 +0200	zh-fm-import-warning-generator.fmp12	0	导入表: 1
+2023-05-03 09:16:48.055 +0200	zh-fm-import-warning-generator.fmp12	0	导入完成
+2023-05-03 09:16:50.869 +0200	zh-fm-import-warning-generator.fmp12	0	导入操作已提交
+2023-05-03 09:16:50.869 +0200	zh-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:16:58.869 +0200	zh-fm-import-warning-generator.fmp12	0	开始从剪贴板导入脚本 
+2023-05-03 09:16:58.869 +0200	zh-fm-import-warning-generator.fmp12	0	名为 “MyScript” 的脚本已存在，因此脚本 “MyScript” 以名称 “MyScript 2” 导入。
+2023-05-03 09:16:58.870 +0200	MyScript 2	0	导入脚本步骤: 0
+2023-05-03 09:16:58.870 +0200	zh-fm-import-warning-generator.fmp12	0	导入脚本: 1
+2023-05-03 09:16:58.870 +0200	zh-fm-import-warning-generator.fmp12	0	导入完成
+2023-05-03 09:17:08.603 +0200	zh-fm-import-warning-generator.fmp12	0	导入操作已开始
+2023-05-03 09:17:08.603 +0200	zh-fm-import-warning-generator.fmp12	0	开始从剪贴板导入自定义函数 
+2023-05-03 09:17:08.604 +0200	zh-fm-import-warning-generator.fmp12	0	函数 “MyCF” 以名称 “MyCF 2” 导入，因为名为 “MyCF” 的函数已存在。
+2023-05-03 09:17:08.605 +0200	zh-fm-import-warning-generator.fmp12	0	导入自定义函数: 1
+2023-05-03 09:17:08.605 +0200	zh-fm-import-warning-generator.fmp12	0	导入完成
+2023-05-03 09:17:11.722 +0200	zh-fm-import-warning-generator.fmp12	0	导入操作已提交
+2023-05-03 09:17:11.722 +0200	zh-fm-import-warning-generator.fmp12	0	==================================================================
+2023-05-03 09:17:18.638 +0200	zh-fm-import-warning-generator.fmp12	0	开始从剪贴板导入值列表 
+2023-05-03 09:17:18.638 +0200	zh-fm-import-warning-generator.fmp12	0	名为 “MyValueList” 的值列表已存在，因此值列表 “MyValueList” 以名称 “MyValueList 2” 导入。
+2023-05-03 09:17:18.639 +0200	zh-fm-import-warning-generator.fmp12	0	导入值列表: 1
+2023-05-03 09:17:18.639 +0200	zh-fm-import-warning-generator.fmp12	0	导入完成
+2023-05-03 09:17:27.923 +0200	zh-fm-import-warning-generator.fmp12	0	开始从剪贴板导入主题 
+2023-05-03 09:17:27.927 +0200	zh-fm-import-warning-generator.fmp12	0	主题 “MyTheme” 以名称 “MyTheme 2” 导入，因为名为 “MyTheme” 的主题已存在。
+2023-05-03 09:17:27.949 +0200	zh-fm-import-warning-generator.fmp12	0	导入主题: 1
+2023-05-03 09:17:27.950 +0200	zh-fm-import-warning-generator.fmp12	0	导入完成
+2023-05-03 09:23:25.577 +0200	zh-fm-import-warning-generator.fmp12	0	导入操作已开始
+2023-05-03 09:23:25.577 +0200	zh-fm-import-warning-generator.fmp12	0	开始从剪贴板导入字段 
+2023-05-03 09:23:25.578 +0200	MyTable	0	名为 “MyField” 的字段已存在，因此字段 “MyField” 以名称 “MyField 3” 导入。
+2023-05-03 09:23:25.579 +0200	MyTable	0	导入字段: 1
+2023-05-03 09:23:25.579 +0200	zh-fm-import-warning-generator.fmp12	0	导入完成
+2023-05-03 09:23:27.703 +0200	zh-fm-import-warning-generator.fmp12	0	导入操作已取消
+2023-05-03 09:23:27.704 +0200	zh-fm-import-warning-generator.fmp12	0	==================================================================
