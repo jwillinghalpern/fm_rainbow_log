@@ -20,7 +20,7 @@ fn send_notification(error_count: usize, warning_count: usize) {
     let summary = if error_count > 0 {
         "🌈❌ fmrl Errors"
     } else if warning_count > 0 {
-        "🌈⚠️ fmlr Warnings"
+        "🌈⚠️ fmrl Warnings"
     } else {
         ""
     };
