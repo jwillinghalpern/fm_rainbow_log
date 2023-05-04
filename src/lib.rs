@@ -1,12 +1,13 @@
 mod config_file;
+mod notifications;
 mod utils;
 
-use crate::config_file::{get_config, ConfigColor};
+use crate::config_file::{get_config, update_args_from_config, ConfigColor};
+use crate::notifications::NotificationType;
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use clap::{Command, CommandFactory, Parser, ValueHint};
 use clap_complete::{generate, Generator, Shell};
 use colored::{ColoredString, Colorize};
-use config_file::Config;
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
 use std::fs::File;
@@ -68,6 +69,12 @@ pub struct Args {
     )]
     warnings_only: bool,
 
+    #[arg(long, short, help = "Print a separator between each import operation")]
+    separator: bool,
+
+    #[arg(long, help = "Show desktop notifications on errors and warnings")]
+    notifications: bool,
+
     #[arg(
         long = "config",
         short = 'c',
@@ -77,9 +84,6 @@ pub struct Args {
     config_path: Option<String>,
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
-    #[arg(long, short, help = "Print a separator between each import operation")]
-    separator: bool,
-
     #[arg(
         long,
         help = "Create log file if missing. This happens automatically when using the --docs-dir option."
@@ -266,15 +270,13 @@ impl PathType {
     fn print_message(&self, no_color: bool) {
         let msg = self.message();
         if msg.is_empty() {
-            println!("{}", self.message());
-        } else {
-            let msg = if no_color {
-                msg
-            } else {
-                msg.green().bold().underline().to_string()
-            };
-            println!("{}", msg);
+            return;
         }
+        if no_color {
+            println!("{}", msg);
+        } else {
+            println!("{}", msg.green().bold().underline());
+        };
     }
     fn path(&self) -> &PathBuf {
         match self {
@@ -288,7 +290,7 @@ impl PathType {
 fn create_file_if_missing(path: &PathBuf, force: bool) -> CustomResult<()> {
     if !path.exists() {
         if force {
-            File::create(&path)
+            File::create(path)
                 .map_err(|_| format!("couldn't create Import.log at {}.", path.display()))?;
         } else {
             return Err(format!("couldn't find Import.log in this location. Use the --create flag to create it automatically. {}", path.display()).into());
@@ -361,21 +363,6 @@ fn colorize_columns(
     [ts, filename, error, msg]
 }
 
-fn update_args_from_config(args: &mut Args, config: &Config) {
-    if config.errors_only {
-        args.errors_only = true;
-    }
-    if config.warnings_only {
-        args.warnings_only = true;
-    }
-    if config.show_separator {
-        args.separator = true;
-    }
-    if config.use_documents_directory && args.path.is_none() && args.path_unnamed.is_none() {
-        args.use_docs_dir = true;
-    }
-}
-
 fn generate_completion_script<G: Generator>(gen: G, cmd: &mut Command) {
     generate(gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
 }
@@ -398,12 +385,11 @@ pub fn run() -> CustomResult {
     let path_type = get_path_type(&args)?;
     let path = path_type.path();
 
-    // NOTE: docs dir is the only folder where we force create the file. The others require the --create flag.
+    // NOTE: docs dir is the only folder where we force create the file by default. The others require the --create flag.
     create_file_if_missing(
         path,
         args.create || matches!(path_type, PathType::DocsDir(_)),
     )?;
-    println!("Reading from: {}", path.display());
     path_type.print_message(args.no_color);
 
     // get colorizer for each field:
@@ -412,8 +398,14 @@ pub fn run() -> CustomResult {
     let error_colorizer = get_default_colorizer(config.colors.error, "bright magenta".to_string());
     let message_colorizer = get_default_colorizer(config.colors.message, "bright blue".to_string());
 
+    // Init notifications. Create a channel whether we send notifications or not because the handle_line closure needs one, even if the messages go nowhere.
+    let (notif_tx, notif_rx) = mpsc::channel();
+    if args.notifications {
+        notifications::listen(notif_rx);
+    }
+
     // closure/fn to handle each line
-    let handle_line = |line: &str| {
+    let handle_line = |line: &str, send_notif: bool| {
         let line = parse_line(line);
         let show_line = line.is_header()
             || (args.errors_only && line.is_error())
@@ -450,6 +442,10 @@ pub fn run() -> CustomResult {
                         line.code.bright_white().on_red(),
                         line.message
                     );
+                    // warning_notification();
+                    if send_notif {
+                        notif_tx.send(NotificationType::Error).unwrap();
+                    }
                 }
                 LineType::Warning(line) => {
                     println!(
@@ -458,7 +454,11 @@ pub fn run() -> CustomResult {
                         line.filename.black().on_yellow(),
                         line.code.black().on_yellow(),
                         line.message
-                    )
+                    );
+                    // warning_notification();
+                    if send_notif {
+                        notif_tx.send(NotificationType::Warning).unwrap();
+                    }
                 }
                 LineType::Header(line) => {
                     let res = colorize_columns(
@@ -482,7 +482,8 @@ pub fn run() -> CustomResult {
 
     // read the initial file content
     reader.read_to_string(&mut buf).unwrap();
-    buf.lines().for_each(handle_line);
+    // don't send_notif for intitial file content. It might be a ton of old errors and warnings
+    buf.lines().for_each(|line| handle_line(line, false));
     if args.no_watch {
         return Ok(());
     }
@@ -505,7 +506,8 @@ pub fn run() -> CustomResult {
 
                 buf.clear();
                 reader.read_to_string(&mut buf).unwrap();
-                buf.lines().for_each(handle_line);
+                buf.lines()
+                    .for_each(|line| handle_line(line, args.notifications));
             }
             Err(err) => {
                 eprintln!("Error: {:?}", err);
