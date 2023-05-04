@@ -401,13 +401,11 @@ pub fn run() -> CustomResult {
     let path_type = get_path_type(&args)?;
     let path = path_type.path();
 
-    // NOTE: docs dir is the only folder where we force create the file. The others require the --create flag.
+    // NOTE: docs dir is the only folder where we force create the file by default. The others require the --create flag.
     create_file_if_missing(
         path,
         args.create || matches!(path_type, PathType::DocsDir(_)),
     )?;
-    // TODO: do we want to print this reading from line?
-    println!("Reading from: {}", path.display());
     path_type.print_message(args.no_color);
 
     // get colorizer for each field:
