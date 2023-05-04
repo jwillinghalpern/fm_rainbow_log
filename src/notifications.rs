@@ -18,9 +18,9 @@ fn get_s(n: usize) -> &'static str {
 
 fn send_notification(error_count: usize, warning_count: usize) {
     let summary = if error_count > 0 {
-        "🌈❌ fmrl Errors"
+        "❌ fmrl Errors 🌈"
     } else if warning_count > 0 {
-        "🌈⚠️ fmrl Warnings"
+        "⚠️ fmrl Warnings 🌈"
     } else {
         ""
     };
