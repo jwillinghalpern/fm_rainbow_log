@@ -74,6 +74,12 @@ fmrl  --errors-only --warnings-only
 # fmrl -e -w
 ```
 
+show desktop notifications for errors and warnings:
+
+```bash
+fmrl --notifications
+```
+
 show help (it's helpful)
 
 ```bash
@@ -109,6 +115,7 @@ To customize colors and default options, create a json file somewhere on your co
 ```json
 {
   "show_separator": false,
+  "show_notifications": false,
   "use_documents_directory": false,
   "errors_only": false,
   "warnings_only": false,
