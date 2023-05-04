@@ -371,6 +371,9 @@ pub fn run() -> CustomResult {
     #[cfg(target_os = "windows")]
     colored::control::set_virtual_terminal(true).unwrap();
 
+    #[cfg(target_os = "macos")]
+    let _ = notify_rust::set_application("com.apple.Terminal");
+
     let mut args = Args::parse();
     if let Some(gen) = args.completion {
         // let mut gen = Generator::new(generator);
