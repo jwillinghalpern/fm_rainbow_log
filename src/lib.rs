@@ -1,7 +1,9 @@
 mod config_file;
+mod notifications;
 mod utils;
 
 use crate::config_file::{get_config, ConfigColor};
+use crate::notifications::NotificationType;
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use clap::{Command, CommandFactory, Parser, ValueHint};
 use clap_complete::{generate, Generator, Shell};
@@ -271,7 +273,7 @@ impl PathType {
         if no_color {
             println!("{}", msg);
         } else {
-            println!("{}", msg.green().bold().underline().to_string());
+            println!("{}", msg.green().bold().underline());
         };
     }
     fn path(&self) -> &PathBuf {
@@ -286,7 +288,7 @@ impl PathType {
 fn create_file_if_missing(path: &PathBuf, force: bool) -> CustomResult<()> {
     if !path.exists() {
         if force {
-            File::create(&path)
+            File::create(path)
                 .map_err(|_| format!("couldn't create Import.log at {}.", path.display()))?;
         } else {
             return Err(format!("couldn't find Import.log in this location. Use the --create flag to create it automatically. {}", path.display()).into());
@@ -401,6 +403,7 @@ pub fn run() -> CustomResult {
         path,
         args.create || matches!(path_type, PathType::DocsDir(_)),
     )?;
+    // TODO: do we want to print this reading from line?
     println!("Reading from: {}", path.display());
     path_type.print_message(args.no_color);
 
@@ -410,8 +413,11 @@ pub fn run() -> CustomResult {
     let error_colorizer = get_default_colorizer(config.colors.error, "bright magenta".to_string());
     let message_colorizer = get_default_colorizer(config.colors.message, "bright blue".to_string());
 
+    // let (notif_tx, notif_rx) = mpsc::channel();
+    let notif_tx = notifications::listen();
+
     // closure/fn to handle each line
-    let handle_line = |line: &str| {
+    let handle_line = |line: &str, send_notif: bool| {
         let line = parse_line(line);
         let show_line = line.is_header()
             || (args.errors_only && line.is_error())
@@ -448,6 +454,10 @@ pub fn run() -> CustomResult {
                         line.code.bright_white().on_red(),
                         line.message
                     );
+                    // warning_notification();
+                    if send_notif {
+                        notif_tx.send(NotificationType::Error).unwrap();
+                    }
                 }
                 LineType::Warning(line) => {
                     println!(
@@ -456,7 +466,11 @@ pub fn run() -> CustomResult {
                         line.filename.black().on_yellow(),
                         line.code.black().on_yellow(),
                         line.message
-                    )
+                    );
+                    // warning_notification();
+                    if send_notif {
+                        notif_tx.send(NotificationType::Warning).unwrap();
+                    }
                 }
                 LineType::Header(line) => {
                     let res = colorize_columns(
@@ -480,7 +494,7 @@ pub fn run() -> CustomResult {
 
     // read the initial file content
     reader.read_to_string(&mut buf).unwrap();
-    buf.lines().for_each(handle_line);
+    buf.lines().for_each(|line| handle_line(line, false));
     if args.no_watch {
         return Ok(());
     }
@@ -503,7 +517,7 @@ pub fn run() -> CustomResult {
 
                 buf.clear();
                 reader.read_to_string(&mut buf).unwrap();
-                buf.lines().for_each(handle_line);
+                buf.lines().for_each(|line| handle_line(line, true));
             }
             Err(err) => {
                 eprintln!("Error: {:?}", err);
