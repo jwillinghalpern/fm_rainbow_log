@@ -414,7 +414,7 @@ pub fn run() -> CustomResult {
     let error_colorizer = get_default_colorizer(config.colors.error, "bright magenta".to_string());
     let message_colorizer = get_default_colorizer(config.colors.message, "bright blue".to_string());
 
-    // create a channel whether we send notifications or not, because the handle_line closure needs one, even if it doesn't do anything.
+    // Init notifications. Create a channel whether we send notifications or not because the handle_line closure needs one, even if the messages go nowhere.
     let (notif_tx, notif_rx) = mpsc::channel();
     if args.notifications {
         notifications::listen(notif_rx);
