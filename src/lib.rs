@@ -70,6 +70,12 @@ pub struct Args {
     )]
     warnings_only: bool,
 
+    #[arg(long, short, help = "Print a separator between each import operation")]
+    separator: bool,
+
+    #[arg(long, help = "Show desktop notifications on errors and warnings")]
+    notifications: bool,
+
     #[arg(
         long = "config",
         short = 'c',
@@ -79,9 +85,6 @@ pub struct Args {
     config_path: Option<String>,
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
-    #[arg(long, short, help = "Print a separator between each import operation")]
-    separator: bool,
-
     #[arg(
         long,
         help = "Create log file if missing. This happens automatically when using the --docs-dir option."
@@ -413,8 +416,11 @@ pub fn run() -> CustomResult {
     let error_colorizer = get_default_colorizer(config.colors.error, "bright magenta".to_string());
     let message_colorizer = get_default_colorizer(config.colors.message, "bright blue".to_string());
 
-    // let (notif_tx, notif_rx) = mpsc::channel();
-    let notif_tx = notifications::listen();
+    // create a channel whether we send notifications or not, because the handle_line closure needs one, even if it doesn't do anything.
+    let (notif_tx, notif_rx) = mpsc::channel();
+    if args.notifications {
+        notifications::listen(notif_rx);
+    }
 
     // closure/fn to handle each line
     let handle_line = |line: &str, send_notif: bool| {
@@ -494,6 +500,7 @@ pub fn run() -> CustomResult {
 
     // read the initial file content
     reader.read_to_string(&mut buf).unwrap();
+    // don't send_notif for intitial file content. It might be a ton of old errors and warnings
     buf.lines().for_each(|line| handle_line(line, false));
     if args.no_watch {
         return Ok(());
@@ -517,7 +524,8 @@ pub fn run() -> CustomResult {
 
                 buf.clear();
                 reader.read_to_string(&mut buf).unwrap();
-                buf.lines().for_each(|line| handle_line(line, true));
+                buf.lines()
+                    .for_each(|line| handle_line(line, args.notifications));
             }
             Err(err) => {
                 eprintln!("Error: {:?}", err);

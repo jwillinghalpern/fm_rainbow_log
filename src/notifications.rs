@@ -1,5 +1,5 @@
 use notify_rust::Notification;
-use std::sync::mpsc::{self, Receiver, Sender};
+use std::sync::mpsc::Receiver;
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -70,13 +70,8 @@ pub(crate) fn process_messages(logs_rx: Receiver<NotificationType>) {
     }
 }
 
-// spawn a thread to send notifications asynchronously
-// TODO: only spawn notifications thread if the notifications option is set
-// if args.notifications {}
-pub(crate) fn listen() -> Sender<NotificationType> {
-    let (notif_tx, notif_rx) = mpsc::channel();
+pub(crate) fn listen(notif_rx: Receiver<NotificationType>) {
     thread::spawn(move || {
         process_messages(notif_rx);
     });
-    notif_tx
 }
