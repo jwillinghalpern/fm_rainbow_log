@@ -23,10 +23,13 @@ pub(crate) struct ConfigColorFields {
 #[serde(default)]
 pub(crate) struct Config {
     pub(crate) show_separator: bool,
-    pub(crate) show_notifications: bool,
     pub(crate) use_documents_directory: bool,
     pub(crate) errors_only: bool,
     pub(crate) warnings_only: bool,
+    pub(crate) show_notifications: bool,
+    pub(crate) beep: bool,
+    pub(crate) beep_volume: f32,
+    pub(crate) beep_path: String,
     pub(crate) colors: ConfigColorFields,
 }
 
@@ -89,5 +92,14 @@ pub(crate) fn update_args_from_config(args: &mut Args, config: &Config) {
     }
     if config.use_documents_directory && args.path.is_none() && args.path_unnamed.is_none() {
         args.use_docs_dir = true;
+    }
+    if config.beep {
+        args.beep = true;
+    }
+    if !config.beep_path.is_empty() {
+        args.beep_path = config.beep_path.clone();
+    }
+    if config.beep_volume > 0.0 {
+        args.beep_volume = config.beep_volume;
     }
 }

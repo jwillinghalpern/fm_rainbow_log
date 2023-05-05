@@ -98,6 +98,14 @@ don't watch for changes, just print the log once:
 fmrl --no-watch
 ```
 
+play sound! (mac only)
+
+```bash
+fmrl --beep
+# or make it fancier!
+fmrl --notifications --beep --beep-volume 0.8 --beep-path /System/Library/Sounds/Frog.aiff
+```
+
 generate an auto-completion script (store somewhere in your $fpath):
 
 ```bash
@@ -115,29 +123,36 @@ To customize colors and default options, create a json file somewhere on your co
 ```json
 {
   "show_separator": false,
-  "show_notifications": false,
   "use_documents_directory": false,
   "errors_only": false,
   "warnings_only": false,
+
+  "show_notifications": false,
+
+  "beep": false,
+  "beep_volume": 1.0,
+  "beep_path": "/System/Library/Sounds/Tink.aiff",
+
   "colors": {
     "timestamp": {
-      "foreground": "bright white",
-      "background": "magenta"
+      "foreground": "",
+      "background": ""
     },
     "filename": {
-      "foreground": "black",
-      "background": "cyan"
+      "foreground": "",
+      "background": ""
     },
     "error": {
-      "foreground": "bright white",
-      "background": "bright green"
+      "foreground": "",
+      "background": ""
     },
     "message": {
-      "foreground": "bright white",
-      "background": "black"
+      "foreground": "",
+      "background": ""
     }
   }
 }
+
 ```
 
 Then pass the path to that file to `fmrl` with the `-c` option:

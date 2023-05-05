@@ -76,6 +76,28 @@ pub struct Args {
     notifications: bool,
 
     #[arg(
+        long,
+        help = "Play a beep when the desktop notification shows. macOS only. Requires --notifications."
+    )]
+    beep: bool,
+
+    #[arg(
+        long,
+        help = "Beep volume. Number between 0 and 1. macOS only. Requires --beep.",
+        value_name = "VOLUME",
+        default_value_t = 1.0
+    )]
+    beep_volume: f32,
+
+    #[arg(
+        long,
+        help = "Beep sound file. macOS only. Requires --beep. Defaults to /System/Library/Sounds/Tink.aiff",
+        value_name = "PATH",
+        default_value = "/System/Library/Sounds/Tink.aiff"
+    )]
+    beep_path: String,
+
+    #[arg(
         long = "config",
         short = 'c',
         help = "Path to config file for customizing colors",
@@ -401,6 +423,9 @@ fn generate_completion_script<G: Generator>(gen: G, cmd: &mut Command) {
     generate(gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
 }
 
+mod beeper;
+use beeper::beep;
+
 pub fn run() -> CustomResult {
     #[cfg(target_os = "windows")]
     colored::control::set_virtual_terminal(true).unwrap();
@@ -437,8 +462,19 @@ pub fn run() -> CustomResult {
 
     // Init notifications. Create a channel whether we send notifications or not because the handle_line closure needs one, even if the messages go nowhere.
     let (notif_tx, notif_rx) = mpsc::channel();
-    if args.notifications {
-        notifications::listen(notif_rx);
+    if args.notifications && args.beep {
+        notifications::listen(notif_rx, move |notif| {
+            beep(&args.beep_path, args.beep_volume);
+            notif.show().unwrap();
+        });
+    } else if args.notifications {
+        notifications::listen(notif_rx, |notif| {
+            notif.show().unwrap();
+        });
+    } else if args.beep {
+        notifications::listen(notif_rx, move |_| {
+            beep(&args.beep_path, args.beep_volume);
+        });
     }
 
     // closure/fn to handle each line
@@ -479,7 +515,6 @@ pub fn run() -> CustomResult {
                         line.code.bright_white().on_red(),
                         line.message
                     );
-                    // warning_notification();
                     if send_notif {
                         notif_tx.send(NotificationType::Error).unwrap();
                     }
@@ -492,7 +527,6 @@ pub fn run() -> CustomResult {
                         line.code.black().on_yellow(),
                         line.message
                     );
-                    // warning_notification();
                     if send_notif {
                         notif_tx.send(NotificationType::Warning).unwrap();
                     }
@@ -544,7 +578,7 @@ pub fn run() -> CustomResult {
                 buf.clear();
                 reader.read_to_string(&mut buf).unwrap();
                 buf.lines()
-                    .for_each(|line| handle_line(line, args.notifications));
+                    .for_each(|line| handle_line(line, args.notifications || args.beep));
             }
             Err(err) => {
                 eprintln!("Error: {:?}", err);
