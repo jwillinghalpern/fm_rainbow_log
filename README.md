@@ -154,13 +154,15 @@ To customize colors and default options, create a json file somewhere on your co
 }
 ```
 
-Then pass the path to that file to `fmrl` with the `-c` option:
+Then either:
 
-```bash
-fmrl -c path/to/config.json
-```
+1. pass the path to that file to `fmrl` with the `-c` option:
 
-_NOTE: if you always want to use the same custom configuration, you can save the file in your config directory at these locations and then fmrl will use that by default:_
+    ```bash
+    fmrl -c path/to/config.json
+    ```
+
+2. (recommended if you always want the same config) save the file in your config directory at these locations and then fmrl will use that by default:
 
 - Mac: `$HOME/Library/Application Support/fm_rainbow_log/config.json`
   - example: /Users/Alice/Library/Application Support/fm_rainbow_log/config.json
