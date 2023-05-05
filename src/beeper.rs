@@ -1,6 +1,6 @@
 pub fn beep(path: &str, volume: f32) {
     let vol = if volume > 1.0 || volume < 0.0 {
-        0.5
+        1.0
     } else {
         volume
     };
