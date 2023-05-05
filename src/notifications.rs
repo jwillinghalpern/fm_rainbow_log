@@ -39,10 +39,6 @@ fn create_notification(error_count: usize, warning_count: usize) -> Notification
     Notification::new().summary(summary).body(&body).finalize()
 }
 
-fn send_notification(notification: Notification) {
-    notification.show().unwrap();
-}
-
 fn process_messages(
     logs_rx: Receiver<NotificationType>,
     notification_sender: &dyn Fn(Notification),
@@ -74,9 +70,12 @@ fn process_messages(
     }
 }
 
-pub(crate) fn listen(notif_rx: Receiver<NotificationType>) {
+pub(crate) fn listen<F>(notif_rx: Receiver<NotificationType>, notification_sender: F)
+where
+    F: Fn(Notification) + Send + 'static,
+{
     thread::spawn(move || {
-        process_messages(notif_rx, &send_notification);
+        process_messages(notif_rx, &notification_sender);
     });
 }
 

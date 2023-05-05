@@ -1,3 +1,4 @@
+mod beeper;
 mod config_file;
 mod notifications;
 mod utils;
@@ -5,6 +6,7 @@ mod utils;
 use crate::config_file::{get_config, update_args_from_config, ConfigColor};
 use crate::notifications::NotificationType;
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
+use beeper::beep;
 use clap::{Command, CommandFactory, Parser, ValueHint};
 use clap_complete::{generate, Generator, Shell};
 use colored::{ColoredString, Colorize};
@@ -76,12 +78,27 @@ pub struct Args {
     notifications: bool,
 
     #[arg(
-        long = "config",
-        short = 'c',
-        help = "Path to config file for customizing colors",
-        value_name = "PATH"
+        long,
+        help = "Play a beep when the desktop notification shows (macOS only)"
     )]
-    config_path: Option<String>,
+    beep: bool,
+
+    #[arg(
+        long,
+        help = "Beep volume. Number between 0 and 1",
+        value_name = "VOLUME",
+        default_value_t = 1.0
+    )]
+    beep_volume: f32,
+
+    #[arg(
+        long,
+        help = "Beep sound file. Defaults to /System/Library/Sounds/Tink.aiff",
+        value_name = "PATH",
+        default_value = "/System/Library/Sounds/Tink.aiff"
+    )]
+    beep_path: String,
+
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
     #[arg(
@@ -89,6 +106,14 @@ pub struct Args {
         help = "Create log file if missing. This happens automatically when using the --docs-dir option."
     )]
     create: bool,
+
+    #[arg(
+        long = "config",
+        short = 'c',
+        help = "Path to config file for customizing colors",
+        value_name = "PATH"
+    )]
+    config_path: Option<String>,
 
     #[arg(long, help = "generate completion script")]
     completion: Option<Shell>,
@@ -437,8 +462,19 @@ pub fn run() -> CustomResult {
 
     // Init notifications. Create a channel whether we send notifications or not because the handle_line closure needs one, even if the messages go nowhere.
     let (notif_tx, notif_rx) = mpsc::channel();
-    if args.notifications {
-        notifications::listen(notif_rx);
+    if args.notifications && args.beep {
+        notifications::listen(notif_rx, move |notif| {
+            beep(&args.beep_path, args.beep_volume);
+            notif.show().unwrap();
+        });
+    } else if args.notifications {
+        notifications::listen(notif_rx, |notif| {
+            notif.show().unwrap();
+        });
+    } else if args.beep {
+        notifications::listen(notif_rx, move |_| {
+            beep(&args.beep_path, args.beep_volume);
+        });
     }
 
     // closure/fn to handle each line
@@ -479,7 +515,6 @@ pub fn run() -> CustomResult {
                         line.code.bright_white().on_red(),
                         line.message
                     );
-                    // warning_notification();
                     if send_notif {
                         notif_tx.send(NotificationType::Error).unwrap();
                     }
@@ -492,7 +527,6 @@ pub fn run() -> CustomResult {
                         line.code.black().on_yellow(),
                         line.message
                     );
-                    // warning_notification();
                     if send_notif {
                         notif_tx.send(NotificationType::Warning).unwrap();
                     }
@@ -544,7 +578,7 @@ pub fn run() -> CustomResult {
                 buf.clear();
                 reader.read_to_string(&mut buf).unwrap();
                 buf.lines()
-                    .for_each(|line| handle_line(line, args.notifications));
+                    .for_each(|line| handle_line(line, args.notifications || args.beep));
             }
             Err(err) => {
                 eprintln!("Error: {:?}", err);
