@@ -135,24 +135,23 @@ To customize colors and default options, create a json file somewhere on your co
 
   "colors": {
     "timestamp": {
-      "foreground": "",
-      "background": ""
+      "foreground": "bright white",
+      "background": "magenta"
     },
     "filename": {
-      "foreground": "",
-      "background": ""
+      "foreground": "black",
+      "background": "cyan"
     },
     "error": {
-      "foreground": "",
-      "background": ""
+      "foreground": "bright white",
+      "background": "bright green"
     },
     "message": {
-      "foreground": "",
-      "background": ""
+      "foreground": "bright white",
+      "background": "black"
     }
   }
 }
-
 ```
 
 Then pass the path to that file to `fmrl` with the `-c` option:
