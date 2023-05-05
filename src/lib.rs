@@ -77,13 +77,13 @@ pub struct Args {
 
     #[arg(
         long,
-        help = "Play a beep when the desktop notification shows. macOS only. Requires --notifications."
+        help = "Play a beep when the desktop notification shows (macOS only)"
     )]
     beep: bool,
 
     #[arg(
         long,
-        help = "Beep volume. Number between 0 and 1. macOS only. Requires --beep.",
+        help = "Beep volume. Number between 0 and 1",
         value_name = "VOLUME",
         default_value_t = 1.0
     )]
@@ -91,11 +91,19 @@ pub struct Args {
 
     #[arg(
         long,
-        help = "Beep sound file. macOS only. Requires --beep. Defaults to /System/Library/Sounds/Tink.aiff",
+        help = "Beep sound file. Defaults to /System/Library/Sounds/Tink.aiff",
         value_name = "PATH",
         default_value = "/System/Library/Sounds/Tink.aiff"
     )]
     beep_path: String,
+
+    // how should filter be passed in? what if we want multiple filters?
+    //   - maybe some basic filters and a regex option?
+    #[arg(
+        long,
+        help = "Create log file if missing. This happens automatically when using the --docs-dir option."
+    )]
+    create: bool,
 
     #[arg(
         long = "config",
@@ -104,13 +112,6 @@ pub struct Args {
         value_name = "PATH"
     )]
     config_path: Option<String>,
-    // how should filter be passed in? what if we want multiple filters?
-    //   - maybe some basic filters and a regex option?
-    #[arg(
-        long,
-        help = "Create log file if missing. This happens automatically when using the --docs-dir option."
-    )]
-    create: bool,
 
     #[arg(long, help = "generate completion script")]
     completion: Option<Shell>,
