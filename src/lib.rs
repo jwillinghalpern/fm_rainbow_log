@@ -1,3 +1,4 @@
+mod beeper;
 mod config_file;
 mod notifications;
 mod utils;
@@ -5,6 +6,7 @@ mod utils;
 use crate::config_file::{get_config, update_args_from_config, ConfigColor};
 use crate::notifications::NotificationType;
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
+use beeper::beep;
 use clap::{Command, CommandFactory, Parser, ValueHint};
 use clap_complete::{generate, Generator, Shell};
 use colored::{ColoredString, Colorize};
@@ -423,9 +425,6 @@ fn colorize_columns(
 fn generate_completion_script<G: Generator>(gen: G, cmd: &mut Command) {
     generate(gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
 }
-
-mod beeper;
-use beeper::beep;
 
 pub fn run() -> CustomResult {
     #[cfg(target_os = "windows")]
