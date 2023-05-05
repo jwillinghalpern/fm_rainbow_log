@@ -43,7 +43,7 @@ fn process_messages(
     logs_rx: Receiver<NotificationType>,
     notification_sender: &dyn Fn(Notification),
 ) {
-    println!("");
+    println!();
     let debounce_interval = Duration::from_millis(500);
     let mut last_processed_time = Instant::now();
     let mut warning_count = 0;

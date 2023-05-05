@@ -1,5 +1,5 @@
 pub fn beep(path: &str, volume: f32) {
-    let vol = if volume > 1.0 || volume < 0.0 {
+    let vol = if !(0.0..=1.0).contains(&volume) {
         1.0
     } else {
         volume
