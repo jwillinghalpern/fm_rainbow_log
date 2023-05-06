@@ -56,7 +56,6 @@ watch Import.log in your local Documents directory (default location when workin
 
 ```bash
 fmrl --docs-dir
-# or short version:
 # fmrl -d
 ```
 
@@ -70,7 +69,6 @@ watch for only errors and warnings:
 
 ```bash
 fmrl  --errors-only --warnings-only
-# or short version:
 # fmrl -e -w
 ```
 
@@ -86,7 +84,15 @@ show help (it's helpful)
 fmrl --help
 ```
 
-Specify custom colors [see section below for how to configure](#customize-colors-and-options-using-a-config-file)
+play sound! (mac only)
+
+```bash
+fmrl --beep
+# or make it fancier!
+fmrl --notifications --beep --beep-volume 0.8 --beep-path /System/Library/Sounds/Frog.aiff
+```
+
+specify custom config/colors file:
 
 ```bash
 fmrl -c path/to/config.json
@@ -98,27 +104,19 @@ don't watch for changes, just print the log once:
 fmrl --no-watch
 ```
 
-play sound! (mac only)
-
-```bash
-fmrl --beep
-# or make it fancier!
-fmrl --notifications --beep --beep-volume 0.8 --beep-path /System/Library/Sounds/Frog.aiff
-```
-
 generate an auto-completion script (store somewhere in your $fpath):
 
 ```bash
-# zsh example. Omit "zsh" to see options.
+# zsh example. Omit "zsh" to see shell options.
 fmrl --completion zsh
 
 # here's where I put it
 fmrl --completion zsh > ~/.oh-my-zsh/completions/_fm_rainbow_log
 ```
 
-### Customize colors and options using a config file
+### Customize with `config.json` (recommended)
 
-To customize colors and default options, create a json file somewhere on your computer (any name) and follow the following format. All keys are optional, e.g. you can omit "background for any field, or omit the field entirely.".
+To customize colors and default options, create config/json file somewhere on your computer with the following format. All keys are optional, e.g. you can omit "background" for any field, or omit the field entirely.
 
 ```json
 {
@@ -162,7 +160,7 @@ Then either:
     fmrl -c path/to/config.json
     ```
 
-2. (recommended if you always want the same config) save the file in your config directory at these locations and then fmrl will use that by default:
+2. or... (recommended if you always want the same settings) save the file in your config directory at these locations and then fmrl will use that by default:
 
 - Mac: `$HOME/Library/Application Support/fm_rainbow_log/config.json`
   - example: /Users/Alice/Library/Application Support/fm_rainbow_log/config.json
@@ -171,23 +169,17 @@ Then either:
 
 For now the only color options are ANSI colors, but I'd like to add RGB support in the future for terminals which support it:
 
-- black
-- red
-- green
-- yellow
-- blue
-- magenta
-- purple
-- cyan
-- white
-- bright black
-- bright red
-- bright green
-- bright yellow
-- bright blue
-- bright magenta
-- bright cyan
-- bright white
+|         |                |
+| ------- | -------------- |
+| black   | bright black   |
+| red     | bright red     |
+| green   | bright green   |
+| yellow  | bright yellow  |
+| blue    | bright blue    |
+| magenta | bright magenta |
+| cyan    | bright cyan    |
+| white   | bright white   |
+|         |                |
 
 ## Notes
 
