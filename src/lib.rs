@@ -13,11 +13,12 @@ use colored::{ColoredString, Colorize};
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
 use std::fs::File;
-use std::io::{Read, Seek, SeekFrom};
+use std::io::{BufRead, Read, Seek, SeekFrom};
 use std::path::PathBuf;
 use std::sync::mpsc;
 use std::time::Duration;
 use std::{env, io};
+use utils::clear_terminal;
 
 type CustomResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -559,6 +560,20 @@ pub fn run() -> CustomResult {
         return Ok(());
     }
 
+    // listen for user to type in 'q' to quit:
+    // do this in a separate thread so that we can listen for user input while the main thread is blocked on the debouncer
+    let stdin_handle = std::thread::spawn(move || {
+        let stdin = io::stdin();
+        for line in BufRead::lines(stdin.lock()) {
+            let line = line.unwrap();
+            if line == "q" || line == "quit" || line == "exit" {
+                std::process::exit(0);
+            } else if line == "clear" {
+                clear_terminal();
+            }
+        }
+    });
+
     let mut pos = buf.len() as u64;
     // Watch the file for changes
     let (tx, rx) = mpsc::channel();
@@ -586,6 +601,8 @@ pub fn run() -> CustomResult {
             }
         }
     }
+
+    stdin_handle.join().unwrap();
 
     Ok(())
 }

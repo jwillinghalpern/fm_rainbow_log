@@ -3,7 +3,7 @@ name = "fmrl"
 version = "0.9.0"
 edition = "2021"
 authors = ["Josh Willing Halpern <josh@willingapps.com>"]
-description = "A tool to watch FileMaker Import.log files for changes and colorize the output, highlighting errors and warnings."
+description = "A tool to watch FileMaker Import.log files for changes and colorize the output, highlighting errors and warnings.\n\nWhile watching the log type:\n  q / quit / exit       to quit\n  clear                 to clear the screen"
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -11,6 +11,7 @@ description = "A tool to watch FileMaker Import.log files for changes and colori
 [dependencies]
 clap = { version = "4.2.5", features = ["derive"] }
 clap_complete = "4.2.1"
+clearscreen = "2.0.1"
 colored = "2.0.0"
 dirs = "5.0.0"
 iso8601 = "0.6.1"

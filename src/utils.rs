@@ -1,3 +1,6 @@
+use clearscreen;
+// use std::process::Command;
+
 use iso8601::parsers::parse_datetime;
 
 pub(crate) fn replace_trailing_cr_with_crlf(buf: &mut String) {
@@ -18,6 +21,10 @@ pub(crate) fn replace_trailing_cr_with_crlf(buf: &mut String) {
 pub(crate) fn is_timestamp(s: &str) -> bool {
     let s = s.replace(' ', "T");
     parse_datetime(s.as_bytes()).is_ok()
+}
+
+pub(crate) fn clear_terminal() {
+    let _ = clearscreen::clear();
 }
 
 #[cfg(test)]
