@@ -325,6 +325,21 @@ fn generate_completion_script<G: Generator>(gen: G, cmd: &mut Command) {
     generate(gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
 }
 
+fn listen_for_keyboard_input() -> std::thread::JoinHandle<()> {
+    // do this in a separate thread so that we can listen for user input while the main thread is blocked on the debouncer
+    std::thread::spawn(|| {
+        let stdin = io::stdin();
+        for line in BufRead::lines(stdin.lock()) {
+            let line = line.unwrap();
+            if line == "q" || line == "quit" || line == "exit" {
+                std::process::exit(0);
+            } else if line == "clear" {
+                clear_terminal();
+            }
+        }
+    })
+}
+
 pub fn run() -> CustomResult {
     #[cfg(target_os = "windows")]
     colored::control::set_virtual_terminal(true).unwrap();
@@ -375,14 +390,23 @@ pub fn run() -> CustomResult {
         });
     }
 
+    // when warnings_only or errors_only is true, we only want to print seps if a warning/error occurred, otherwise you get seps even when no text is printed
+    // store this state outside the closure, and have the closure queue up a sep but don't print until a warning/error occurs
+    const SEPARATOR: &str = "-----------------------------------------------------------------";
+    let mut print_sep_on_warning = false;
+
     // closure/fn to handle each line
-    let handle_line = |line: &str, send_notif: bool| {
+    let mut handle_line = |line: &str, send_notif: bool| {
         let line = parse_line(line);
         let show_line = line.is_header()
             || (args.errors_only && line.is_error())
             || (args.warnings_only && line.is_warning())
             || (!args.errors_only && !args.warnings_only);
         if !show_line {
+            if args.separator && (args.errors_only || args.warnings_only) {
+                // queue up a separator to be printed before the next warning/error
+                print_sep_on_warning = true;
+            }
             return;
         };
         if args.no_color {
@@ -399,13 +423,16 @@ pub fn run() -> CustomResult {
                     );
                     let [a, b, c, d] = res;
                     if args.separator && is_operation_start(&line) {
-                        println!(
-                            "-----------------------------------------------------------------"
-                        );
+                        println!("{SEPARATOR}");
                     }
+
                     println!("{}\t{}\t{}\t{}", a, b, c, d);
                 }
                 LineType::Error(line) => {
+                    if print_sep_on_warning {
+                        println!("{SEPARATOR}");
+                        print_sep_on_warning = false;
+                    }
                     println!(
                         "{}\t{}\t{}\t{}",
                         line.timestamp.bright_white().on_red(),
@@ -418,6 +445,10 @@ pub fn run() -> CustomResult {
                     }
                 }
                 LineType::Warning(line) => {
+                    if print_sep_on_warning {
+                        println!("{SEPARATOR}");
+                        print_sep_on_warning = false;
+                    }
                     println!(
                         "{}\t{}\t{}\t{}",
                         line.timestamp.black().on_yellow(),
@@ -458,19 +489,7 @@ pub fn run() -> CustomResult {
         return Ok(());
     }
 
-    // listen for user to type in 'q' to quit:
-    // do this in a separate thread so that we can listen for user input while the main thread is blocked on the debouncer
-    let stdin_handle = std::thread::spawn(move || {
-        let stdin = io::stdin();
-        for line in BufRead::lines(stdin.lock()) {
-            let line = line.unwrap();
-            if line == "q" || line == "quit" || line == "exit" {
-                std::process::exit(0);
-            } else if line == "clear" {
-                clear_terminal();
-            }
-        }
-    });
+    let keyboard_handle = listen_for_keyboard_input();
 
     let mut pos = buf.len() as u64;
     // Watch the file for changes
@@ -500,7 +519,7 @@ pub fn run() -> CustomResult {
         }
     }
 
-    stdin_handle.join().unwrap();
+    keyboard_handle.join().unwrap();
 
     Ok(())
 }
