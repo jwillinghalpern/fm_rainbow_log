@@ -1,6 +1,3 @@
-use clearscreen;
-// use std::process::Command;
-
 use iso8601::parsers::parse_datetime;
 
 pub(crate) fn replace_trailing_cr_with_crlf(buf: &mut String) {
