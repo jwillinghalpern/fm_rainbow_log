@@ -3,6 +3,9 @@ mod config_file;
 mod notifications;
 mod utils;
 
+mod rules;
+use rules::{contains_warning_text, is_header, is_operation_start};
+
 use crate::config_file::{get_config, update_args_from_config, ConfigColor};
 use crate::notifications::NotificationType;
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
@@ -127,94 +130,6 @@ struct ImportLogLine {
     message: String,
 }
 impl ImportLogLine {
-    fn contains_warning_text(&self) -> bool {
-        if self.is_error() {
-            return false;
-        }
-        let warning_checks = vec![
-            // ————————————————————————————————————————————————
-            // ————————————————————————————————————————————————
-            |msg: &str| msg.ends_with("already exists."), // en
-            |msg: &str| msg.ends_with("bereits existiert."), // de
-            |msg: &str| {
-                msg.ends_with("ya existe.")
-                    || msg.contains("” pues ya existe un")
-                    || msg.contains("” porque ya existe un")
-            }, // es
-            |msg: &str| msg.ends_with("existe déjà."),    // fr
-            |msg: &str| msg.ends_with("già esistente.") || msg.contains("esiste già"), // it
-            |msg: &str| {
-                msg.ends_with("はすでに存在します。")
-                    || msg.ends_with("としてインポートされました。")
-            }, // ja
-            |msg: &str| {
-                msg.ends_with("이미 존재합니다.")
-                    || msg.ends_with("이미 존재합니다..") // I'm not sure if the trailing doubledot is a typo in the test data or not
-                    || msg.ends_with("”인 값 목록이 이미 존재함).")
-                    || msg.ends_with("”은(는) 이미 존재합니다).")
-            }, // ko
-            |msg: &str| msg.ends_with("bestaat."),        // nl
-            |msg: &str| {
-                msg.ends_with("já existe.")
-                    || msg.contains("”, pois já existe uma função nomeada ")
-                    || msg.contains("já existe uma lista de valor com nome “")
-            }, // pt
-            |msg: &str| msg.ends_with("redan finns."),    // sv
-            |msg: &str| msg.contains("名为 “"),           // zh
-            // ————————————————————————————————————————————————
-            // ————————————————————————————————————————————————
-            |msg: &str| msg.ends_with("created and imported automatically."), // en
-            |msg: &str| msg.ends_with("automatisch erstellt und importiert."), // de
-            |msg: &str| msg.ends_with("creada e importada automáticamente."), // es
-            |msg: &str| msg.ends_with("créée et importée automatiquement."),  // fr
-            |msg: &str| msg.ends_with("creato e importato automaticamente."), // it
-            |msg: &str| msg.contains("自動的に作成およびインポートされたファイル参照"), // ja
-            |msg: &str| msg.contains("자동으로 생성되고 가져왔습니다."),      // ko
-            |msg: &str| msg.ends_with("is automatisch gemaakt en geïmporteerd."), // nl
-            |msg: &str| msg.ends_with("criada e importada automaticamente."), // pt
-            |msg: &str| msg.ends_with("skapades och importerades automatiskt."), // sv
-            |msg: &str| msg.contains("自动创建并导入丢失的文件参考"),         // zh
-            // ————————————————————————————————————————————————
-            // ————————————————————————————————————————————————
-            |msg: &str| msg.ends_with("used instead since it refers to the same file."), // en
-            |msg: &str| {
-                msg.ends_with("stattdessen verwendet, da er sich auf die gleiche Datei bezieht.")
-                // de
-            },
-            |msg: &str| msg.ends_with("ya que se refiere al mismo archivo."), // es
-            |msg: &str| {
-                msg.ends_with("utilisée en remplacement, car elle fait référence au même fichier.")
-                // fr
-            },
-            |msg: &str| msg.ends_with("perché si riferisce allo stesso file."), // it
-            |msg: &str| msg.contains("同じファイルを参照しているため、ファイル参照"), // ja
-            |msg: &str| msg.contains("같은 파일을 참조하므로 대신 파일 참조"),  // ko
-            |msg: &str| {
-                msg.ends_with("worden gebruikt omdat deze naar hetzelfde bestand verwijst.")
-            }, // nl
-            |msg: &str| msg.ends_with("foi usada, pois faz referência ao mesmo arquivo."), // pt
-            |msg: &str| msg.ends_with("används i stället, eftersom den hänvisar till samma fil."), // sv
-            |msg: &str| msg.contains("因为参考同一文件，所以使用文件参考"), // zh
-        ];
-        warning_checks.iter().any(|check| check(&self.message))
-    }
-    fn is_operation_start(&self) -> bool {
-        !self.is_error()
-            && (
-                self.message.ends_with(" begonnen") // de
-            || self.message.ends_with(" started") // en
-            || self.message.ends_with(" iniciada") // es
-            || (self.message.ends_with(" démarrée") || self.message.ends_with(" démarrées") )// fr
-            || (self.message.ends_with(" avviata") || self.message.ends_with(" avviate") )// it
-            || (self.message.ends_with(" のインポートを開始しました") || self.message.ends_with("インポート処理が開始されました") )// ja
-            || (self.message.ends_with(" 가져오기가 시작됨") || self.message.ends_with("가져오기 작업 시작됨") ) // ko
-            || self.message.ends_with(" gestart") // nl
-            || self.message.ends_with(" iniciada") || self.message.ends_with(" iniciadas")// pt
-            || self.message.ends_with(" startats")// sv
-            || (self.message.starts_with("开始从剪贴板导") || self.message.starts_with("导入操作已开始"))
-                // zh
-            )
-    }
     fn is_error(&self) -> bool {
         self.code != "0"
     }
@@ -226,23 +141,6 @@ impl ToString for ImportLogLine {
             self.timestamp, self.filename, self.code, self.message
         )
     }
-}
-
-fn is_header(line: &str) -> bool {
-    let headers = vec![
-        "Timestamp\tFilename\tError\tMessage",             // en
-        "Zeitstempel	Dateiname	Fehler	Meldung",               // de
-        "Fecha y hora	Nombre de archivo	Error	Mensaje",       // es
-        "Horodatage	NomFichier	Erreur	Message",               // fr
-        "Indicatore data e ora	Nomefile	Errore	Messaggio",    // it
-        "タイムスタンプ	ファイル名	エラー	メッセージ",        // ja
-        "타임 스탬프	파일 이름	오류	메시지",                  // ko
-        "Tijdstempel	Bestandsnaam	Fout	Bericht",              // nl
-        "Carimbo de data/hora	Nome do arquivo	Erro	Mensagem", // pt
-        "Tidsstämpel	Filnamn	Fel	Meddelande",                 // sv
-        "时间戳	文件名	错误	信息",                            // zh
-    ];
-    headers.iter().any(|h| line.ends_with(h))
 }
 
 enum LineType {
@@ -306,7 +204,7 @@ fn parse_line(line: &str) -> LineType {
     } else if line.is_error() {
         replace_trailing_cr_with_crlf(&mut line.message);
         LineType::Error(line)
-    } else if line.contains_warning_text() {
+    } else if contains_warning_text(&line) {
         LineType::Warning(line)
     } else {
         LineType::Success(line)
@@ -436,7 +334,6 @@ pub fn run() -> CustomResult {
 
     let mut args = Args::parse();
     if let Some(gen) = args.completion {
-        // let mut gen = Generator::new(generator);
         let mut cmd = Args::command();
         generate_completion_script(gen, &mut cmd);
         return Ok(());
@@ -501,7 +398,7 @@ pub fn run() -> CustomResult {
                         &message_colorizer,
                     );
                     let [a, b, c, d] = res;
-                    if args.separator && line.is_operation_start() {
+                    if args.separator && is_operation_start(&line) {
                         println!(
                             "-----------------------------------------------------------------"
                         );
@@ -556,6 +453,7 @@ pub fn run() -> CustomResult {
     reader.read_to_string(&mut buf).unwrap();
     // don't send_notif for intitial file content. It might be a ton of old errors and warnings
     buf.lines().for_each(|line| handle_line(line, false));
+
     if args.no_watch {
         return Ok(());
     }
@@ -736,7 +634,7 @@ mod tests {
             let count_operation_start = results
                 .iter()
                 .filter(|r| match r {
-                    LineType::Success(val) => val.is_operation_start(),
+                    LineType::Success(val) => is_operation_start(&val),
                     _ => false,
                 })
                 .count();

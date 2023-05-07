@@ -96,16 +96,16 @@ mod tests {
         assert_eq!(n.summary, "");
         assert_eq!(n.body, "");
         let n = create_notification(1, 0);
-        assert_eq!(n.summary, "🌈❌ fmrl Errors");
+        assert_eq!(n.summary, "❌ fmrl Errors 🌈");
         assert_eq!(n.body, "1 error");
         let n = create_notification(0, 1);
-        assert_eq!(n.summary, "🌈⚠️ fmrl Warnings");
+        assert_eq!(n.summary, "⚠️ fmrl Warnings 🌈");
         assert_eq!(n.body, "1 warning");
         let n = create_notification(1, 1);
-        assert_eq!(n.summary, "🌈❌ fmrl Errors");
+        assert_eq!(n.summary, "❌ fmrl Errors 🌈");
         assert_eq!(n.body, "1 error and 1 warning");
         let n = create_notification(2, 3);
-        assert_eq!(n.summary, "🌈❌ fmrl Errors");
+        assert_eq!(n.summary, "❌ fmrl Errors 🌈");
         assert_eq!(n.body, "2 errors and 3 warnings");
     }
 
