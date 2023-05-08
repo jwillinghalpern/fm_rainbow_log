@@ -169,7 +169,7 @@ Then either:
 
 For now the only color options are ANSI colors, but I'd like to add RGB support in the future for terminals which support it:
 
-|         |                |
+| color   | bright version |
 | ------- | -------------- |
 | black   | bright black   |
 | red     | bright red     |
@@ -179,7 +179,6 @@ For now the only color options are ANSI colors, but I'd like to add RGB support 
 | magenta | bright magenta |
 | cyan    | bright cyan    |
 | white   | bright white   |
-|         |                |
 
 ## Notes
 
