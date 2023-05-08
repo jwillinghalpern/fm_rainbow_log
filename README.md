@@ -182,7 +182,5 @@ For now the only color options are ANSI colors, but I'd like to add RGB support 
 
 ## Notes
 
-- Currently fmrl only supports the English language, but there is an open issue to address this soon.
-- Most terminals let you customize the ANSI colors, so feel free to modify the colors to your liking!
+- Most terminals let you customize the ANSI colors, so feel free to tweak the appearance to your liking!
 - On Windows I've only tested PowerShell. There are certain cases where the color escape sequences don't display properly, and show garbled text. I'm not sure how to handle every edge case (please submit suggestions/pull requests if you do).
-- This is a WORK IN PROGRESS. Everything about it is subject to change, including the name and usage instructions.
