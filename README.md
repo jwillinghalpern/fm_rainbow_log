@@ -18,7 +18,7 @@ Furthermore, FileMaker calcs don't play nice with other CLI utilities like `tail
 
 ## Installation
 
-If installing locally, I prefer using cargo (described below), becuase it streamlines updates and avoids macos permission issues. But pre-compiled binaries are also available.
+If installing locally, I prefer using cargo (described below), because it streamlines updates and avoids macos permission issues. But pre-compiled binaries are also available.
 
 ### Via pre-compiled binaries
 
@@ -26,9 +26,9 @@ If installing locally, I prefer using cargo (described below), becuase it stream
     - To see the folders in your PATH, run this in your terminal: `echo $PATH | sed -E 's/:/\n/g'`
 2. Restart your terminal and type `fmrl --help`.
 
-Binaries are available in the [Releases](https://github.com/jwillinghalpern/fm_rainbow_log/releases) section of this repo.
+Binaries are available in the [Releases section](https://github.com/jwillinghalpern/fm_rainbow_log/releases).
 
-NOTE: On MacOS, the first time you run the program you'll encounter a security warning. [See here](./readme-files/macos-security.md)
+NOTE: On macOS, the first time you run the program you'll encounter a security warning. [See here](./readme-files/macos-security.md)
 
 ### Via 🦀 rust/cargo
 
