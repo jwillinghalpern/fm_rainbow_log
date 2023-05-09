@@ -1,4 +1,5 @@
 mod beeper;
+mod color_type;
 mod config_file;
 mod notifications;
 mod utils;
@@ -12,12 +13,14 @@ use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use beeper::beep;
 use clap::{Command, CommandFactory, Parser, ValueHint};
 use clap_complete::{generate, Generator, Shell};
+use color_type::ColorType;
 use colored::{ColoredString, Colorize};
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
 use std::fs::File;
 use std::io::{BufRead, Read, Seek, SeekFrom};
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::sync::mpsc;
 use std::time::Duration;
 use std::{env, io};
@@ -299,9 +302,15 @@ fn get_default_colorizer(
             config_color.background.as_str()
         };
 
-        let mut res = line.color(foreground);
+        let mut res = match ColorType::from_str(foreground).unwrap() {
+            ColorType::RGB(r, g, b) => line.truecolor(r, g, b),
+            ColorType::ANSI(ansi) => line.color(ansi),
+        };
         if !background.is_empty() {
-            res = res.on_color(background)
+            res = match ColorType::from_str(background).unwrap() {
+                ColorType::RGB(r, g, b) => res.on_truecolor(r, g, b),
+                ColorType::ANSI(ansi) => res.on_color(ansi),
+            };
         }
         res
     }
