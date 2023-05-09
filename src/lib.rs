@@ -302,7 +302,6 @@ fn get_default_colorizer(
             config_color.background.as_str()
         };
 
-        // TODO: currently this panics if from_str returns Err. We should probably fail gracefully instead
         let mut res = match ColorType::from_str(foreground).unwrap_or_default() {
             ColorType::RGB(r, g, b) => line.truecolor(r, g, b),
             ColorType::ANSI(ansi) => line.color(ansi),
