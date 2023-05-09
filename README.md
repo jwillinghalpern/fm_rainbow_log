@@ -116,7 +116,7 @@ fmrl --completion zsh > ~/.oh-my-zsh/completions/_fm_rainbow_log
 
 ### Customize with `config.json` (recommended)
 
-To customize colors and default options, create config/json file somewhere on your computer with the following format. All keys are optional, e.g. you can omit "background" for any field, or omit the field entirely.
+To customize colors and default options, create config/json file. All keys are optional, e.g. you can omit "background" for any field, or omit the field entirely.
 
 ```json
 {
@@ -152,22 +152,30 @@ To customize colors and default options, create config/json file somewhere on yo
 }
 ```
 
-Then either:
+#### Where to store the config
 
-1. pass the path to that file to `fmrl` with the `-c` option:
+either:
+
+1. pass in the path with the `-c/--config` option:
 
     ```bash
     fmrl -c path/to/config.json
     ```
 
-2. or... (recommended if you always want the same settings) save the file in your config directory at these locations and then fmrl will use that by default:
+2. or... (recommended for default config) save the file in one of these locations and then fmrl will use that by default:
 
 - Mac: `$HOME/Library/Application Support/fm_rainbow_log/config.json`
-  - example: /Users/Alice/Library/Application Support/fm_rainbow_log/config.json
+  - example: `/Users/Alice/Library/Application Support/fm_rainbow_log/config.json`
 - Windows: `{FOLDERID_RoamingAppData}\fm_rainbow_log\config.json`
-  - example: C:\Users\Alice\AppData\Roaming\fm_rainbow_log\config.json
+  - example: `C:\Users\Alice\AppData\Roaming\fm_rainbow_log\config.json`
 
-For now the only color options are ANSI colors, but I'd like to add RGB support in the future for terminals which support it:
+_If you have a default config.json, you can override it by passing a different path to the `-c` option._
+
+#### Colors
+
+`fmrl` supports both ANSI and truecolor. ANSI colors are the standard 16 colors supported by most terminals, whereas truecolor is a newer standard. Some terminals including macOS Terminal.app _do not_ support truecolor, but modern terminals like iTerm2, Alacritty, and Warp do. You can define truecolors as rgb or hex (see below).
+
+##### ANSI format
 
 | color   | bright version |
 | ------- | -------------- |
@@ -179,6 +187,12 @@ For now the only color options are ANSI colors, but I'd like to add RGB support 
 | magenta | bright magenta |
 | cyan    | bright cyan    |
 | white   | bright white   |
+
+##### Truecolor format
+
+rgb: `rgb(255, 0, 255)`
+
+hex: `#ff00ff`
 
 ## Notes
 

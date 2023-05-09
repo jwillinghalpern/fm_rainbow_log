@@ -1,4 +1,5 @@
 mod beeper;
+mod color_type;
 mod config_file;
 mod notifications;
 mod utils;
@@ -12,12 +13,14 @@ use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use beeper::beep;
 use clap::{Command, CommandFactory, Parser, ValueHint};
 use clap_complete::{generate, Generator, Shell};
+use color_type::ColorType;
 use colored::{ColoredString, Colorize};
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
 use std::fs::File;
 use std::io::{BufRead, Read, Seek, SeekFrom};
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::sync::mpsc;
 use std::time::Duration;
 use std::{env, io};
@@ -299,9 +302,18 @@ fn get_default_colorizer(
             config_color.background.as_str()
         };
 
-        let mut res = line.color(foreground);
+        let mut res = match ColorType::from_str(foreground).unwrap_or_default() {
+            ColorType::RGB(r, g, b) => line.truecolor(r, g, b),
+            ColorType::ANSI(ansi) => line.color(ansi),
+        };
         if !background.is_empty() {
-            res = res.on_color(background)
+            res = match ColorType::from_str(background) {
+                Ok(color_type) => match color_type {
+                    ColorType::RGB(r, g, b) => res.on_truecolor(r, g, b),
+                    ColorType::ANSI(ansi) => res.on_color(ansi),
+                },
+                Err(_) => res,
+            };
         }
         res
     }
@@ -392,7 +404,9 @@ pub fn run() -> CustomResult {
 
     // when warnings_only or errors_only is true, we only want to print seps if a warning/error occurred, otherwise you get seps even when no text is printed
     // store this state outside the closure, and have the closure queue up a sep but don't print until a warning/error occurs
-    const SEPARATOR: &str = "-----------------------------------------------------------------";
+    fn print_separator() {
+        println!("-----------------------------------------------------------------");
+    }
     let mut print_sep_on_warning = false;
 
     // closure/fn to handle each line
@@ -423,14 +437,14 @@ pub fn run() -> CustomResult {
                     );
                     let [a, b, c, d] = res;
                     if args.separator && is_operation_start(&line) {
-                        println!("{SEPARATOR}");
+                        print_separator();
                     }
 
                     println!("{}\t{}\t{}\t{}", a, b, c, d);
                 }
                 LineType::Error(line) => {
                     if print_sep_on_warning {
-                        println!("{SEPARATOR}");
+                        print_separator();
                         print_sep_on_warning = false;
                     }
                     println!(
@@ -446,7 +460,7 @@ pub fn run() -> CustomResult {
                 }
                 LineType::Warning(line) => {
                     if print_sep_on_warning {
-                        println!("{SEPARATOR}");
+                        print_separator();
                         print_sep_on_warning = false;
                     }
                     println!(
