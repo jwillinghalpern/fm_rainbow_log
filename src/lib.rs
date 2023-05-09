@@ -401,7 +401,9 @@ pub fn run() -> CustomResult {
 
     // when warnings_only or errors_only is true, we only want to print seps if a warning/error occurred, otherwise you get seps even when no text is printed
     // store this state outside the closure, and have the closure queue up a sep but don't print until a warning/error occurs
-    const SEPARATOR: &str = "-----------------------------------------------------------------";
+    fn print_separator() {
+        println!("-----------------------------------------------------------------");
+    }
     let mut print_sep_on_warning = false;
 
     // closure/fn to handle each line
@@ -432,14 +434,14 @@ pub fn run() -> CustomResult {
                     );
                     let [a, b, c, d] = res;
                     if args.separator && is_operation_start(&line) {
-                        println!("{SEPARATOR}");
+                        print_separator();
                     }
 
                     println!("{}\t{}\t{}\t{}", a, b, c, d);
                 }
                 LineType::Error(line) => {
                     if print_sep_on_warning {
-                        println!("{SEPARATOR}");
+                        print_separator();
                         print_sep_on_warning = false;
                     }
                     println!(
@@ -455,7 +457,7 @@ pub fn run() -> CustomResult {
                 }
                 LineType::Warning(line) => {
                     if print_sep_on_warning {
-                        println!("{SEPARATOR}");
+                        print_separator();
                         print_sep_on_warning = false;
                     }
                     println!(
