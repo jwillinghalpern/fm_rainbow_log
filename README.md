@@ -4,7 +4,8 @@
 
 - 🥸 watch FileMaker Import.log files for changes
 - 🦄 colorize the output
-- 🚨 and highlight errors and warnings.
+- 🚨 highlight errors and warnings.
+- 🔔 display notifications and/or beep when issues are detected
 
 It displays real-time updates for both custom Import.log paths as well as the default (Documents) location when working with hosted fmp12 files.
 
