@@ -126,8 +126,33 @@ pub(crate) fn update_args_from_config(args: &mut Args, config: &Config) {
 mod tests {
     use super::*;
 
-    // #[test]
-    // fn quiet_errors_should_not_overwrite_cli_arg() {
-    //     todo!()
-    // }
+    #[test]
+    fn quiet_errors_should_not_overwrite_non_empty() {
+        let mut args = Args::default();
+        args.quiet_errors = vec!["111".to_string()];
+        let mut config = Config::default();
+        config.quiet_errors = vec!["999".to_string()];
+        update_args_from_config(&mut args, &config);
+        assert_eq!(args.quiet_errors, vec!["111".to_string()]);
+    }
+
+    #[test]
+    fn quiet_errors_should_overwrite_empty() {
+        let mut args = Args::default();
+        args.quiet_errors = vec![];
+        let mut config = Config::default();
+        config.quiet_errors = vec!["999".to_string()];
+        update_args_from_config(&mut args, &config);
+        assert_eq!(args.quiet_errors, vec!["999".to_string()]);
+    }
+
+    #[test]
+    fn quiet_errors_empty_should_not_overwrite_non_empty() {
+        let mut args = Args::default();
+        args.quiet_errors = vec!["111".to_string()];
+        let mut config = Config::default();
+        config.quiet_errors = vec![];
+        update_args_from_config(&mut args, &config);
+        assert_eq!(args.quiet_errors, vec!["111".to_string()]);
+    }
 }
