@@ -378,10 +378,6 @@ pub fn run() -> CustomResult {
     println!("config.quiet_errors: {:?}", config.quiet_errors);
     update_args_from_config(&mut args, &config);
 
-    // let quiet_errors: Vec<&str> = args.quiet_errors.split(',').collect();
-    println!("args.quiet_errors: {:?}", args.quiet_errors);
-    // println!("quiet_errors: {:?}", quiet_errors);
-
     let path_type = get_path_type(&args)?;
     let path = path_type.path();
 
