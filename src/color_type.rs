@@ -29,8 +29,8 @@ impl FromStr for ColorType {
             Ok(ColorType::RGB(r, g, b))
         } else if s.starts_with("rgb") {
             let s = s.trim_start_matches("rgb");
-            let s = s.trim_start_matches(" ").trim_start_matches('(');
-            let s = s.trim_end_matches(" ").trim_end_matches(')');
+            let s = s.trim_start_matches(' ').trim_start_matches('(');
+            let s = s.trim_end_matches(' ').trim_end_matches(')');
             let mut split = s.split(',');
             let r = split
                 .next()
@@ -52,7 +52,7 @@ impl FromStr for ColorType {
                 .map_err(|_| invalid_rgb_msg)?;
             Ok(ColorType::RGB(r, g, b))
         } else {
-            Ok(ColorType::ANSI(s.to_string()))
+            Ok(ColorType::ANSI(s))
         }
     }
 }
