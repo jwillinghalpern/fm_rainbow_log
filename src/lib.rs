@@ -113,7 +113,6 @@ pub struct Args {
         value_delimiter = ','
     )]
     quiet_errors: Vec<String>,
-    // quiet_errors: String,
 
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
