@@ -108,9 +108,8 @@ pub struct Args {
 
     #[arg(
         long,
-        help = "Comma-separated list of error codes that don't produce a desktop notification or beep",
+        help = "Comma-separated list (with no spaces) of error codes that shouldn't produce a desktop notification or beep",
         value_name = "ERROR_CODES",
-        default_value = "",
         value_delimiter = ','
     )]
     quiet_errors: Vec<String>,
@@ -377,6 +376,7 @@ pub fn run() -> CustomResult {
     }
 
     let config = get_config(args.config_path.as_deref())?;
+    println!("config.quiet_errors: {:?}", config.quiet_errors);
     update_args_from_config(&mut args, &config);
 
     // let quiet_errors: Vec<&str> = args.quiet_errors.split(',').collect();

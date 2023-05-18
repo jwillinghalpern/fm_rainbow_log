@@ -1,6 +1,6 @@
 use crate::Args;
 use colored::Colorize;
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 use std::fs::File;
 use std::io::Read;
 
@@ -31,6 +31,21 @@ pub(crate) struct Config {
     pub(crate) beep_volume: f32,
     pub(crate) beep_path: String,
     pub(crate) colors: ConfigColorFields,
+    #[serde(deserialize_with = "comma_list_deserialize")]
+    pub(crate) quiet_errors: Vec<String>,
+}
+
+fn comma_list_deserialize<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let str_sequence = String::deserialize(deserializer)?;
+    Ok(str_sequence
+        .split(',')
+        .map(|item| item.trim())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string())
+        .collect())
 }
 
 fn get_default_config_path() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
@@ -102,4 +117,17 @@ pub(crate) fn update_args_from_config(args: &mut Args, config: &Config) {
     if config.beep_volume > 0.0 {
         args.beep_volume = config.beep_volume;
     }
+    if !config.quiet_errors.is_empty() && args.quiet_errors.is_empty() {
+        args.quiet_errors = config.quiet_errors.clone();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // #[test]
+    // fn quiet_errors_should_not_overwrite_cli_arg() {
+    //     todo!()
+    // }
 }
