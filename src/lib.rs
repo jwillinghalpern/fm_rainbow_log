@@ -375,7 +375,6 @@ pub fn run() -> CustomResult {
     }
 
     let config = get_config(args.config_path.as_deref())?;
-    println!("config.quiet_errors: {:?}", config.quiet_errors);
     update_args_from_config(&mut args, &config);
 
     let path_type = get_path_type(&args)?;
