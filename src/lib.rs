@@ -653,7 +653,7 @@ mod tests {
     fn parse_line_examples() {
         apply_to_each_file(|buf| {
             let lines = buf.lines();
-            let results = lines.map(|line| parse_line(line)).collect::<Vec<_>>();
+            let results = lines.map(parse_line).collect::<Vec<_>>();
             let count_success = results.iter().filter(|r| r.is_success()).count();
             let count_error = results.iter().filter(|r| r.is_error()).count();
             let count_warning = results.iter().filter(|r| r.is_warning()).count();
@@ -671,11 +671,11 @@ mod tests {
     fn test_is_operation_start() {
         apply_to_each_file(|buf| {
             let lines = buf.lines();
-            let results = lines.map(|line| parse_line(line)).collect::<Vec<_>>();
+            let results = lines.map(parse_line).collect::<Vec<_>>();
             let count_operation_start = results
                 .iter()
                 .filter(|r| match r {
-                    LineType::Success(val) => is_operation_start(&val),
+                    LineType::Success(line) => is_operation_start(line),
                     _ => false,
                 })
                 .count();
@@ -689,7 +689,7 @@ mod tests {
         let mut buf = String::new();
         File::open(path).unwrap().read_to_string(&mut buf).unwrap();
         let lines = buf.lines();
-        let results = lines.map(|line| parse_line(line)).collect::<Vec<_>>();
+        let results = lines.map(parse_line).collect::<Vec<_>>();
         println!(
             "{:?}",
             results.iter().map(|r| r.to_string()).collect::<Vec<_>>()
