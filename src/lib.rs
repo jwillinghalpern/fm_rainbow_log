@@ -311,14 +311,14 @@ fn get_default_colorizer(
         };
 
         let mut res = match ColorType::from_str(foreground).unwrap_or_default() {
-            ColorType::RGB(r, g, b) => line.truecolor(r, g, b),
-            ColorType::ANSI(ansi) => line.color(ansi),
+            ColorType::Rgb(r, g, b) => line.truecolor(r, g, b),
+            ColorType::Ansi(ansi) => line.color(ansi),
         };
         if !background.is_empty() {
             res = match ColorType::from_str(background) {
                 Ok(color_type) => match color_type {
-                    ColorType::RGB(r, g, b) => res.on_truecolor(r, g, b),
-                    ColorType::ANSI(ansi) => res.on_color(ansi),
+                    ColorType::Rgb(r, g, b) => res.on_truecolor(r, g, b),
+                    ColorType::Ansi(ansi) => res.on_color(ansi),
                 },
                 Err(_) => res,
             };

@@ -2,13 +2,13 @@ use std::str::FromStr;
 
 #[cfg_attr(test, derive(PartialEq, Debug))]
 pub(crate) enum ColorType {
-    RGB(u8, u8, u8),
-    ANSI(String),
+    Rgb(u8, u8, u8),
+    Ansi(String),
 }
 
 impl Default for ColorType {
     fn default() -> Self {
-        ColorType::ANSI("".to_string())
+        ColorType::Ansi("".to_string())
     }
 }
 
@@ -26,7 +26,7 @@ impl FromStr for ColorType {
             let r = u8::from_str_radix(&s[0..2], 16).map_err(|_| invalid_hex_msg)?;
             let g = u8::from_str_radix(&s[2..4], 16).map_err(|_| invalid_hex_msg)?;
             let b = u8::from_str_radix(&s[4..6], 16).map_err(|_| invalid_hex_msg)?;
-            Ok(ColorType::RGB(r, g, b))
+            Ok(ColorType::Rgb(r, g, b))
         } else if s.starts_with("rgb") {
             let s = s.trim_start_matches("rgb");
             let s = s.trim_start_matches(' ').trim_start_matches('(');
@@ -50,9 +50,9 @@ impl FromStr for ColorType {
                 .trim()
                 .parse::<u8>()
                 .map_err(|_| invalid_rgb_msg)?;
-            Ok(ColorType::RGB(r, g, b))
+            Ok(ColorType::Rgb(r, g, b))
         } else {
-            Ok(ColorType::ANSI(s))
+            Ok(ColorType::Ansi(s))
         }
     }
 }
@@ -64,10 +64,10 @@ mod tests {
     #[test]
     fn test_rgb() {
         let rgb = ColorType::from_str("rgb(255, 255, 255)").unwrap();
-        assert_eq!(rgb, ColorType::RGB(255, 255, 255));
+        assert_eq!(rgb, ColorType::Rgb(255, 255, 255));
 
         let rgb = ColorType::from_str("     rgb    (   0   , 0   , 0)       ");
-        assert_eq!(rgb, Ok(ColorType::RGB(0, 0, 0)));
+        assert_eq!(rgb, Ok(ColorType::Rgb(0, 0, 0)));
     }
     #[test]
     fn test_rgb_invalid_num() {
@@ -80,7 +80,7 @@ mod tests {
     #[test]
     fn test_hex() {
         let rgb = ColorType::from_str("#ffffff").unwrap();
-        assert_eq!(rgb, ColorType::RGB(255, 255, 255));
+        assert_eq!(rgb, ColorType::Rgb(255, 255, 255));
     }
     #[test]
     fn test_hex_invalid() {
@@ -93,6 +93,6 @@ mod tests {
     #[test]
     fn test_ansi() {
         let rgb = ColorType::from_str("red").unwrap();
-        assert_eq!(rgb, ColorType::ANSI("red".to_string()));
+        assert_eq!(rgb, ColorType::Ansi("red".to_string()));
     }
 }
