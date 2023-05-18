@@ -106,6 +106,16 @@ pub struct Args {
     )]
     beep_path: String,
 
+    #[arg(
+        long,
+        help = "Comma-separated list of error codes that don't produce a desktop notification or beep",
+        value_name = "ERROR_CODES",
+        default_value = "",
+        value_delimiter = ','
+    )]
+    quiet_errors: Vec<String>,
+    // quiet_errors: String,
+
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
     #[arg(
@@ -369,6 +379,10 @@ pub fn run() -> CustomResult {
     let config = get_config(args.config_path.as_deref())?;
     update_args_from_config(&mut args, &config);
 
+    // let quiet_errors: Vec<&str> = args.quiet_errors.split(',').collect();
+    println!("args.quiet_errors: {:?}", args.quiet_errors);
+    // println!("quiet_errors: {:?}", quiet_errors);
+
     let path_type = get_path_type(&args)?;
     let path = path_type.path();
 
@@ -454,7 +468,7 @@ pub fn run() -> CustomResult {
                         line.code.bright_white().on_red(),
                         line.message
                     );
-                    if send_notif {
+                    if send_notif && !args.quiet_errors.contains(&line.code) {
                         notif_tx.send(NotificationType::Error).unwrap();
                     }
                 }
