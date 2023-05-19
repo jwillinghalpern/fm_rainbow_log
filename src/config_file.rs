@@ -155,4 +155,31 @@ mod tests {
         update_args_from_config(&mut args, &config);
         assert_eq!(args.quiet_errors, vec!["111".to_string()]);
     }
+
+    #[test]
+    fn test_comma_list_deserialize() {
+        let my_struct = r#"
+        {
+            "my_field": "a,b,c"
+        }"#;
+
+        #[derive(Deserialize, Debug)]
+        struct MyStruct {
+            #[serde(deserialize_with = "comma_list_deserialize")]
+            my_field: Vec<String>,
+        }
+
+        let res: MyStruct = serde_json::from_str(my_struct).unwrap();
+        let my_field_expected = vec!["a".to_string(), "b".to_string(), "c".to_string()];
+        assert_eq!(res.my_field, my_field_expected);
+
+        // bad formatting:
+        let my_struct = r#"
+        {
+            "my_field": "123,     234   ,,,, 234  , "
+        }"#;
+        let res: MyStruct = serde_json::from_str(my_struct).unwrap();
+        let my_field_expected = vec!["123".to_string(), "234".to_string(), "234".to_string()];
+        assert_eq!(res.my_field, my_field_expected);
+    }
 }
