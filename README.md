@@ -132,6 +132,8 @@ To customize colors and default options, create config/json file. All keys are o
   "beep_volume": 1.0,
   "beep_path": "/System/Library/Sounds/Tink.aiff",
 
+  "quiet_errors": "3702, 1234",
+
   "colors": {
     "timestamp": {
       "foreground": "bright white",

@@ -29,6 +29,7 @@ use utils::clear_terminal;
 type CustomResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 #[derive(Parser, Debug)]
+#[cfg_attr(test, derive(Default))]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
     #[arg(
@@ -105,6 +106,14 @@ pub struct Args {
         default_value = "/System/Library/Sounds/Tink.aiff"
     )]
     beep_path: String,
+
+    #[arg(
+        long,
+        help = "Comma-separated list (with no spaces) of error codes that shouldn't produce a desktop notification or beep",
+        value_name = "ERROR_CODES",
+        value_delimiter = ','
+    )]
+    quiet_errors: Vec<String>,
 
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
@@ -303,14 +312,14 @@ fn get_default_colorizer(
         };
 
         let mut res = match ColorType::from_str(foreground).unwrap_or_default() {
-            ColorType::RGB(r, g, b) => line.truecolor(r, g, b),
-            ColorType::ANSI(ansi) => line.color(ansi),
+            ColorType::Rgb(r, g, b) => line.truecolor(r, g, b),
+            ColorType::Ansi(ansi) => line.color(ansi),
         };
         if !background.is_empty() {
             res = match ColorType::from_str(background) {
                 Ok(color_type) => match color_type {
-                    ColorType::RGB(r, g, b) => res.on_truecolor(r, g, b),
-                    ColorType::ANSI(ansi) => res.on_color(ansi),
+                    ColorType::Rgb(r, g, b) => res.on_truecolor(r, g, b),
+                    ColorType::Ansi(ansi) => res.on_color(ansi),
                 },
                 Err(_) => res,
             };
@@ -454,7 +463,7 @@ pub fn run() -> CustomResult {
                         line.code.bright_white().on_red(),
                         line.message
                     );
-                    if send_notif {
+                    if send_notif && !args.quiet_errors.contains(&line.code) {
                         notif_tx.send(NotificationType::Error).unwrap();
                     }
                 }
@@ -645,7 +654,7 @@ mod tests {
     fn parse_line_examples() {
         apply_to_each_file(|buf| {
             let lines = buf.lines();
-            let results = lines.map(|line| parse_line(line)).collect::<Vec<_>>();
+            let results = lines.map(parse_line).collect::<Vec<_>>();
             let count_success = results.iter().filter(|r| r.is_success()).count();
             let count_error = results.iter().filter(|r| r.is_error()).count();
             let count_warning = results.iter().filter(|r| r.is_warning()).count();
@@ -663,11 +672,11 @@ mod tests {
     fn test_is_operation_start() {
         apply_to_each_file(|buf| {
             let lines = buf.lines();
-            let results = lines.map(|line| parse_line(line)).collect::<Vec<_>>();
+            let results = lines.map(parse_line).collect::<Vec<_>>();
             let count_operation_start = results
                 .iter()
                 .filter(|r| match r {
-                    LineType::Success(val) => is_operation_start(&val),
+                    LineType::Success(line) => is_operation_start(line),
                     _ => false,
                 })
                 .count();
@@ -681,7 +690,7 @@ mod tests {
         let mut buf = String::new();
         File::open(path).unwrap().read_to_string(&mut buf).unwrap();
         let lines = buf.lines();
-        let results = lines.map(|line| parse_line(line)).collect::<Vec<_>>();
+        let results = lines.map(parse_line).collect::<Vec<_>>();
         println!(
             "{:?}",
             results.iter().map(|r| r.to_string()).collect::<Vec<_>>()

@@ -1,6 +1,6 @@
 use crate::Args;
 use colored::Colorize;
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 use std::fs::File;
 use std::io::Read;
 
@@ -31,6 +31,21 @@ pub(crate) struct Config {
     pub(crate) beep_volume: f32,
     pub(crate) beep_path: String,
     pub(crate) colors: ConfigColorFields,
+    #[serde(deserialize_with = "comma_list_deserialize")]
+    pub(crate) quiet_errors: Vec<String>,
+}
+
+fn comma_list_deserialize<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let str_sequence = String::deserialize(deserializer)?;
+    Ok(str_sequence
+        .split(',')
+        .map(|item| item.trim())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string())
+        .collect())
 }
 
 fn get_default_config_path() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
@@ -101,5 +116,70 @@ pub(crate) fn update_args_from_config(args: &mut Args, config: &Config) {
     }
     if config.beep_volume > 0.0 {
         args.beep_volume = config.beep_volume;
+    }
+    if !config.quiet_errors.is_empty() && args.quiet_errors.is_empty() {
+        args.quiet_errors = config.quiet_errors.clone();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn quiet_errors_should_not_overwrite_non_empty() {
+        let mut args = Args::default();
+        args.quiet_errors = vec!["111".to_string()];
+        let mut config = Config::default();
+        config.quiet_errors = vec!["999".to_string()];
+        update_args_from_config(&mut args, &config);
+        assert_eq!(args.quiet_errors, vec!["111".to_string()]);
+    }
+
+    #[test]
+    fn quiet_errors_should_overwrite_empty() {
+        let mut args = Args::default();
+        args.quiet_errors = vec![];
+        let mut config = Config::default();
+        config.quiet_errors = vec!["999".to_string()];
+        update_args_from_config(&mut args, &config);
+        assert_eq!(args.quiet_errors, vec!["999".to_string()]);
+    }
+
+    #[test]
+    fn quiet_errors_empty_should_not_overwrite_non_empty() {
+        let mut args = Args::default();
+        args.quiet_errors = vec!["111".to_string()];
+        let mut config = Config::default();
+        config.quiet_errors = vec![];
+        update_args_from_config(&mut args, &config);
+        assert_eq!(args.quiet_errors, vec!["111".to_string()]);
+    }
+
+    #[test]
+    fn test_comma_list_deserialize() {
+        let my_struct = r#"
+        {
+            "my_field": "a,b,c"
+        }"#;
+
+        #[derive(Deserialize, Debug)]
+        struct MyStruct {
+            #[serde(deserialize_with = "comma_list_deserialize")]
+            my_field: Vec<String>,
+        }
+
+        let res: MyStruct = serde_json::from_str(my_struct).unwrap();
+        let my_field_expected = vec!["a".to_string(), "b".to_string(), "c".to_string()];
+        assert_eq!(res.my_field, my_field_expected);
+
+        // bad formatting:
+        let my_struct = r#"
+        {
+            "my_field": "123,     234   ,,,, 234  , "
+        }"#;
+        let res: MyStruct = serde_json::from_str(my_struct).unwrap();
+        let my_field_expected = vec!["123".to_string(), "234".to_string(), "234".to_string()];
+        assert_eq!(res.my_field, my_field_expected);
     }
 }
