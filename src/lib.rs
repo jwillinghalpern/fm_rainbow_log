@@ -28,7 +28,8 @@ use utils::clear_terminal;
 
 type CustomResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 
-#[derive(Parser, Debug, Default)]
+#[derive(Parser, Debug)]
+#[cfg_attr(test, derive(Default))]
 #[command(author, version, about, long_about = None)]
 pub struct Args {
     #[arg(
