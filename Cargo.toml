@@ -1,6 +1,6 @@
 [package]
 name = "fmrl"
-version = "0.12.0"
+version = "0.13.0"
 edition = "2021"
 authors = ["Josh Willing Halpern <josh@willingapps.com>"]
 description = "A tool to watch FileMaker Import.log files for changes and colorize the output, highlighting errors and warnings.\n\nWhile watching the log type:\n  q / quit / exit       to quit\n  clear                 to clear the screen"

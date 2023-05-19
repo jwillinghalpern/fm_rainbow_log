@@ -528,7 +528,7 @@ dependencies = [
 
 [[package]]
 name = "fmrl"
-version = "0.12.0"
+version = "0.13.0"
 dependencies = [
  "clap",
  "clap_complete",
