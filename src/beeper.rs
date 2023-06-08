@@ -9,9 +9,21 @@ pub fn beep(path: &str, volume: f32) {
     } else {
         path
     };
-    let _ = std::process::Command::new("afplay")
+    if let Ok(mut child) = std::process::Command::new("afplay")
         .arg("-v")
         .arg(vol.to_string())
         .arg(path)
-        .spawn();
+        .spawn()
+    {
+        // previx underscore to avoid conditional compilation warning in release build.
+        // _res is only used in debug mode.
+        let _res = child.wait();
+        #[cfg(debug_assertions)]
+        if let Err(e) = _res {
+            eprintln!("afplay wait error: {}", e);
+        };
+    } else {
+        #[cfg(debug_assertions)]
+        eprintln!("afplay not found");
+    }
 }
