@@ -43,7 +43,7 @@ If you don't have cargo, [follow this one easy step](https://doc.rust-lang.org/c
 
 ### Development/contribution
 
-Simply clone this repo, cd to the directory, and run `cargo run` to test in debug mode. If you are planning a big feature or change, please open an issue first to discuss.
+Fork to your own Github account, clone this repo to your desktop, cd to the directory, and run `cargo run` to test in debug mode. If you are planning a big feature or change, please open an issue first to discuss. It's best to create a new branch for the specific feature/issue you're working on.
 
 ## Usage
 
