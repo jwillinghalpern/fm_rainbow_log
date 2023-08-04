@@ -130,7 +130,7 @@ pub(crate) fn update_args_from_config(args: &mut Args, config: &Config) {
             .error_rules
             .clone()
             .into_iter()
-            .filter(|rule| !rule.is_action_only())
+            .filter(|rule| !rule.no_match_logic())
             .collect::<Vec<_>>();
         args.error_rules = filtered_rules;
     }

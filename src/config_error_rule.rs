@@ -10,6 +10,12 @@ pub(crate) enum ErrorRuleAction {
     Ignore,
 }
 
+impl Default for ErrorRuleAction {
+    fn default() -> Self {
+        ErrorRuleAction::Quiet
+    }
+}
+
 impl FromStr for ErrorRuleAction {
     type Err = String;
 
@@ -22,7 +28,7 @@ impl FromStr for ErrorRuleAction {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Default)]
 // #[derive(Deserialize)]
 pub(crate) struct ErrorRule {
     // error_code is optional, but if it's empty, then any non-zero error code will have this rule applied
@@ -30,11 +36,11 @@ pub(crate) struct ErrorRule {
     error_code: Option<String>,
     // rules act like an AND query clause. All rules must match for the rule to be satisfied, this lets you get specific about the shape of an error. e.g. starts with "foo" and contains "bar" and ends with "."
     message_contains: Option<String>,
-    // message_starts_with: Option<String>,
-    // message_ends_with: Option<String>,
-    // pub(crate) location_contains: Option<String>,
-    // location_starts_with: Option<String>,
-    // location_ends_with: Option<String>,
+    message_starts_with: Option<String>,
+    message_ends_with: Option<String>,
+    location_contains: Option<String>,
+    location_starts_with: Option<String>,
+    location_ends_with: Option<String>,
     action: ErrorRuleAction,
 }
 
@@ -50,7 +56,7 @@ impl FromStr for ErrorRule {
 
 impl ErrorRule {
     /// check if ImportLogLine matches this rule
-    pub(crate) fn get_action(&self, line: &ImportLogLine) -> Option<ErrorRuleAction> {
+    fn get_action(&self, line: &ImportLogLine) -> Option<ErrorRuleAction> {
         // we only care about error lines (non-zero error code)
         if line.code == "0" {
             return None;
@@ -68,14 +74,68 @@ impl ErrorRule {
             }
         }
 
+        if let Some(message_starts_with) = &self.message_starts_with {
+            if !line.message.starts_with(message_starts_with) {
+                return None;
+            }
+        }
+
+        if let Some(message_ends_with) = &self.message_ends_with {
+            if !line.message.ends_with(message_ends_with) {
+                return None;
+            }
+        }
+
+        if let Some(location_contains) = &self.location_contains {
+            if !line.filename.contains(location_contains) {
+                return None;
+            }
+        }
+
+        if let Some(location_starts_with) = &self.location_starts_with {
+            if !line.filename.starts_with(location_starts_with) {
+                return None;
+            }
+        }
+
+        if let Some(location_ends_with) = &self.location_ends_with {
+            if !line.filename.ends_with(location_ends_with) {
+                return None;
+            }
+        }
+
         // return the action if all the rules match
         Some(self.action)
     }
 
     // write function that checks if the only property defined is action
-    pub(crate) fn is_action_only(&self) -> bool {
-        self.error_code.is_none() && self.message_contains.is_none()
+    pub(crate) fn no_match_logic(&self) -> bool {
+        // TODO: update this so that you don't have to remember to add new fields
+
+        self.error_code.is_none()
+            && self.message_contains.is_none()
+            && self.location_contains.is_none()
+            && self.message_starts_with.is_none()
+            && self.message_ends_with.is_none()
+            && self.location_starts_with.is_none()
+            && self.location_ends_with.is_none()
     }
+}
+
+pub(crate) fn apply_error_rules(
+    rules: &[ErrorRule],
+    line: &ImportLogLine,
+) -> Option<ErrorRuleAction> {
+    use ErrorRuleAction::*;
+    let mut action = None;
+    for rule in rules {
+        match rule.get_action(line) {
+            Some(Quiet) => action = Some(Quiet),
+            Some(Ignore) => return Some(Ignore),
+            None => continue,
+        }
+    }
+    action
 }
 
 #[cfg(test)]
@@ -132,6 +192,8 @@ mod tests {
             error_code: Some("123".to_string()),
             message_contains: Some("abc".to_string()),
             action: ErrorRuleAction::Quiet,
+            location_contains: None,
+            ..ErrorRule::default()
         };
 
         let line = ImportLogLine {
@@ -148,16 +210,17 @@ mod tests {
         };
         assert_eq!(rule.get_action(&line), None);
 
-        let rule = ErrorRule {
-            error_code: None,
-            message_contains: Some("abc".to_string()),
-            action: ErrorRuleAction::Quiet,
-        };
-        let line = ImportLogLine {
-            code: "123".to_string(),
-            message: "HELLO_abc_WORLD".to_string(),
-            ..ImportLogLine::default()
-        };
+        // let rule = ErrorRule {
+        //     error_code: None,
+        //     message_contains: Some("abc".to_string()),
+        //     action: ErrorRuleAction::Quiet,
+        //     ..ErrorRule::default()
+        // };
+        // let line = ImportLogLine {
+        //     code: "123".to_string(),
+        //     message: "HELLO_abc_WORLD".to_string(),
+        //     ..ImportLogLine::default()
+        // };
     }
 
     #[test]
@@ -166,6 +229,7 @@ mod tests {
             error_code: None,
             message_contains: Some("abc".to_string()),
             action: ErrorRuleAction::Quiet,
+            ..ErrorRule::default()
         };
 
         let line = ImportLogLine {
@@ -188,7 +252,9 @@ mod tests {
         let rule = ErrorRule {
             error_code: Some("123".to_string()),
             message_contains: Some("abc".to_string()),
+            // location_contains: None,
             action: ErrorRuleAction::Quiet,
+            ..ErrorRule::default()
         };
         let line = ImportLogLine {
             code: "0".to_string(),
@@ -197,4 +263,7 @@ mod tests {
         };
         assert_eq!(rule.get_action(&line), None);
     }
+
+    // TODO: add test other ErrorRule fields
+    // TODO: test function that applies rules
 }

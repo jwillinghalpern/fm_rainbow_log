@@ -9,6 +9,7 @@ mod rules;
 use config_error_rule::ErrorRule;
 use rules::{contains_warning_text, is_header, is_operation_start};
 
+use crate::config_error_rule::{apply_error_rules, ErrorRuleAction};
 use crate::config_file::{get_config, update_args_from_config, ConfigColor};
 use crate::notifications::NotificationType;
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
@@ -396,9 +397,6 @@ pub fn run() -> CustomResult {
     let config = get_config(args.config_path.as_deref())?;
     update_args_from_config(&mut args, &config);
 
-    println!("args: {:#?}", args);
-    return Ok(());
-
     let path_type = get_path_type(&args)?;
     let path = path_type.path();
 
@@ -477,14 +475,32 @@ pub fn run() -> CustomResult {
                         print_separator();
                         print_sep_on_warning = false;
                     }
-                    println!(
-                        "{}\t{}\t{}\t{}",
-                        line.timestamp.bright_white().on_red(),
-                        line.filename.bright_white().on_red(),
-                        line.code.bright_white().on_red(),
-                        line.message
-                    );
-                    if send_notif && !args.quiet_errors.contains(&line.code) {
+                    let (rule_blocks_color, rule_blocks_notif) =
+                        match apply_error_rules(&args.error_rules, &line) {
+                            Some(ErrorRuleAction::Ignore) => (true, true),
+                            Some(ErrorRuleAction::Quiet) => (false, true),
+                            None => (false, false),
+                        };
+                    if rule_blocks_color {
+                        let [a, b, c, d] = colorize_columns(
+                            &line,
+                            &timestamp_colorizer,
+                            &filename_colorizer,
+                            &error_colorizer,
+                            &message_colorizer,
+                        );
+                        println!("{}\t{}\t{}\t{}", a, b, c, d);
+                    } else {
+                        println!(
+                            "{}\t{}\t{}\t{}",
+                            line.timestamp.bright_white().on_red(),
+                            line.filename.bright_white().on_red(),
+                            line.code.bright_white().on_red(),
+                            line.message
+                        );
+                    };
+
+                    if send_notif && !args.quiet_errors.contains(&line.code) && !rule_blocks_notif {
                         notif_tx.send(NotificationType::Error).unwrap();
                     }
                 }
@@ -515,7 +531,9 @@ pub fn run() -> CustomResult {
                     let [a, b, c, d] = res.map(|s| s.underline());
                     println!("{}\t{}\t{}\t{}", a, b, c, d);
                 }
-                LineType::Other(line) => println!("{}", line),
+                LineType::Other(line) => {
+                    println!("{}", line);
+                }
             }
         }
     };
