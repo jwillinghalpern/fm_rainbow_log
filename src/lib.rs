@@ -110,23 +110,23 @@ pub struct Args {
     )]
     beep_path: String,
 
-    #[arg(
-        long,
-        help = "Comma-separated list (with no spaces) of error codes that shouldn't produce a desktop notification or beep",
-        value_name = "ERROR_CODES",
-        value_delimiter = ','
-    )]
-    quiet_errors: Vec<String>,
-
     // IDK why this special Vec syntax works, but it does. See https://github.com/clap-rs/clap/issues/4626
     #[arg(
         long,
-        help = "JSON array of error rules.",
+        help = "JSON array of error rules. Controls the behavior when an error line matches one or more rules.",
         value_name = "ERROR_RULES",
         value_parser(parse_error_rule_array),
         default_value = "[]"
     )]
     error_rules: ::std::vec::Vec<ErrorRule>,
+
+    #[arg(
+        long,
+        help = "Comma-separated list (with no spaces) of error codes that shouldn't produce a desktop notification or beep. NOTE: This option may be deprecated at some point, it is recommended to use `error_rules` instead.",
+        value_name = "ERROR_CODES",
+        value_delimiter = ','
+    )]
+    quiet_errors: Vec<String>,
 
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?

@@ -132,9 +132,6 @@ To customize colors and default options, create config/json file. All keys are o
   "beep_volume": 1.0,
   "beep_path": "/System/Library/Sounds/Tink.aiff",
 
-  // TODO: should we deprecate this feature in favor of using only error_rules?
-  "quiet_errors": "3702, 1234",
-
   // error_rules fields:
   //   - action: "quiet" or "ignore"
   //     - "quiet" : still highlight the error red, but don't produce desktop notification
@@ -172,7 +169,10 @@ To customize colors and default options, create config/json file. All keys are o
       "foreground": "bright white",
       "background": "black"
     }
-  }
+  },
+
+  // NOTE: quiet_errors may be deprecated/removed in the future. Please use error_rules instead.
+  "quiet_errors": "3702, 1234"
 }
 ```
 
