@@ -14,7 +14,7 @@ use crate::config_file::{get_config, update_args_from_config, ConfigColor};
 use crate::notifications::NotificationType;
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use beeper::beep;
-use clap::{Command, CommandFactory, Parser, ValueHint};
+use clap::{Command, CommandFactory, Parser};
 use clap_complete::{generate, Generator, Shell};
 use color_type::ColorType;
 use colored::{ColoredString, Colorize};
