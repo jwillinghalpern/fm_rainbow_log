@@ -3,20 +3,19 @@ mod color_type;
 mod config_file;
 mod error_rule;
 mod notifications;
+mod rules;
 mod utils;
 
-mod rules;
-use error_rule::ErrorRule;
-use rules::{contains_warning_text, is_header, is_operation_start};
-
-use crate::config_file::{get_config, update_args_from_config, ConfigColor};
-use crate::error_rule::{apply_error_rules, ErrorRuleAction};
-use crate::notifications::NotificationType;
-use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use beeper::beep;
+use color_type::ColorType;
+use config_file::{get_config, update_args_from_config, ConfigColor};
+use error_rule::{apply_error_rules, ErrorRule, ErrorRuleAction};
+use notifications::NotificationType;
+use rules::{contains_warning_text, is_header, is_operation_start};
+use utils::{clear_terminal, is_timestamp, replace_trailing_cr_with_crlf};
+
 use clap::{Command, CommandFactory, Parser};
 use clap_complete::{generate, Generator, Shell};
-use color_type::ColorType;
 use colored::{ColoredString, Colorize};
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
@@ -27,7 +26,6 @@ use std::str::FromStr;
 use std::sync::mpsc;
 use std::time::Duration;
 use std::{env, io};
-use utils::clear_terminal;
 
 type CustomResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 
