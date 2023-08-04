@@ -397,10 +397,6 @@ pub fn run() -> CustomResult {
     let config = get_config(args.config_path.as_deref())?;
     update_args_from_config(&mut args, &config);
 
-    // TODO: remove
-    println!("args: {:#?}", args);
-    return Ok(());
-
     let path_type = get_path_type(&args)?;
     let path = path_type.path();
 
