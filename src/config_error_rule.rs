@@ -266,4 +266,14 @@ mod tests {
 
     // TODO: add test other ErrorRule fields
     // TODO: test function that applies rules
+
+    #[test]
+    fn apply_error_rules_works() {
+        // let line = ImportLogLine {
+        //     code: "123".to_string(),
+        //     message: "HELLO_abc_WORLD".to_string(),
+        //     ..ImportLogLine::default()
+        // };
+        // TODO
+    }
 }
