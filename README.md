@@ -119,7 +119,7 @@ fmrl --completion zsh > ~/.oh-my-zsh/completions/_fm_rainbow_log
 
 To customize colors and default options, create config/json file. All keys are optional, e.g. you can omit "background" for any field, or omit the field entirely.
 
-```json
+```json5
 {
   "show_separator": false,
   "use_documents_directory": false,
