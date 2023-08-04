@@ -3,6 +3,8 @@ use std::str::FromStr;
 use crate::ImportLogLine;
 use serde::Deserialize;
 
+//TODO: rename file
+
 #[derive(Deserialize, Debug, PartialEq, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 pub(crate) enum ErrorRuleAction {
