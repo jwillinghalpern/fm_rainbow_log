@@ -1,10 +1,9 @@
+use crate::error_rule::{remove_no_match_rules, ErrorRule};
 use crate::Args;
 use colored::Colorize;
 use serde::{Deserialize, Deserializer};
 use std::fs::File;
 use std::io::Read;
-
-use crate::error_rule::ErrorRule;
 
 #[derive(Deserialize, Debug, Default)]
 #[serde(default)]
@@ -89,8 +88,10 @@ pub(crate) fn get_config(config_path: Option<&str>) -> Result<Config, Box<dyn st
         .read_to_string(&mut buf)
         .map_err(|e| format!("couldn't read config file: {}", e))?;
 
-    let config =
+    let mut config: Config =
         serde_json::from_str(&buf).map_err(|e| format!("couldn't parse config file: {}", e))?;
+
+    remove_no_match_rules(&mut config.error_rules);
 
     Ok(config)
 }
@@ -124,13 +125,7 @@ pub(crate) fn update_args_from_config(args: &mut Args, config: &Config) {
         args.quiet_errors = config.quiet_errors.clone();
     }
     if !config.error_rules.is_empty() && args.error_rules.is_empty() {
-        let filtered_rules = config
-            .error_rules
-            .clone()
-            .into_iter()
-            .filter(|rule| !rule.no_match_logic())
-            .collect::<Vec<_>>();
-        args.error_rules = filtered_rules;
+        args.error_rules = config.error_rules.clone();
     }
 }
 

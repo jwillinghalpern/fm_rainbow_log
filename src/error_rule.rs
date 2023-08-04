@@ -84,7 +84,7 @@ impl ErrorRule {
     }
 
     /// check if only the action field is set on this rule. If so, then the rule has no match logic so will never be used and can be ignored.
-    pub(crate) fn no_match_logic(&self) -> bool {
+    fn no_match_logic(&self) -> bool {
         // set the non-optional fields to the same on boths sides of the comparison, then compare against the default ErrorRule. default Options are None, so if they match, we can assume all optional fields are None
         let action = ErrorRuleAction::default();
         let default = ErrorRule {
@@ -115,6 +115,10 @@ pub(crate) fn apply_error_rules(
         }
     }
     action
+}
+
+pub(crate) fn remove_no_match_rules(rules: &mut Vec<ErrorRule>) {
+    rules.retain(|rule| !rule.no_match_logic());
 }
 
 #[cfg(test)]
