@@ -117,11 +117,16 @@ pub struct Args {
     )]
     quiet_errors: Vec<String>,
 
-    // this is defined as skip because I don't want to allow error_rules to be passed in via command line arg, only via the json config file.
-    #[arg(skip)]
+    // IDK why this special Vec syntax works, but it does. See https://github.com/clap-rs/clap/issues/4626
+    #[arg(
+        long,
+        help = "JSON array of error rules.",
+        value_name = "ERROR_RULES",
+        value_parser(parse_error_rule_array),
+        default_value = "[]"
+    )]
+    // error_rules: ::std::vec::Vec<ErrorRule>,
     error_rules: Vec<ErrorRule>,
-
-    // TODO: should error_rules be Vec<String> or Vec<ErrorRule>? If the latter, how do we parse it?
 
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
@@ -143,13 +148,10 @@ pub struct Args {
     completion: Option<Shell>,
 }
 
-// fn parse_error_rule_array(val: &str) -> Result<Vec<ErrorRule>, String> {
-//     // let mut rules = Vec::new();
-//     // use serde from_json to parse the stringified array of objects into a Vec<ErrorRule>
-//     let rules = serde_json::from_str(val).map_err(|e| e.to_string())?;
-
-//     Ok(rules)
-// }
+fn parse_error_rule_array(val: &str) -> Result<Vec<ErrorRule>, String> {
+    let rules = serde_json::from_str(val).map_err(|e| e.to_string())?;
+    Ok(rules)
+}
 
 #[derive(Clone, Default)]
 struct ImportLogLine {
@@ -731,5 +733,25 @@ mod tests {
         let line = "hello world";
         assert!(!is_header(line));
         assert!(is_header("lkjflkjfljf - 타임 스탬프	파일 이름	오류	메시지"))
+    }
+
+    #[test]
+    fn test_parse_error_rule_array() {
+        let json = r#"[
+            { "code": "0", "message_contains": "zero", "action": "quiet" },
+            { "code": "1", "message_contains": "one", "action": "ignore" }
+        ]"#;
+        let rules = parse_error_rule_array(json).unwrap();
+        assert_eq!(rules.len(), 2);
+
+        let json = r#"[
+            { "code": "0", "message_contains": "zero", "action": "WRONG" }
+        ]"#;
+        let rules = parse_error_rule_array(json);
+        assert!(rules.is_err());
+
+        let json = r#"[ { "action": "quiet" }, INVALID_JSON ]"#;
+        let rules = parse_error_rule_array(json);
+        assert!(rules.is_err());
     }
 }
