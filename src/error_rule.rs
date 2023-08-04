@@ -14,9 +14,7 @@ impl Default for ErrorRuleAction {
     }
 }
 
-
-
-#[derive(Deserialize, Debug, Clone, Default)]
+#[derive(Deserialize, Debug, Clone, Default, PartialEq)]
 // #[derive(Deserialize)]
 pub(crate) struct ErrorRule {
     // error_code is optional, but if it's empty, then any non-zero error code will have this rule applied
@@ -85,17 +83,21 @@ impl ErrorRule {
         Some(self.action)
     }
 
-    // write function that checks if the only property defined is action
+    /// check if only the action field is set on this rule. If so, then the rule has no match logic so will never be used and can be ignored.
     pub(crate) fn no_match_logic(&self) -> bool {
-        // TODO: update this so that you don't have to remember to add new fields
+        // set the non-optional fields to the same on boths sides of the comparison, then compare against the default ErrorRule. default Options are None, so if they match, we can assume all optional fields are None
+        let action = ErrorRuleAction::default();
+        let default = ErrorRule {
+            action,
+            ..ErrorRule::default()
+        };
 
-        self.error_code.is_none()
-            && self.message_contains.is_none()
-            && self.location_contains.is_none()
-            && self.message_starts_with.is_none()
-            && self.message_ends_with.is_none()
-            && self.location_starts_with.is_none()
-            && self.location_ends_with.is_none()
+        let this_rule = ErrorRule {
+            action,
+            ..self.clone()
+        };
+
+        default == this_rule
     }
 }
 
@@ -246,11 +248,15 @@ mod tests {
 
     #[test]
     fn apply_error_rules_works() {
-        // let line = ImportLogLine {
-        //     code: "123".to_string(),
-        //     message: "HELLO_abc_WORLD".to_string(),
-        //     ..ImportLogLine::default()
-        // };
-        // TODO
+    #[test]
+    fn no_match_logic_works() {
+        let rule = ErrorRule::default();
+        assert!(rule.no_match_logic());
+
+        let rule = ErrorRule {
+            error_code: Some("123".to_string()),
+            ..ErrorRule::default()
+        };
+        assert!(!rule.no_match_logic());
     }
 }
