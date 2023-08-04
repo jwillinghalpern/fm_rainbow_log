@@ -123,7 +123,7 @@ mod tests {
 
     #[test]
     fn deserialize_error_rule() {
-        let json = r#"{"error_code": 123, "message_contains": "abc", "action": "quiet"}"#;
+        let json = r#"{"error_code": "123", "message_contains": "abc", "action": "quiet"}"#;
         let res: ErrorRule = serde_json::from_str(json).unwrap();
         assert_eq!(res.error_code, Some("123".to_string()));
         assert_eq!(res.message_contains, Some("abc".to_string()));
@@ -135,13 +135,13 @@ mod tests {
         assert_eq!(res.message_contains, Some("abc".to_string()));
         assert_eq!(res.action, ErrorRuleAction::Ignore);
 
-        let json = r#"{"error_code": 123, "action": "ignore"}"#;
+        let json = r#"{"error_code": "123", "action": "ignore"}"#;
         let res: ErrorRule = serde_json::from_str(json).unwrap();
         assert_eq!(res.error_code, Some("123".to_string()));
         assert_eq!(res.message_contains, None);
         assert_eq!(res.action, ErrorRuleAction::Ignore);
 
-        // TODO: IDK if this is correct
+        // this throws because error_code is not a string but I might change that behavior later
         let json = r#"{"error_code": 123, "message_contains": "abc", "message_contains": "def", "action": "quiet"}"#;
         let res: std::result::Result<ErrorRule, _> = serde_json::from_str(json);
         assert!(res.is_err());
@@ -152,7 +152,37 @@ mod tests {
         assert_eq!(res.message_contains, None);
         assert_eq!(res.action, ErrorRuleAction::Ignore);
 
-        // TODO: add more tests when we add more properties lik message_starts_with etc.
+        // only action:
+        let json = r#"{"action": "ignore"}"#;
+        serde_json::from_str::<ErrorRule>(json).unwrap();
+
+        // add more tests when we add more properties like message_starts_with etc.
+        let json = r#"{
+            "action": "quiet",
+            "error_code": "123",
+            "message_contains": "abc",
+            "message_starts_with": "abc",
+            "message_ends_with": "def",
+            "location_contains": "ghi",
+            "location_starts_with": "jkl",
+            "location_ends_with": "mno"
+        }"#;
+        serde_json::from_str::<ErrorRule>(json).unwrap();
+    }
+
+    #[test]
+    fn deserialize_error_rule_action() {
+        let json = r#"{"action": "quiet"}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.action, ErrorRuleAction::Quiet);
+
+        let json = r#"{"action": "ignore"}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.action, ErrorRuleAction::Ignore);
+
+        let json = r#"{ "action": "INVALID_VARIANT"}"#;
+        let res: std::result::Result<ErrorRule, _> = serde_json::from_str(json);
+        assert!(res.is_err());
     }
 
     #[test]
@@ -167,6 +197,7 @@ mod tests {
 
     #[test]
     fn get_action_works() {
+        // TODO: test each of the match logic fields individually
         let rule = ErrorRule {
             error_code: Some("123".to_string()),
             message_contains: Some("abc".to_string()),
@@ -188,18 +219,6 @@ mod tests {
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), None);
-
-        // let rule = ErrorRule {
-        //     error_code: None,
-        //     message_contains: Some("abc".to_string()),
-        //     action: ErrorRuleAction::Quiet,
-        //     ..ErrorRule::default()
-        // };
-        // let line = ImportLogLine {
-        //     code: "123".to_string(),
-        //     message: "HELLO_abc_WORLD".to_string(),
-        //     ..ImportLogLine::default()
-        // };
     }
 
     #[test]
@@ -243,11 +262,40 @@ mod tests {
         assert_eq!(rule.get_action(&line), None);
     }
 
-    // TODO: add test other ErrorRule fields
-    // TODO: test function that applies rules
-
     #[test]
     fn apply_error_rules_works() {
+        let rules = vec![
+            ErrorRule {
+                error_code: Some("123".to_string()),
+                message_contains: Some("abc".to_string()),
+                action: ErrorRuleAction::Quiet,
+                ..ErrorRule::default()
+            },
+            ErrorRule {
+                error_code: Some("456".to_string()),
+                message_contains: Some("def".to_string()),
+                action: ErrorRuleAction::Ignore,
+                ..ErrorRule::default()
+            },
+        ];
+
+        let line = ImportLogLine {
+            code: "123".to_string(),
+            message: "HELLO_abc_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        let res = apply_error_rules(&rules, &line);
+        assert_eq!(res, Some(ErrorRuleAction::Quiet));
+
+        let line = ImportLogLine {
+            code: "456".to_string(),
+            message: "HELLO_def_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        let res = apply_error_rules(&rules, &line);
+        assert_eq!(res, Some(ErrorRuleAction::Ignore));
+    }
+
     #[test]
     fn no_match_logic_works() {
         let rule = ErrorRule::default();
