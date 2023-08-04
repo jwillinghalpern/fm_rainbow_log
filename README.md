@@ -24,7 +24,7 @@ If installing locally, I prefer using cargo (described below), because it stream
 ### Via pre-compiled binaries
 
 1. Copy the `fmrl` binary (see below) to a directory in your PATH. For example, `/usr/local/bin` on macOS.
-    - To see the folders in your PATH, run this in your terminal: `echo $PATH | sed -E 's/:/\n/g'`
+   - To see the folders in your PATH, run this in your terminal: `echo $PATH | sed -E 's/:/\n/g'`
 2. Restart your terminal and type `fmrl --help`.
 
 Binaries are available in the [Releases section](https://github.com/jwillinghalpern/fm_rainbow_log/releases).
@@ -132,7 +132,21 @@ To customize colors and default options, create config/json file. All keys are o
   "beep_volume": 1.0,
   "beep_path": "/System/Library/Sounds/Tink.aiff",
 
+  // TODO: should we deprecate this feature in favor of using only error_rules?
   "quiet_errors": "3702, 1234",
+
+  // action can be:
+  //   - "quiet" : still highlight the error red, but don't produce desktop notification
+  //   - "ignore" : don't even highlight the error
+  // The other fields are optional. A line will trigger the `action`
+  //   if ALL the other fields are satisfied (Like an AND operator)
+  //   If error_code is empty, then any non-zero error code will be tested.
+  //     If it contains a value, only lines matching that error code will have this rule applied.
+  "error_rules": [
+    { "error_code": "123", "message_contains": "foo", "action": "quiet" },
+    { "error_code": "234", "action": "ignore" }
+    { "message_contains": "I'm not an important error", "action": "ignore" }
+  ],
 
   "colors": {
     "timestamp": {
@@ -161,9 +175,9 @@ either:
 
 1. pass in the path with the `-c/--config` option:
 
-    ```bash
-    fmrl -c path/to/config.json
-    ```
+   ```bash
+   fmrl -c path/to/config.json
+   ```
 
 2. or... (recommended for default config) save the file in one of these locations and then fmrl will use that by default:
 

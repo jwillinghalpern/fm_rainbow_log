@@ -4,6 +4,8 @@ use serde::{Deserialize, Deserializer};
 use std::fs::File;
 use std::io::Read;
 
+use crate::config_error_rule::ErrorRule;
+
 #[derive(Deserialize, Debug, Default)]
 #[serde(default)]
 pub(crate) struct ConfigColor {
@@ -33,6 +35,7 @@ pub(crate) struct Config {
     pub(crate) colors: ConfigColorFields,
     #[serde(deserialize_with = "comma_list_deserialize")]
     pub(crate) quiet_errors: Vec<String>,
+    pub(crate) error_rules: Vec<ErrorRule>,
 }
 
 fn comma_list_deserialize<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
@@ -119,6 +122,17 @@ pub(crate) fn update_args_from_config(args: &mut Args, config: &Config) {
     }
     if !config.quiet_errors.is_empty() && args.quiet_errors.is_empty() {
         args.quiet_errors = config.quiet_errors.clone();
+    }
+    // TODO: will error_rules actually be empty or will it be some sort of noop closure that is _always_ applied?
+    // TODO: I don't think know if I want to make --error-rules a possible option at all because it would require passing in escaped json (yuck)
+    if !config.error_rules.is_empty() && args.error_rules.is_empty() {
+        let filtered_rules = config
+            .error_rules
+            .clone()
+            .into_iter()
+            .filter(|rule| !rule.is_action_only())
+            .collect::<Vec<_>>();
+        args.error_rules = filtered_rules;
     }
 }
 

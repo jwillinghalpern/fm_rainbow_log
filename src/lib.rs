@@ -1,10 +1,12 @@
 mod beeper;
 mod color_type;
+mod config_error_rule;
 mod config_file;
 mod notifications;
 mod utils;
 
 mod rules;
+use config_error_rule::ErrorRule;
 use rules::{contains_warning_text, is_header, is_operation_start};
 
 use crate::config_file::{get_config, update_args_from_config, ConfigColor};
@@ -37,7 +39,7 @@ pub struct Args {
         conflicts_with = "use_docs_dir",
         conflicts_with = "path",
         value_names = &["PATH"],
-        value_hint = ValueHint::FilePath,
+        // value_hint = ValueHint::FilePath,
     )]
     path_unnamed: Option<String>,
 
@@ -48,7 +50,7 @@ pub struct Args {
         required = false,
         conflicts_with = "use_docs_dir",
         conflicts_with = "path_unnamed",
-        value_hint = ValueHint::FilePath,
+        // value_hint = ValueHint::FilePath,
     )]
     path: Option<String>,
 
@@ -115,6 +117,12 @@ pub struct Args {
     )]
     quiet_errors: Vec<String>,
 
+    // this is defined as skip because I don't want to allow error_rules to be passed in via command line arg, only via the json config file.
+    #[arg(skip)]
+    error_rules: Vec<ErrorRule>,
+
+    // TODO: should error_rules be Vec<String> or Vec<ErrorRule>? If the latter, how do we parse it?
+
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
     #[arg(
@@ -135,6 +143,15 @@ pub struct Args {
     completion: Option<Shell>,
 }
 
+// fn parse_error_rule_array(val: &str) -> Result<Vec<ErrorRule>, String> {
+//     // let mut rules = Vec::new();
+//     // use serde from_json to parse the stringified array of objects into a Vec<ErrorRule>
+//     let rules = serde_json::from_str(val).map_err(|e| e.to_string())?;
+
+//     Ok(rules)
+// }
+
+#[derive(Clone, Default)]
 struct ImportLogLine {
     timestamp: String,
     filename: String,
@@ -377,6 +394,10 @@ pub fn run() -> CustomResult {
 
     let config = get_config(args.config_path.as_deref())?;
     update_args_from_config(&mut args, &config);
+
+    // TODO: remove
+    println!("args: {:#?}", args);
+    return Ok(());
 
     let path_type = get_path_type(&args)?;
     let path = path_type.path();
