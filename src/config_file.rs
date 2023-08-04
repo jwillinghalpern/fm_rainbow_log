@@ -4,7 +4,7 @@ use serde::{Deserialize, Deserializer};
 use std::fs::File;
 use std::io::Read;
 
-use crate::config_error_rule::ErrorRule;
+use crate::error_rule::ErrorRule;
 
 #[derive(Deserialize, Debug, Default)]
 #[serde(default)]

@@ -1,16 +1,16 @@
 mod beeper;
 mod color_type;
-mod config_error_rule;
 mod config_file;
+mod error_rule;
 mod notifications;
 mod utils;
 
 mod rules;
-use config_error_rule::ErrorRule;
+use error_rule::ErrorRule;
 use rules::{contains_warning_text, is_header, is_operation_start};
 
-use crate::config_error_rule::{apply_error_rules, ErrorRuleAction};
 use crate::config_file::{get_config, update_args_from_config, ConfigColor};
+use crate::error_rule::{apply_error_rules, ErrorRuleAction};
 use crate::notifications::NotificationType;
 use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use beeper::beep;
