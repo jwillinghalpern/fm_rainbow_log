@@ -14,7 +14,7 @@ use notifications::NotificationType;
 use rules::{contains_warning_text, is_header, is_operation_start};
 use utils::{clear_terminal, is_timestamp, replace_trailing_cr_with_crlf};
 
-use clap::{Command, CommandFactory, Parser};
+use clap::{Command, CommandFactory, Parser, ValueHint};
 use clap_complete::{generate, Generator, Shell};
 use colored::{ColoredString, Colorize};
 use notify::RecursiveMode;
@@ -38,7 +38,7 @@ pub struct Args {
         conflicts_with = "use_docs_dir",
         conflicts_with = "path",
         value_names = &["PATH"],
-        // value_hint = ValueHint::FilePath,
+        value_hint = ValueHint::FilePath,
     )]
     path_unnamed: Option<String>,
 
@@ -49,7 +49,7 @@ pub struct Args {
         required = false,
         conflicts_with = "use_docs_dir",
         conflicts_with = "path_unnamed",
-        // value_hint = ValueHint::FilePath,
+        value_hint = ValueHint::FilePath,
     )]
     path: Option<String>,
 
