@@ -32,7 +32,6 @@ impl FromStr for ErrorRuleAction {
 // #[derive(Deserialize)]
 pub(crate) struct ErrorRule {
     // error_code is optional, but if it's empty, then any non-zero error code will have this rule applied
-    // TODO: I think I made import log line `code` field a string to colorize more easily, but I'd prefer treating them as numbers
     error_code: Option<String>,
     // rules act like an AND query clause. All rules must match for the rule to be satisfied, this lets you get specific about the shape of an error. e.g. starts with "foo" and contains "bar" and ends with "."
     message_contains: Option<String>,
@@ -44,6 +43,7 @@ pub(crate) struct ErrorRule {
     action: ErrorRuleAction,
 }
 
+// TODO: do i still need this with the custom parse in args?
 impl FromStr for ErrorRule {
     type Err = String;
 
