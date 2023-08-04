@@ -135,13 +135,20 @@ To customize colors and default options, create config/json file. All keys are o
   // TODO: should we deprecate this feature in favor of using only error_rules?
   "quiet_errors": "3702, 1234",
 
-  // action can be:
-  //   - "quiet" : still highlight the error red, but don't produce desktop notification
-  //   - "ignore" : don't even highlight the error
-  // The other fields are optional. A line will trigger the `action`
-  //   if ALL the other fields are satisfied (Like an AND operator)
-  //   If error_code is empty, then any non-zero error code will be tested.
-  //     If it contains a value, only lines matching that error code will have this rule applied.
+  // error_rules fields:
+  //   - action: "quiet" or "ignore"
+  //     - "quiet" : still highlight the error red, but don't produce desktop notification
+  //     - "ignore" : don't even highlight the error
+  //   - error_code (optional): the error code to match
+  //   - message_contains (optional): the text to match
+  //   - message_starts_with (optional): the text to match
+  //   - message_ends_with (optional): the text to match
+  //   - location_contains (optional): the text to match
+  //   - location_starts_with (optional): the text to match
+  //   - location_ends_with (optional): the text to match
+
+  //   NOTE: ALL fields fields must be satisfied (Like an AND operator) for a rule to trigger `action`. Therefore, fewer fields set will have a broader effect.
+
   "error_rules": [
     { "error_code": "123", "message_contains": "foo", "action": "quiet" },
     { "error_code": "234", "action": "ignore" }
