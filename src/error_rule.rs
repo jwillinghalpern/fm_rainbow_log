@@ -1,8 +1,5 @@
 use crate::ImportLogLine;
 use serde::Deserialize;
-use std::str::FromStr;
-
-//TODO: rename file
 
 #[derive(Deserialize, Debug, PartialEq, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
@@ -17,17 +14,7 @@ impl Default for ErrorRuleAction {
     }
 }
 
-impl FromStr for ErrorRuleAction {
-    type Err = String;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "quiet" => Ok(ErrorRuleAction::Quiet),
-            "ignore" => Ok(ErrorRuleAction::Ignore),
-            _ => Err(format!("unknown error rule action: {}", s)),
-        }
-    }
-}
 
 #[derive(Deserialize, Debug, Clone, Default)]
 // #[derive(Deserialize)]
@@ -42,17 +29,6 @@ pub(crate) struct ErrorRule {
     location_starts_with: Option<String>,
     location_ends_with: Option<String>,
     action: ErrorRuleAction,
-}
-
-// TODO: do i still need this with the custom parse in args?
-impl FromStr for ErrorRule {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let res: ErrorRule =
-            serde_json::from_str(s).map_err(|e| format!("error parsing error rule: {}", e))?;
-        Ok(res)
-    }
 }
 
 impl ErrorRule {
