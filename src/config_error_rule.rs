@@ -1,7 +1,6 @@
-use std::str::FromStr;
-
 use crate::ImportLogLine;
 use serde::Deserialize;
+use std::str::FromStr;
 
 //TODO: rename file
 
