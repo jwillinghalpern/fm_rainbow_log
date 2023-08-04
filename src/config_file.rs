@@ -123,8 +123,6 @@ pub(crate) fn update_args_from_config(args: &mut Args, config: &Config) {
     if !config.quiet_errors.is_empty() && args.quiet_errors.is_empty() {
         args.quiet_errors = config.quiet_errors.clone();
     }
-    // TODO: will error_rules actually be empty or will it be some sort of noop closure that is _always_ applied?
-    // TODO: I don't think know if I want to make --error-rules a possible option at all because it would require passing in escaped json (yuck)
     if !config.error_rules.is_empty() && args.error_rules.is_empty() {
         let filtered_rules = config
             .error_rules
