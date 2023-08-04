@@ -1,19 +1,21 @@
 mod beeper;
 mod color_type;
 mod config_file;
+mod error_rule;
 mod notifications;
+mod rules;
 mod utils;
 
-mod rules;
-use rules::{contains_warning_text, is_header, is_operation_start};
-
-use crate::config_file::{get_config, update_args_from_config, ConfigColor};
-use crate::notifications::NotificationType;
-use crate::utils::{is_timestamp, replace_trailing_cr_with_crlf};
 use beeper::beep;
+use color_type::ColorType;
+use config_file::{get_config, update_args_from_config, ConfigColor};
+use error_rule::{apply_error_rules, ErrorRule, ErrorRuleAction};
+use notifications::NotificationType;
+use rules::{contains_warning_text, is_header, is_operation_start};
+use utils::{clear_terminal, is_timestamp, replace_trailing_cr_with_crlf};
+
 use clap::{Command, CommandFactory, Parser, ValueHint};
 use clap_complete::{generate, Generator, Shell};
-use color_type::ColorType;
 use colored::{ColoredString, Colorize};
 use notify::RecursiveMode;
 use notify_debouncer_mini::new_debouncer;
@@ -24,7 +26,6 @@ use std::str::FromStr;
 use std::sync::mpsc;
 use std::time::Duration;
 use std::{env, io};
-use utils::clear_terminal;
 
 type CustomResult<T = ()> = std::result::Result<T, Box<dyn std::error::Error>>;
 
@@ -107,9 +108,19 @@ pub struct Args {
     )]
     beep_path: String,
 
+    // IDK why this special Vec syntax works, but it does. See https://github.com/clap-rs/clap/issues/4626
     #[arg(
         long,
-        help = "Comma-separated list (with no spaces) of error codes that shouldn't produce a desktop notification or beep",
+        help = "JSON array of error rules. Controls the behavior when an error line matches one or more rules.",
+        value_name = "ERROR_RULES",
+        value_parser(parse_error_rule_array),
+        default_value = "[]"
+    )]
+    error_rules: ::std::vec::Vec<ErrorRule>,
+
+    #[arg(
+        long,
+        help = "Comma-separated list (with no spaces) of error codes that shouldn't produce a desktop notification or beep. NOTE: This option may be deprecated at some point, it is recommended to use `error_rules` instead.",
         value_name = "ERROR_CODES",
         value_delimiter = ','
     )]
@@ -135,6 +146,12 @@ pub struct Args {
     completion: Option<Shell>,
 }
 
+fn parse_error_rule_array(val: &str) -> Result<Vec<ErrorRule>, String> {
+    let rules = serde_json::from_str(val).map_err(|e| e.to_string())?;
+    Ok(rules)
+}
+
+#[derive(Clone, Default)]
 struct ImportLogLine {
     timestamp: String,
     filename: String,
@@ -456,14 +473,32 @@ pub fn run() -> CustomResult {
                         print_separator();
                         print_sep_on_warning = false;
                     }
-                    println!(
-                        "{}\t{}\t{}\t{}",
-                        line.timestamp.bright_white().on_red(),
-                        line.filename.bright_white().on_red(),
-                        line.code.bright_white().on_red(),
-                        line.message
-                    );
-                    if send_notif && !args.quiet_errors.contains(&line.code) {
+                    let (rule_blocks_color, rule_blocks_notif) =
+                        match apply_error_rules(&args.error_rules, &line) {
+                            Some(ErrorRuleAction::Ignore) => (true, true),
+                            Some(ErrorRuleAction::Quiet) => (false, true),
+                            None => (false, false),
+                        };
+                    if rule_blocks_color {
+                        let [a, b, c, d] = colorize_columns(
+                            &line,
+                            &timestamp_colorizer,
+                            &filename_colorizer,
+                            &error_colorizer,
+                            &message_colorizer,
+                        );
+                        println!("{}\t{}\t{}\t{}", a, b, c, d);
+                    } else {
+                        println!(
+                            "{}\t{}\t{}\t{}",
+                            line.timestamp.bright_white().on_red(),
+                            line.filename.bright_white().on_red(),
+                            line.code.bright_white().on_red(),
+                            line.message
+                        );
+                    };
+
+                    if send_notif && !args.quiet_errors.contains(&line.code) && !rule_blocks_notif {
                         notif_tx.send(NotificationType::Error).unwrap();
                     }
                 }
@@ -494,7 +529,9 @@ pub fn run() -> CustomResult {
                     let [a, b, c, d] = res.map(|s| s.underline());
                     println!("{}\t{}\t{}\t{}", a, b, c, d);
                 }
-                LineType::Other(line) => println!("{}", line),
+                LineType::Other(line) => {
+                    println!("{}", line);
+                }
             }
         }
     };
@@ -710,5 +747,25 @@ mod tests {
         let line = "hello world";
         assert!(!is_header(line));
         assert!(is_header("lkjflkjfljf - 타임 스탬프	파일 이름	오류	메시지"))
+    }
+
+    #[test]
+    fn test_parse_error_rule_array() {
+        let json = r#"[
+            { "code": "0", "message_contains": "zero", "action": "quiet" },
+            { "code": "1", "message_contains": "one", "action": "ignore" }
+        ]"#;
+        let rules = parse_error_rule_array(json).unwrap();
+        assert_eq!(rules.len(), 2);
+
+        let json = r#"[
+            { "code": "0", "message_contains": "zero", "action": "WRONG" }
+        ]"#;
+        let rules = parse_error_rule_array(json);
+        assert!(rules.is_err());
+
+        let json = r#"[ { "action": "quiet" }, INVALID_JSON ]"#;
+        let rules = parse_error_rule_array(json);
+        assert!(rules.is_err());
     }
 }

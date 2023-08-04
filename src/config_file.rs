@@ -1,3 +1,4 @@
+use crate::error_rule::{remove_no_match_rules, ErrorRule};
 use crate::Args;
 use colored::Colorize;
 use serde::{Deserialize, Deserializer};
@@ -33,6 +34,7 @@ pub(crate) struct Config {
     pub(crate) colors: ConfigColorFields,
     #[serde(deserialize_with = "comma_list_deserialize")]
     pub(crate) quiet_errors: Vec<String>,
+    pub(crate) error_rules: Vec<ErrorRule>,
 }
 
 fn comma_list_deserialize<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
@@ -86,8 +88,10 @@ pub(crate) fn get_config(config_path: Option<&str>) -> Result<Config, Box<dyn st
         .read_to_string(&mut buf)
         .map_err(|e| format!("couldn't read config file: {}", e))?;
 
-    let config =
+    let mut config: Config =
         serde_json::from_str(&buf).map_err(|e| format!("couldn't parse config file: {}", e))?;
+
+    remove_no_match_rules(&mut config.error_rules);
 
     Ok(config)
 }
@@ -119,6 +123,9 @@ pub(crate) fn update_args_from_config(args: &mut Args, config: &Config) {
     }
     if !config.quiet_errors.is_empty() && args.quiet_errors.is_empty() {
         args.quiet_errors = config.quiet_errors.clone();
+    }
+    if !config.error_rules.is_empty() && args.error_rules.is_empty() {
+        args.error_rules = config.error_rules.clone();
     }
 }
 
