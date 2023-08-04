@@ -125,8 +125,7 @@ pub struct Args {
         value_parser(parse_error_rule_array),
         default_value = "[]"
     )]
-    // error_rules: ::std::vec::Vec<ErrorRule>,
-    error_rules: Vec<ErrorRule>,
+    error_rules: ::std::vec::Vec<ErrorRule>,
 
     // how should filter be passed in? what if we want multiple filters?
     //   - maybe some basic filters and a regex option?
@@ -396,6 +395,9 @@ pub fn run() -> CustomResult {
 
     let config = get_config(args.config_path.as_deref())?;
     update_args_from_config(&mut args, &config);
+
+    println!("args: {:#?}", args);
+    return Ok(());
 
     let path_type = get_path_type(&args)?;
     let path = path_type.path();
