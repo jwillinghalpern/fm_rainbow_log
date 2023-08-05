@@ -137,7 +137,7 @@ pub struct Args {
     #[arg(
         long = "config",
         short = 'c',
-        help = "Path to config file for customizing colors",
+        help = "Path to config file for customizing appearance, notifications, and error rules",
         value_name = "PATH"
     )]
     config_path: Option<String>,
