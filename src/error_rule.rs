@@ -15,6 +15,7 @@ impl Default for ErrorRuleAction {
 }
 
 #[derive(Deserialize, Debug, Clone, Default, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct ErrorRule {
     #[serde(deserialize_with = "deserialize_error_code", default)]
     error_code: Option<String>,
