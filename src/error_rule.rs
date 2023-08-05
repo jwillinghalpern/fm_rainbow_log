@@ -512,4 +512,18 @@ mod tests {
         };
         assert!(!rule.no_match_logic());
     }
+
+    #[test]
+    fn error_rules_unknown_field_fails() {
+        let json = r#"[
+            {
+                "error_code": "123",
+                "message_contains": ["abc"],
+                "action": "quiet",
+                "unknown_field": "unknown"
+            }
+        ]"#;
+        let res = serde_json::from_str::<Vec<ErrorRule>>(json);
+        assert!(res.is_err());
+    }
 }
