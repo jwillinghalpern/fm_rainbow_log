@@ -137,7 +137,7 @@ pub struct Args {
     #[arg(
         long = "config",
         short = 'c',
-        help = "Path to config file for customizing colors",
+        help = "Path to config file for customizing appearance, notifications, and error rules",
         value_name = "PATH"
     )]
     config_path: Option<String>,
@@ -752,14 +752,14 @@ mod tests {
     #[test]
     fn test_parse_error_rule_array() {
         let json = r#"[
-            { "code": "0", "message_contains": "zero", "action": "quiet" },
-            { "code": "1", "message_contains": "one", "action": "ignore" }
+            { "error_code": "0", "message_contains": "zero", "action": "quiet" },
+            { "error_code": "1", "message_contains": "one", "action": "ignore" }
         ]"#;
         let rules = parse_error_rule_array(json).unwrap();
         assert_eq!(rules.len(), 2);
 
         let json = r#"[
-            { "code": "0", "message_contains": "zero", "action": "WRONG" }
+            { "error_code": "0", "message_contains": "zero", "action": "WRONG" }
         ]"#;
         let rules = parse_error_rule_array(json);
         assert!(rules.is_err());

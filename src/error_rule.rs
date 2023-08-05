@@ -1,31 +1,54 @@
 use crate::ImportLogLine;
 use serde::{Deserialize, Deserializer};
 
-#[derive(Deserialize, Debug, PartialEq, Clone, Copy)]
+#[derive(Default, Deserialize, Debug, PartialEq, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 pub(crate) enum ErrorRuleAction {
+    #[default]
     Quiet,
     Ignore,
 }
 
-impl Default for ErrorRuleAction {
-    fn default() -> Self {
-        ErrorRuleAction::Quiet
-    }
-}
-
 #[derive(Deserialize, Debug, Clone, Default, PartialEq)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct ErrorRule {
     #[serde(deserialize_with = "deserialize_error_code", default)]
     error_code: Option<String>,
     // rules act like an AND query clause. All rules must match for the rule to be satisfied, this lets you get specific about the shape of an error. e.g. starts with "foo" and contains "bar" and ends with "."
-    message_contains: Option<String>,
+    #[serde(default, deserialize_with = "parse_string_or_string_array")]
+    message_contains: Vec<String>,
     message_starts_with: Option<String>,
     message_ends_with: Option<String>,
-    location_contains: Option<String>,
+    #[serde(default, deserialize_with = "parse_string_or_string_array")]
+    location_contains: Vec<String>,
     location_starts_with: Option<String>,
     location_ends_with: Option<String>,
     action: ErrorRuleAction,
+}
+
+// create fn parse_string_or_string_array
+fn parse_string_or_string_array<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde::de::Error;
+
+    let value: serde_json::Value = Deserialize::deserialize(deserializer)?;
+    match value {
+        serde_json::Value::String(s) => Ok(vec![s]),
+        serde_json::Value::Array(arr) => {
+            let mut result = Vec::with_capacity(arr.len());
+            for val in arr {
+                if let serde_json::Value::String(s) = val {
+                    result.push(s);
+                } else {
+                    return Err(D::Error::custom("Expected a string or an array of strings"));
+                }
+            }
+            Ok(result)
+        }
+        _ => Err(D::Error::custom("Expected a string or an array of strings")),
+    }
 }
 
 /// converts a number or string to Option<String>
@@ -52,7 +75,7 @@ where
 }
 
 fn contains_only_digits(input: &str) -> bool {
-    input.chars().all(|c| c.is_digit(10))
+    input.chars().all(|c| c.is_ascii_digit())
 }
 
 impl ErrorRule {
@@ -69,8 +92,8 @@ impl ErrorRule {
             }
         }
 
-        if let Some(message_contains) = &self.message_contains {
-            if !line.message.contains(message_contains) {
+        for msg in &self.message_contains {
+            if !line.message.contains(msg) {
                 return None;
             }
         }
@@ -87,8 +110,8 @@ impl ErrorRule {
             }
         }
 
-        if let Some(location_contains) = &self.location_contains {
-            if !line.filename.contains(location_contains) {
+        for msg in &self.location_contains {
+            if !line.filename.contains(msg) {
                 return None;
             }
         }
@@ -156,25 +179,25 @@ mod tests {
         let json = r#"{"error_code": "123", "message_contains": "abc", "action": "quiet"}"#;
         let res: ErrorRule = serde_json::from_str(json).unwrap();
         assert_eq!(res.error_code, Some("123".to_string()));
-        assert_eq!(res.message_contains, Some("abc".to_string()));
+        assert_eq!(res.message_contains, vec!["abc".to_string()]);
         assert_eq!(res.action, ErrorRuleAction::Quiet);
 
         let json = r#"{"message_contains": "abc", "action": "ignore"}"#;
         let res: ErrorRule = serde_json::from_str(json).unwrap();
         assert_eq!(res.error_code, None);
-        assert_eq!(res.message_contains, Some("abc".to_string()));
+        assert_eq!(res.message_contains, vec!["abc".to_string()]);
         assert_eq!(res.action, ErrorRuleAction::Ignore);
 
         let json = r#"{"error_code": "123", "action": "ignore"}"#;
         let res: ErrorRule = serde_json::from_str(json).unwrap();
         assert_eq!(res.error_code, Some("123".to_string()));
-        assert_eq!(res.message_contains, None);
+        assert_eq!(res.message_contains, Vec::<String>::new());
         assert_eq!(res.action, ErrorRuleAction::Ignore);
 
         let json = r#"{"action": "ignore"}"#;
         let res: ErrorRule = serde_json::from_str(json).unwrap();
         assert_eq!(res.error_code, None);
-        assert_eq!(res.message_contains, None);
+        assert_eq!(res.message_contains, Vec::<String>::new());
         assert_eq!(res.action, ErrorRuleAction::Ignore);
 
         // only action:
@@ -193,6 +216,52 @@ mod tests {
             "location_ends_with": "mno"
         }"#;
         serde_json::from_str::<ErrorRule>(json).unwrap();
+    }
+
+    #[test]
+    fn deserialize_message_contains_should_allow_string_or_array() {
+        // string
+        let json = r#"{"action": "quiet", "message_contains": "abc"}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.message_contains, vec!["abc".to_string()]);
+        // array
+        let json = r#"{"action": "quiet", "message_contains": ["abc", "def"]}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(
+            res.message_contains,
+            vec!["abc".to_string(), "def".to_string()]
+        );
+        // empty array
+        let json = r#"{"action": "quiet", "message_contains": []}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.message_contains, Vec::<String>::new());
+        // undefined becomes empty array
+        let json = r#"{"action": "quiet"}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.message_contains, Vec::<String>::new());
+    }
+
+    #[test]
+    fn deserialize_location_contains_should_allow_string_or_array() {
+        // string
+        let json = r#"{"action": "quiet", "location_contains": "abc"}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.location_contains, vec!["abc".to_string()]);
+        // array
+        let json = r#"{"action": "quiet", "location_contains": ["abc", "def"]}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(
+            res.location_contains,
+            vec!["abc".to_string(), "def".to_string()]
+        );
+        // empty array
+        let json = r#"{"action": "quiet", "location_contains": []}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.location_contains, Vec::<String>::new());
+        // undefined becomes empty array
+        let json = r#"{"action": "quiet"}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.location_contains, Vec::<String>::new());
     }
 
     #[test]
@@ -259,9 +328,9 @@ mod tests {
         // TODO: test each of the match logic fields individually
         let rule = ErrorRule {
             error_code: Some("123".to_string()),
-            message_contains: Some("abc".to_string()),
+            message_contains: vec!["abc".to_string()],
             action: ErrorRuleAction::Quiet,
-            location_contains: None,
+            location_contains: vec![],
             ..ErrorRule::default()
         };
 
@@ -281,10 +350,82 @@ mod tests {
     }
 
     #[test]
+    fn get_action_message_contains_works() {
+        // one element
+        let rule = ErrorRule {
+            message_contains: vec!["abc".to_string()],
+            ..ErrorRule::default()
+        };
+        let line = ImportLogLine {
+            message: "HELLO_abc_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
+
+        let line = ImportLogLine {
+            message: "HELLO_def_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        assert_eq!(rule.get_action(&line), None);
+
+        // two elements. line.message must contain both elements to match
+        let rule = ErrorRule {
+            action: ErrorRuleAction::Quiet,
+            message_contains: vec!["abc".to_string(), "def".to_string()],
+            ..ErrorRule::default()
+        };
+        let mut line = ImportLogLine {
+            message: "HELLO_abc_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        assert_eq!(rule.get_action(&line), None);
+        line.message = "HELLO_def_WORLD".to_string();
+        assert_eq!(rule.get_action(&line), None);
+        line.message = "HELLO_abc_def_WORLD".to_string();
+        assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
+    }
+
+    #[test]
+    fn get_action_location_contains_works() {
+        // one element
+        let rule = ErrorRule {
+            location_contains: vec!["abc".to_string()],
+            ..ErrorRule::default()
+        };
+        let line = ImportLogLine {
+            filename: "HELLO_abc_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
+
+        let line = ImportLogLine {
+            filename: "HELLO_def_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        assert_eq!(rule.get_action(&line), None);
+
+        // two elements. line.filename must contain both elements to match
+        let rule = ErrorRule {
+            action: ErrorRuleAction::Quiet,
+            location_contains: vec!["abc".to_string(), "def".to_string()],
+            ..ErrorRule::default()
+        };
+        let mut line = ImportLogLine {
+            filename: "HELLO_abc_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        assert_eq!(rule.get_action(&line), None);
+        line.filename = "HELLO_def_WORLD".to_string();
+        assert_eq!(rule.get_action(&line), None);
+        line.filename = "HELLO_abc_def_WORLD".to_string();
+        assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
+    }
+
+    #[test]
     fn get_action_matches_any_error_if_error_code_is_none() {
         let rule = ErrorRule {
             error_code: None,
-            message_contains: Some("abc".to_string()),
+            message_contains: vec!["abc".to_string()],
             action: ErrorRuleAction::Quiet,
             ..ErrorRule::default()
         };
@@ -308,7 +449,7 @@ mod tests {
     fn get_action_returns_none_for_non_error_lines() {
         let rule = ErrorRule {
             error_code: Some("123".to_string()),
-            message_contains: Some("abc".to_string()),
+            message_contains: vec!["abc".to_string()],
             // location_contains: None,
             action: ErrorRuleAction::Quiet,
             ..ErrorRule::default()
@@ -326,13 +467,13 @@ mod tests {
         let rules = vec![
             ErrorRule {
                 error_code: Some("123".to_string()),
-                message_contains: Some("abc".to_string()),
+                message_contains: vec!["abc".to_string()],
                 action: ErrorRuleAction::Quiet,
                 ..ErrorRule::default()
             },
             ErrorRule {
                 error_code: Some("456".to_string()),
-                message_contains: Some("def".to_string()),
+                message_contains: vec!["def".to_string()],
                 action: ErrorRuleAction::Ignore,
                 ..ErrorRule::default()
             },
@@ -365,5 +506,19 @@ mod tests {
             ..ErrorRule::default()
         };
         assert!(!rule.no_match_logic());
+    }
+
+    #[test]
+    fn error_rules_unknown_field_fails() {
+        let json = r#"[
+            {
+                "error_code": "123",
+                "message_contains": ["abc"],
+                "action": "quiet",
+                "unknown_field": "unknown"
+            }
+        ]"#;
+        let res = serde_json::from_str::<Vec<ErrorRule>>(json);
+        assert!(res.is_err());
     }
 }

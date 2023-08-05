@@ -137,10 +137,10 @@ To customize colors and default options, create config/json file. All keys are o
   //     - "quiet" : still highlight the error red, but don't produce desktop notification
   //     - "ignore" : don't even highlight the error
   //   - error_code (optional): the error code to match
-  //   - message_contains (optional): the text to match
+  //   - message_contains (optional): String or Array of strings. the text to match. If an array is passed, every substring must be present in the line to match.
   //   - message_starts_with (optional): the text to match
   //   - message_ends_with (optional): the text to match
-  //   - location_contains (optional): the text to match
+  //   - location_contains (optional): String or Array of strings. the text to match. If an array is passed, every substring must be present in the line to match.
   //   - location_starts_with (optional): the text to match
   //   - location_ends_with (optional): the text to match
 
@@ -148,6 +148,8 @@ To customize colors and default options, create config/json file. All keys are o
 
   "error_rules": [
     { "error_code": "123", "message_contains": "foo", "action": "quiet" },
+    { "message_contains": ["arrays", "work"], "action": "quiet" },
+    { "location_contains": ["location", "too"], "action": "quiet" },
     { "error_code": "234", "action": "ignore" }
     { "message_contains": "I'm not an important error", "action": "ignore" }
   ],
