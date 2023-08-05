@@ -1,17 +1,12 @@
 use crate::ImportLogLine;
 use serde::{Deserialize, Deserializer};
 
-#[derive(Deserialize, Debug, PartialEq, Clone, Copy)]
+#[derive(Default, Deserialize, Debug, PartialEq, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 pub(crate) enum ErrorRuleAction {
+    #[default]
     Quiet,
     Ignore,
-}
-
-impl Default for ErrorRuleAction {
-    fn default() -> Self {
-        ErrorRuleAction::Quiet
-    }
 }
 
 #[derive(Deserialize, Debug, Clone, Default, PartialEq)]
@@ -80,7 +75,7 @@ where
 }
 
 fn contains_only_digits(input: &str) -> bool {
-    input.chars().all(|c| c.is_digit(10))
+    input.chars().all(|c| c.is_ascii_digit())
 }
 
 impl ErrorRule {
