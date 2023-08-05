@@ -23,7 +23,8 @@ pub(crate) struct ErrorRule {
     message_contains: Vec<String>,
     message_starts_with: Option<String>,
     message_ends_with: Option<String>,
-    location_contains: Option<String>,
+    #[serde(default, deserialize_with = "parse_string_or_string_array")]
+    location_contains: Vec<String>,
     location_starts_with: Option<String>,
     location_ends_with: Option<String>,
     action: ErrorRuleAction,
@@ -113,8 +114,8 @@ impl ErrorRule {
             }
         }
 
-        if let Some(location_contains) = &self.location_contains {
-            if !line.filename.contains(location_contains) {
+        for msg in &self.location_contains {
+            if !line.filename.contains(msg) {
                 return None;
             }
         }
@@ -242,7 +243,29 @@ mod tests {
         let json = r#"{"action": "quiet"}"#;
         let res: ErrorRule = serde_json::from_str(json).unwrap();
         assert_eq!(res.message_contains, Vec::<String>::new());
-        // TODO: test the same logic for location_contains
+    }
+
+    #[test]
+    fn deserialize_location_contains_should_allow_string_or_array() {
+        // string
+        let json = r#"{"action": "quiet", "location_contains": "abc"}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.location_contains, vec!["abc".to_string()]);
+        // array
+        let json = r#"{"action": "quiet", "location_contains": ["abc", "def"]}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(
+            res.location_contains,
+            vec!["abc".to_string(), "def".to_string()]
+        );
+        // empty array
+        let json = r#"{"action": "quiet", "location_contains": []}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.location_contains, Vec::<String>::new());
+        // undefined becomes empty array
+        let json = r#"{"action": "quiet"}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.location_contains, Vec::<String>::new());
     }
 
     #[test]
@@ -311,7 +334,7 @@ mod tests {
             error_code: Some("123".to_string()),
             message_contains: vec!["abc".to_string()],
             action: ErrorRuleAction::Quiet,
-            location_contains: None,
+            location_contains: vec![],
             ..ErrorRule::default()
         };
 
@@ -363,6 +386,42 @@ mod tests {
         line.message = "HELLO_def_WORLD".to_string();
         assert_eq!(rule.get_action(&line), None);
         line.message = "HELLO_abc_def_WORLD".to_string();
+        assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
+    }
+
+    #[test]
+    fn get_action_location_contains_works() {
+        // one element
+        let rule = ErrorRule {
+            location_contains: vec!["abc".to_string()],
+            ..ErrorRule::default()
+        };
+        let line = ImportLogLine {
+            filename: "HELLO_abc_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
+
+        let line = ImportLogLine {
+            filename: "HELLO_def_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        assert_eq!(rule.get_action(&line), None);
+
+        // two elements. line.filename must contain both elements to match
+        let rule = ErrorRule {
+            action: ErrorRuleAction::Quiet,
+            location_contains: vec!["abc".to_string(), "def".to_string()],
+            ..ErrorRule::default()
+        };
+        let mut line = ImportLogLine {
+            filename: "HELLO_abc_WORLD".to_string(),
+            ..ImportLogLine::default()
+        };
+        assert_eq!(rule.get_action(&line), None);
+        line.filename = "HELLO_def_WORLD".to_string();
+        assert_eq!(rule.get_action(&line), None);
+        line.filename = "HELLO_abc_def_WORLD".to_string();
         assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
     }
 
