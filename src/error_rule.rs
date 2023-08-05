@@ -1,5 +1,5 @@
 use crate::ImportLogLine;
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 
 #[derive(Deserialize, Debug, PartialEq, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
@@ -15,9 +15,8 @@ impl Default for ErrorRuleAction {
 }
 
 #[derive(Deserialize, Debug, Clone, Default, PartialEq)]
-// #[derive(Deserialize)]
 pub(crate) struct ErrorRule {
-    // error_code is optional, but if it's empty, then any non-zero error code will have this rule applied
+    #[serde(deserialize_with = "deserialize_error_code", default)]
     error_code: Option<String>,
     // rules act like an AND query clause. All rules must match for the rule to be satisfied, this lets you get specific about the shape of an error. e.g. starts with "foo" and contains "bar" and ends with "."
     message_contains: Option<String>,
@@ -27,6 +26,33 @@ pub(crate) struct ErrorRule {
     location_starts_with: Option<String>,
     location_ends_with: Option<String>,
     action: ErrorRuleAction,
+}
+
+/// converts a number or string to Option<String>
+fn deserialize_error_code<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde_json::Value;
+
+    let value: serde_json::Value = Deserialize::deserialize(deserializer)?;
+    let string_value = match value {
+        Value::Number(num) => Some(num.to_string()),
+        Value::String(s) if s.is_empty() => None,
+        Value::String(s) if !contains_only_digits(&s) => {
+            return Err(serde::de::Error::custom(format!(
+                "Expected a number or a string containing only digits, got: {s}"
+            )));
+        }
+        Value::String(s) => Some(s),
+        _ => return Err(serde::de::Error::custom("Expected a number or a string")),
+    };
+
+    Ok(string_value)
+}
+
+fn contains_only_digits(input: &str) -> bool {
+    input.chars().all(|c| c.is_digit(10))
 }
 
 impl ErrorRule {
@@ -145,11 +171,6 @@ mod tests {
         assert_eq!(res.message_contains, None);
         assert_eq!(res.action, ErrorRuleAction::Ignore);
 
-        // this throws because error_code is not a string but I might change that behavior later
-        let json = r#"{"error_code": 123, "message_contains": "abc", "message_contains": "def", "action": "quiet"}"#;
-        let res: std::result::Result<ErrorRule, _> = serde_json::from_str(json);
-        assert!(res.is_err());
-
         let json = r#"{"action": "ignore"}"#;
         let res: ErrorRule = serde_json::from_str(json).unwrap();
         assert_eq!(res.error_code, None);
@@ -172,6 +193,40 @@ mod tests {
             "location_ends_with": "mno"
         }"#;
         serde_json::from_str::<ErrorRule>(json).unwrap();
+    }
+
+    #[test]
+    fn error_code_can_be_num_or_string() {
+        let json = r#"{"action": "quiet", "error_code": "123"}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.error_code, Some("123".to_string()));
+
+        let json = r#"{"action": "quiet", "error_code": 123}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.error_code, Some("123".to_string()));
+    }
+
+    #[test]
+    fn empty_error_code_deserializes_to_none() {
+        let json = r#"{"action": "quiet", "error_code": ""}"#;
+        let res: ErrorRule = serde_json::from_str(json).unwrap();
+        assert_eq!(res.error_code, None);
+    }
+
+    #[test]
+    fn error_code_deserializer_fails_on_non_digits() {
+        let json = r#"{"action": "quiet", "error_code": "LETTERS"}"#;
+        let res: Result<ErrorRule, _> = serde_json::from_str(json);
+        assert!(res.is_err());
+
+        let json = r#"{"action": "quiet", "error_code": "123LETTERS"}"#;
+        let res: Result<ErrorRule, _> = serde_json::from_str(json);
+        assert!(res.is_err());
+
+        // spaces are not allowed
+        let json = r#"{"action": "quiet", "error_code": "123 234 345"}"#;
+        let res: Result<ErrorRule, _> = serde_json::from_str(json);
+        assert!(res.is_err());
     }
 
     #[test]
