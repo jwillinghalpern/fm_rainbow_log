@@ -385,6 +385,14 @@ fn print_separator() {
     println!("-----------------------------------------------------------------");
 }
 
+/// print queued separator and set the queued flag back to false
+fn print_sep_if_queued(queued_sep: &mut bool) {
+    if *queued_sep {
+        print_separator();
+        *queued_sep = false;
+    }
+}
+
 fn generate_completion_script<G: Generator>(gen: G, cmd: &mut Command) {
     generate(gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
 }
@@ -466,7 +474,7 @@ pub fn run() -> CustomResult {
         });
     }
 
-    let mut print_sep_on_warning = false;
+    let mut queued_sep = false;
 
     // closure/fn to handle each line
     let mut handle_line = |line: &str, send_notif: bool| {
@@ -478,7 +486,7 @@ pub fn run() -> CustomResult {
         if !show_line {
             if args.separator && (args.errors_only || args.warnings_only) {
                 // queue up a separator to be printed before the next warning/error
-                print_sep_on_warning = true;
+                queued_sep = true;
             }
             return;
         };
@@ -493,10 +501,7 @@ pub fn run() -> CustomResult {
                     print_default_colors(&line);
                 }
                 LineType::Error(line) => {
-                    if print_sep_on_warning {
-                        print_separator();
-                        print_sep_on_warning = false;
-                    }
+                    print_sep_if_queued(&mut queued_sep);
                     let (rule_blocks_color, rule_blocks_notif) =
                         match apply_error_rules(&args.error_rules, &line) {
                             Some(ErrorRuleAction::Ignore) => (true, true),
@@ -514,10 +519,7 @@ pub fn run() -> CustomResult {
                     }
                 }
                 LineType::Warning(line) => {
-                    if print_sep_on_warning {
-                        print_separator();
-                        print_sep_on_warning = false;
-                    }
+                    print_sep_if_queued(&mut queued_sep);
                     print_warning_colors(&line);
                     if send_notif {
                         notif_tx.send(NotificationType::Warning).unwrap();
