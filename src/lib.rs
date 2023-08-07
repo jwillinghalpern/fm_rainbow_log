@@ -359,6 +359,32 @@ fn colorize_columns(
     [ts, filename, error, msg]
 }
 
+fn print_error_colors(line: &ImportLogLine) {
+    println!(
+        "{}\t{}\t{}\t{}",
+        line.timestamp.bright_white().on_red(),
+        line.filename.bright_white().on_red(),
+        line.code.bright_white().on_red(),
+        line.message
+    );
+}
+
+fn print_warning_colors(line: &ImportLogLine) {
+    println!(
+        "{}\t{}\t{}\t{}",
+        line.timestamp.black().on_yellow(),
+        line.filename.black().on_yellow(),
+        line.code.black().on_yellow(),
+        line.message
+    );
+}
+
+// when warnings_only or errors_only is true, we only want to print seps if a warning/error occurred, otherwise you get seps even when no text is printed
+// store this state outside the closure, and have the closure queue up a sep but don't print until a warning/error occurs
+fn print_separator() {
+    println!("-----------------------------------------------------------------");
+}
+
 fn generate_completion_script<G: Generator>(gen: G, cmd: &mut Command) {
     generate(gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
 }
@@ -410,8 +436,7 @@ pub fn run() -> CustomResult {
     let filename_colorizer = get_default_colorizer(config.colors.filename, "green");
     let error_colorizer = get_default_colorizer(config.colors.error, "bright magenta");
     let message_colorizer = get_default_colorizer(config.colors.message, "bright blue");
-
-    // create default color printer :
+    // create default color printer:
     let print_default_colors = |line: &ImportLogLine| {
         let res = colorize_columns(
             &line,
@@ -423,26 +448,6 @@ pub fn run() -> CustomResult {
         let [a, b, c, d] = res;
         println!("{}\t{}\t{}\t{}", a, b, c, d);
     };
-
-    fn print_error_colors(line: &ImportLogLine) {
-        println!(
-            "{}\t{}\t{}\t{}",
-            line.timestamp.bright_white().on_red(),
-            line.filename.bright_white().on_red(),
-            line.code.bright_white().on_red(),
-            line.message
-        );
-    }
-
-    fn print_warning_colors(line: &ImportLogLine) {
-        println!(
-            "{}\t{}\t{}\t{}",
-            line.timestamp.black().on_yellow(),
-            line.filename.black().on_yellow(),
-            line.code.black().on_yellow(),
-            line.message
-        );
-    }
 
     // Init notifications. Create a channel whether we send notifications or not because the handle_line closure needs one, even if the messages go nowhere.
     let (notif_tx, notif_rx) = mpsc::channel();
@@ -461,11 +466,6 @@ pub fn run() -> CustomResult {
         });
     }
 
-    // when warnings_only or errors_only is true, we only want to print seps if a warning/error occurred, otherwise you get seps even when no text is printed
-    // store this state outside the closure, and have the closure queue up a sep but don't print until a warning/error occurs
-    fn print_separator() {
-        println!("-----------------------------------------------------------------");
-    }
     let mut print_sep_on_warning = false;
 
     // closure/fn to handle each line
