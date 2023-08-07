@@ -312,13 +312,13 @@ fn get_path_type(args: &Args) -> CustomResult<PathType> {
     }
 }
 
-fn get_default_colorizer(
+fn get_default_colorizer<'a>(
     config_color: ConfigColor,
-    default_foreground: String,
-) -> impl Fn(&str) -> ColoredString {
+    default_foreground: &'a str,
+) -> impl Fn(&str) -> ColoredString + 'a {
     move |line: &str| {
         let foreground = if config_color.foreground.is_empty() {
-            default_foreground.as_str()
+            default_foreground
         } else {
             config_color.foreground.as_str()
         };
@@ -406,12 +406,12 @@ pub fn run() -> CustomResult {
     path_type.print_message(args.no_color);
 
     // get colorizer for each field:
-    let timestamp_colorizer = get_default_colorizer(config.colors.timestamp, "cyan".to_string());
-    let filename_colorizer = get_default_colorizer(config.colors.filename, "green".to_string());
-    let error_colorizer = get_default_colorizer(config.colors.error, "bright magenta".to_string());
-    let message_colorizer = get_default_colorizer(config.colors.message, "bright blue".to_string());
+    let timestamp_colorizer = get_default_colorizer(config.colors.timestamp, "cyan");
+    let filename_colorizer = get_default_colorizer(config.colors.filename, "green");
+    let error_colorizer = get_default_colorizer(config.colors.error, "bright magenta");
+    let message_colorizer = get_default_colorizer(config.colors.message, "bright blue");
 
-    // create default color printer closure:
+    // create default color printer :
     let print_default_colors = |line: &ImportLogLine| {
         let res = colorize_columns(
             &line,
