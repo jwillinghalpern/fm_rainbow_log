@@ -411,6 +411,39 @@ pub fn run() -> CustomResult {
     let error_colorizer = get_default_colorizer(config.colors.error, "bright magenta".to_string());
     let message_colorizer = get_default_colorizer(config.colors.message, "bright blue".to_string());
 
+    // create default color printer closure:
+    let print_default_colors = |line: &ImportLogLine| {
+        let res = colorize_columns(
+            &line,
+            &timestamp_colorizer,
+            &filename_colorizer,
+            &error_colorizer,
+            &message_colorizer,
+        );
+        let [a, b, c, d] = res;
+        println!("{}\t{}\t{}\t{}", a, b, c, d);
+    };
+
+    fn print_error_colors(line: &ImportLogLine) {
+        println!(
+            "{}\t{}\t{}\t{}",
+            line.timestamp.bright_white().on_red(),
+            line.filename.bright_white().on_red(),
+            line.code.bright_white().on_red(),
+            line.message
+        );
+    }
+
+    fn print_warning_colors(line: &ImportLogLine) {
+        println!(
+            "{}\t{}\t{}\t{}",
+            line.timestamp.black().on_yellow(),
+            line.filename.black().on_yellow(),
+            line.code.black().on_yellow(),
+            line.message
+        );
+    }
+
     // Init notifications. Create a channel whether we send notifications or not because the handle_line closure needs one, even if the messages go nowhere.
     let (notif_tx, notif_rx) = mpsc::channel();
     if args.notifications && args.beep {
@@ -454,19 +487,10 @@ pub fn run() -> CustomResult {
         } else {
             match line {
                 LineType::Success(line) => {
-                    let res = colorize_columns(
-                        &line,
-                        &timestamp_colorizer,
-                        &filename_colorizer,
-                        &error_colorizer,
-                        &message_colorizer,
-                    );
-                    let [a, b, c, d] = res;
                     if args.separator && is_operation_start(&line) {
                         print_separator();
                     }
-
-                    println!("{}\t{}\t{}\t{}", a, b, c, d);
+                    print_default_colors(&line);
                 }
                 LineType::Error(line) => {
                     if print_sep_on_warning {
@@ -480,22 +504,9 @@ pub fn run() -> CustomResult {
                             None => (false, false),
                         };
                     if rule_blocks_color {
-                        let [a, b, c, d] = colorize_columns(
-                            &line,
-                            &timestamp_colorizer,
-                            &filename_colorizer,
-                            &error_colorizer,
-                            &message_colorizer,
-                        );
-                        println!("{}\t{}\t{}\t{}", a, b, c, d);
+                        print_default_colors(&line);
                     } else {
-                        println!(
-                            "{}\t{}\t{}\t{}",
-                            line.timestamp.bright_white().on_red(),
-                            line.filename.bright_white().on_red(),
-                            line.code.bright_white().on_red(),
-                            line.message
-                        );
+                        print_error_colors(&line);
                     };
 
                     if send_notif && !args.quiet_errors.contains(&line.code) && !rule_blocks_notif {
@@ -507,27 +518,13 @@ pub fn run() -> CustomResult {
                         print_separator();
                         print_sep_on_warning = false;
                     }
-                    println!(
-                        "{}\t{}\t{}\t{}",
-                        line.timestamp.black().on_yellow(),
-                        line.filename.black().on_yellow(),
-                        line.code.black().on_yellow(),
-                        line.message
-                    );
+                    print_warning_colors(&line);
                     if send_notif {
                         notif_tx.send(NotificationType::Warning).unwrap();
                     }
                 }
                 LineType::Header(line) => {
-                    let res = colorize_columns(
-                        &line,
-                        &timestamp_colorizer,
-                        &filename_colorizer,
-                        &error_colorizer,
-                        &message_colorizer,
-                    );
-                    let [a, b, c, d] = res.map(|s| s.underline());
-                    println!("{}\t{}\t{}\t{}", a, b, c, d);
+                    print_default_colors(&line);
                 }
                 LineType::Other(line) => {
                     println!("{}", line);
