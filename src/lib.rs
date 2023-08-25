@@ -380,16 +380,6 @@ fn print_warning_colors(line: &ImportLogLine) {
 }
 
 /// A struct that can print separator lines, queue separators to be printed later, and print queued separators
-///
-/// Example:
-/// ```
-/// let mut separator = Separator::new();
-/// separator.print(); // prints a separator
-/// separator.queue(); // queues up a separator to be printed later
-/// // do some other stuff...
-/// separator.print_if_queued(); // prints the queued separator
-/// separator.print_if_queued(); // does nothing because there is no queued separator anymore
-/// ```
 struct Separator {
     queued: bool,
 }
