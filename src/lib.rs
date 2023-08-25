@@ -379,17 +379,43 @@ fn print_warning_colors(line: &ImportLogLine) {
     );
 }
 
-// when warnings_only or errors_only is true, we only want to print seps if a warning/error occurred, otherwise you get seps even when no text is printed
-// store this state outside the closure, and have the closure queue up a sep but don't print until a warning/error occurs
-fn print_separator() {
-    println!("-----------------------------------------------------------------");
+/// A struct that can print separator lines, queue separators to be printed later, and print queued separators
+///
+/// Example:
+/// ```
+/// let mut separator = Separator::new();
+/// separator.print(); // prints a separator
+/// separator.queue(); // queues up a separator to be printed later
+/// // do some other stuff...
+/// separator.print_if_queued(); // prints the queued separator
+/// separator.print_if_queued(); // does nothing because there is no queued separator anymore
+/// ```
+struct Separator {
+    queued: bool,
 }
+impl Separator {
+    fn new() -> Self {
+        Self { queued: false }
+    }
 
-/// print queued separator and set the queued flag back to false
-fn print_sep_if_queued(queued_sep: &mut bool) {
-    if *queued_sep {
-        print_separator();
-        *queued_sep = false;
+    // when warnings_only or errors_only is true, we only want to print seps if a warning/error occurred, otherwise you get seps even when no text is printed
+    // store this state outside the closure, and have the closure queue up a sep but don't print until a warning/error occurs
+    fn print(&self) {
+        println!("-----------------------------------------------------------------");
+    }
+
+    /// queue up a separator to be printed later
+    fn queue(&mut self) {
+        self.queued = true;
+    }
+
+    /// print queued separator and set the queued flag back to false
+    /// if no separator is queued, this does nothing
+    fn print_if_queued(&mut self) {
+        if self.queued {
+            self.print();
+            self.queued = false;
+        }
     }
 }
 
@@ -474,7 +500,7 @@ pub fn run() -> CustomResult {
         });
     }
 
-    let mut queued_sep = false;
+    let mut separator = Separator::new();
 
     // closure/fn to handle each line
     let mut handle_line = |line: &str, send_notif: bool| {
@@ -486,7 +512,7 @@ pub fn run() -> CustomResult {
         if !show_line {
             if args.separator && (args.errors_only || args.warnings_only) {
                 // queue up a separator to be printed before the next warning/error
-                queued_sep = true;
+                separator.queue();
             }
             return;
         };
@@ -496,12 +522,12 @@ pub fn run() -> CustomResult {
             match line {
                 LineType::Success(line) => {
                     if args.separator && is_operation_start(&line) {
-                        print_separator();
+                        separator.print();
                     }
                     print_default_colors(&line);
                 }
                 LineType::Error(line) => {
-                    print_sep_if_queued(&mut queued_sep);
+                    separator.print_if_queued();
                     let (rule_blocks_color, rule_blocks_notif) =
                         match apply_error_rules(&args.error_rules, &line) {
                             Some(ErrorRuleAction::Ignore) => (true, true),
@@ -519,7 +545,7 @@ pub fn run() -> CustomResult {
                     }
                 }
                 LineType::Warning(line) => {
-                    print_sep_if_queued(&mut queued_sep);
+                    separator.print_if_queued();
                     print_warning_colors(&line);
                     if send_notif {
                         notif_tx.send(NotificationType::Warning).unwrap();
