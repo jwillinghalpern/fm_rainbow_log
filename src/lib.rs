@@ -485,20 +485,14 @@ pub fn run() -> CustomResult {
 
     // Init notifications. Create a channel whether we send notifications or not because the handle_line closure needs one, even if the messages go nowhere.
     let (notif_tx, notif_rx) = mpsc::channel();
-    if args.notifications && args.beep {
-        notifications::listen(notif_rx, move |notif| {
+    notifications::listen(notif_rx, move |notif| {
+        if args.beep {
             beep(&args.beep_path, args.beep_volume);
+        }
+        if args.notifications {
             notif.show().unwrap();
-        });
-    } else if args.notifications {
-        notifications::listen(notif_rx, |notif| {
-            notif.show().unwrap();
-        });
-    } else if args.beep {
-        notifications::listen(notif_rx, move |_| {
-            beep(&args.beep_path, args.beep_volume);
-        });
-    }
+        }
+    });
 
     let mut separator = Separator::new();
 
