@@ -312,10 +312,10 @@ fn get_path_type(args: &Args) -> CustomResult<PathType> {
     }
 }
 
-fn get_default_colorizer<'a>(
+fn get_default_colorizer(
     config_color: ConfigColor,
-    default_foreground: &'a str,
-) -> impl Fn(&str) -> ColoredString + 'a {
+    default_foreground: &str,
+) -> impl Fn(&str) -> ColoredString + '_ {
     move |line: &str| {
         let foreground = if config_color.foreground.is_empty() {
             default_foreground
@@ -473,7 +473,7 @@ pub fn run() -> CustomResult {
     // create default color printer:
     let print_default_colors = |line: &ImportLogLine| {
         let res = colorize_columns(
-            &line,
+            line,
             &timestamp_colorizer,
             &filename_colorizer,
             &error_colorizer,
