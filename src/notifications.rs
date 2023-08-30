@@ -69,6 +69,7 @@ fn process_messages(
                         .summary("⚠️ fmrl Warning 🌈")
                         .body(&msg)
                         .finalize();
+                    // send via notification_sender instead of calling .show() directly because notification_sender obeys the configured beep and desktop notification settings passed in via config
                     notification_sender(notification);
                 }
             }
