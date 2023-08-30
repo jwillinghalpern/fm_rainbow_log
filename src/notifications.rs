@@ -65,8 +65,10 @@ fn process_messages(
                 NotificationType::Warning => warning_count += 1,
                 NotificationType::QuickWarning(msg) => {
                     // immediately show message without incrementing warning_count
-                    let mut notification = Notification::new();
-                    notification.summary("⚠️ fmrl Warning 🌈").body(&msg);
+                    let notification = Notification::new()
+                        .summary("⚠️ fmrl Warning 🌈")
+                        .body(&msg)
+                        .finalize();
                     notification_sender(notification);
                 }
             }
