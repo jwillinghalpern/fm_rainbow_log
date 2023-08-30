@@ -6,6 +6,8 @@ use std::time::{Duration, Instant};
 pub(crate) enum NotificationType {
     Error,
     Warning,
+    // using 'static since I don't send anything dynamic yet. Can be changed to &'a str or String if needed
+    QuickWarning(&'static str),
 }
 
 fn get_s(n: usize) -> &'static str {
@@ -61,6 +63,12 @@ fn process_messages(
             match msg {
                 NotificationType::Error => error_count += 1,
                 NotificationType::Warning => warning_count += 1,
+                NotificationType::QuickWarning(msg) => {
+                    // immediately show message without incrementing warning_count
+                    let mut notification = Notification::new();
+                    notification.summary("⚠️ fmrl Warning 🌈").body(&msg);
+                    notification_sender(notification);
+                }
             }
             // Reset timer in case multiple items are pasted in quick succession
             //   or the log is backed up. This will to group more messages together.

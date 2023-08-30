@@ -428,6 +428,23 @@ pub fn run() -> CustomResult {
         });
     }
 
+    // if quiet_errors is specified, print a warning. make it black on yellow
+    if !args.quiet_errors.is_empty() {
+        println!(
+            "{}",
+            "WARNING: `quiet_errors` is deprecated. Please use `error_rules` instead. See docs for more info."
+                .black()
+                .on_yellow()
+        );
+
+        // show desktop notification
+        notif_tx
+            .send(NotificationType::QuickWarning(
+                "`quiet_errors` option deprecated. Please use `error_rules` instead.",
+            ))
+            .unwrap();
+    }
+
     // when warnings_only or errors_only is true, we only want to print seps if a warning/error occurred, otherwise you get seps even when no text is printed
     // store this state outside the closure, and have the closure queue up a sep but don't print until a warning/error occurs
     fn print_separator() {
