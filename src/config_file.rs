@@ -89,7 +89,7 @@ pub(crate) fn get_config(config_path: Option<&str>) -> Result<Config, Box<dyn st
         .map_err(|e| format!("couldn't read config file: {}", e))?;
 
     let mut config: Config =
-        serde_json::from_str(&buf).map_err(|e| format!("couldn't parse config file: {}", e))?;
+        json5::from_str(&buf).map_err(|e| format!("couldn't parse config file: {}", e))?;
 
     remove_no_match_rules(&mut config.error_rules);
 

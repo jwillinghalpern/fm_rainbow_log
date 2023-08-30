@@ -1,6 +1,6 @@
 [package]
 name = "fmrl"
-version = "0.16.0"
+version = "0.17.0"
 edition = "2021"
 authors = ["Josh Willing Halpern <josh@willingapps.com>"]
 description = "A tool to watch FileMaker Import.log files for changes and colorize the output, highlighting errors and warnings.\n\nWhile watching the log type:\n  q / quit / exit       to quit\n  clear                 to clear the screen"
@@ -15,6 +15,7 @@ clearscreen = "2.0.1"
 colored = "2.0.0"
 dirs = "5.0.0"
 iso8601 = "0.6.1"
+json5 = "0.4.1"
 notify = "6.0.1"
 notify-debouncer-mini = "0.3.0"
 notify-rust = "4.8.0"
