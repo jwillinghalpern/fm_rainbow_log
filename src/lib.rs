@@ -120,7 +120,7 @@ pub struct Args {
 
     #[arg(
         long,
-        help = "Comma-separated list (with no spaces) of error codes that shouldn't produce a desktop notification or beep. NOTE: This option may be deprecated at some point, it is recommended to use `error_rules` instead.",
+        help = "DEPRECATED, please use `error_rules` instead. Comma-separated list (with no spaces) of error codes that shouldn't produce a desktop notification or beep.",
         value_name = "ERROR_CODES",
         value_delimiter = ','
     )]
