@@ -120,7 +120,7 @@ pub struct Args {
 
     #[arg(
         long,
-        help = "Comma-separated list (with no spaces) of error codes that shouldn't produce a desktop notification or beep. NOTE: This option may be deprecated at some point, it is recommended to use `error_rules` instead.",
+        help = "DEPRECATED, please use `error_rules` instead. Comma-separated list (with no spaces) of error codes that shouldn't produce a desktop notification or beep.",
         value_name = "ERROR_CODES",
         value_delimiter = ','
     )]
@@ -426,6 +426,23 @@ pub fn run() -> CustomResult {
         notifications::listen(notif_rx, move |_| {
             beep(&args.beep_path, args.beep_volume);
         });
+    }
+
+    // if quiet_errors is specified, print a warning. make it black on yellow
+    if !args.quiet_errors.is_empty() {
+        println!(
+            "{}",
+            "WARNING: `quiet_errors` is deprecated. Please use `error_rules` instead. See docs for more info."
+                .black()
+                .on_yellow()
+        );
+
+        // show desktop notification
+        notif_tx
+            .send(NotificationType::QuickWarning(
+                "`quiet_errors` option deprecated. Please use `error_rules` instead.",
+            ))
+            .unwrap();
     }
 
     // when warnings_only or errors_only is true, we only want to print seps if a warning/error occurred, otherwise you get seps even when no text is printed

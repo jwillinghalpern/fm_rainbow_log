@@ -53,6 +53,12 @@ watch Import.log in current directory:
 fmrl
 ```
 
+show help (it's helpful)
+
+```bash
+fmrl --help
+```
+
 watch Import.log in your local Documents directory (default location when working with hosted files):
 
 ```bash
@@ -71,18 +77,13 @@ watch for only errors and warnings:
 ```bash
 fmrl  --errors-only --warnings-only
 # fmrl -e -w
+# fmrl -ew
 ```
 
 show desktop notifications for errors and warnings:
 
 ```bash
 fmrl --notifications
-```
-
-show help (it's helpful)
-
-```bash
-fmrl --help
 ```
 
 play sound! (mac only)
@@ -120,6 +121,7 @@ fmrl --completion zsh > ~/.oh-my-zsh/completions/_fm_rainbow_log
 To customize colors and default options, create config/json file. All keys are optional, e.g. you can omit "background" for any field, or omit the field entirely.
 
 ```json5
+// this file supports json5 syntax, so you can use comments and trailing commas
 {
   "show_separator": false,
   "use_documents_directory": false,
@@ -173,7 +175,7 @@ To customize colors and default options, create config/json file. All keys are o
     }
   },
 
-  // NOTE: quiet_errors may be deprecated/removed in the future. Please use error_rules instead.
+  // (DEPRECATED) this option will be removed in the future. Please use error_rules instead.
   "quiet_errors": "3702, 1234"
 }
 ```
