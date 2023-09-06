@@ -37,7 +37,7 @@ NOTE: On macOS, the first time you run the program you'll encounter a security w
 cargo install --git https://github.com/jwillinghalpern/fm_rainbow_log.git
 ```
 
-To update fmrl, re-run the above command any time.
+To update fmrl, re-run the above command any time. If you get a warning that `rustc` is outdated, simply run either `rustup update` or `rustup update stable` then try installing `fmrl` again.
 
 If you don't have cargo, [follow this one easy step](https://doc.rust-lang.org/cargo/getting-started/installation.html)
 
