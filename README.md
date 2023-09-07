@@ -39,7 +39,7 @@ I prefer using cargo (described above), because it streamlines updates and avoid
 
 NOTE: On macOS, the first time you run the program you'll encounter a security warning. [See here](./readme-files/macos-security.md)
 
-## Basic Usage
+## 🏎️ Basic Usage
 
 watch Import.log in current directory:
 
@@ -62,7 +62,7 @@ fmrl --docs-dir
 
 ### Customize with `config.json` (recommended)
 
-To customize colors and default options, create config/json file. All keys are optional, e.g. you can omit "background" for any field, or omit the field entirely.
+To customize colors and default options, create config/json file (the location to store it is described below). All keys are optional, including nested keys.
 
 ```json5
 // this file supports json5 syntax, so you can use comments and trailing commas
@@ -100,6 +100,7 @@ To customize colors and default options, create config/json file. All keys are o
     { "message_contains": "I'm not an important error", "action": "ignore" }
   ],
 
+  // you can omit nested keys if you want
   "colors": {
     "timestamp": {
       "foreground": "bright white",
@@ -107,7 +108,7 @@ To customize colors and default options, create config/json file. All keys are o
     },
     "filename": {
       "foreground": "black",
-      "background": "cyan"
+      // "background": "cyan"
     },
     "error": {
       "foreground": "bright white",
@@ -147,7 +148,7 @@ _If you have a default config.json, you can override it by passing a different p
 
 When working with local fmp12 files, please also see [this nice opener tool](https://github.com/DanShockley/FM_Rainbow_Log-Opener-applet). You can copy it into a local project folder and double click any time to open `fmrl` for that project.
 
-## Colors
+## 🎨 Colors
 
 `fmrl` supports both ANSI and truecolor. ANSI colors are the standard 16 colors supported by most terminals, whereas truecolor is a newer standard. Some terminals including macOS Terminal.app _do not_ support truecolor, but modern terminals like iTerm2, Alacritty, and Warp do. You can define truecolors as rgb or hex (see below).
 
@@ -170,7 +171,7 @@ rgb: `rgb(255, 0, 255)`
 
 hex: `#ff00ff`
 
-## Additional Usage Examples
+## 👽 Additional Usage Examples
 
 print a separator between each import operation:
 
@@ -212,21 +213,21 @@ don't watch for changes, just print the log once:
 fmrl --no-watch
 ```
 
-generate an auto-completion script (store somewhere in your $fpath):
+generate an auto-completion script (store somewhere in your $fpath, see below for mac example):
 
 ```bash
 # zsh example. Omit "zsh" to see shell options.
 fmrl --completion zsh
 
-# here's where I put it
+# here's where I put it!
 fmrl --completion zsh > ~/.oh-my-zsh/completions/_fm_rainbow_log
 ```
 
-## Development/contribution
+## 👩‍💻 Development/contribution
 
 Fork to your own Github account, clone this repo to your desktop, cd to the directory, and run `cargo run` to test in debug mode. If you are planning a big feature or change, please open an issue first to discuss. It's best to create a new branch for the specific feature/issue you're working on.
 
-## Notes
+## 📓 Notes
 
 - Most terminals let you customize the ANSI colors, so feel free to tweak the appearance to your liking!
 - On Windows I've only tested PowerShell. There are certain cases where the color escape sequences don't display properly, and show garbled text. I'm not sure how to handle every edge case (please submit suggestions/pull requests if you do).
