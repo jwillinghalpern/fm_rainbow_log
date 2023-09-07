@@ -19,19 +19,7 @@ Furthermore, FileMaker calcs don't play nice with other CLI utilities like `tail
 
 ## Installation
 
-If installing locally, I prefer using cargo (described below), because it streamlines updates and avoids macos permission issues. But pre-compiled binaries are also available.
-
-### Via pre-compiled binaries
-
-1. Copy the `fmrl` binary (see below) to a directory in your PATH. For example, `/usr/local/bin` on macOS.
-   - To see the folders in your PATH, run this in your terminal: `echo $PATH | sed -E 's/:/\n/g'`
-2. Restart your terminal and type `fmrl --help`.
-
-Binaries are available in the [Releases section](https://github.com/jwillinghalpern/fm_rainbow_log/releases).
-
-NOTE: On macOS, the first time you run the program you'll encounter a security warning. [See here](./readme-files/macos-security.md)
-
-### Via 🦀 rust/cargo
+### Via 🦀 cargo (recommended)
 
 ```bash
 cargo install --git https://github.com/jwillinghalpern/fm_rainbow_log.git
@@ -41,11 +29,21 @@ To update fmrl, re-run the above command any time. If you get a warning that `ru
 
 If you don't have cargo, [follow this one easy step](https://doc.rust-lang.org/cargo/getting-started/installation.html)
 
+### Via pre-compiled binary
+
+I prefer using cargo (described above), because it streamlines updates and avoids permission issues. But pre-compiled binaries are also available.
+
+1. Copy the latest `fmrl` binary [from here](https://github.com/jwillinghalpern/fm_rainbow_log/releases) to a directory in your PATH. For example, `/usr/local/bin` on macOS.
+   - To see the folders in your PATH, run this in your terminal: `echo $PATH | sed -E 's/:/\n/g'`
+2. Restart your terminal and type `fmrl --help`.
+
+NOTE: On macOS, the first time you run the program you'll encounter a security warning. [See here](./readme-files/macos-security.md)
+
 ### Development/contribution
 
 Fork to your own Github account, clone this repo to your desktop, cd to the directory, and run `cargo run` to test in debug mode. If you are planning a big feature or change, please open an issue first to discuss. It's best to create a new branch for the specific feature/issue you're working on.
 
-## Usage
+## Basic Usage
 
 watch Import.log in current directory:
 
@@ -64,56 +62,6 @@ watch Import.log in your local Documents directory (default location when workin
 ```bash
 fmrl --docs-dir
 # fmrl -d
-```
-
-print a separator between each import operation:
-
-```bash
-fmrl -s
-```
-
-watch for only errors and warnings:
-
-```bash
-fmrl  --errors-only --warnings-only
-# fmrl -e -w
-# fmrl -ew
-```
-
-show desktop notifications for errors and warnings:
-
-```bash
-fmrl --notifications
-```
-
-play sound! (mac only)
-
-```bash
-fmrl --beep
-# or make it fancier!
-fmrl --notifications --beep --beep-volume 0.8 --beep-path /System/Library/Sounds/Frog.aiff
-```
-
-specify custom config/colors file:
-
-```bash
-fmrl -c path/to/config.json
-```
-
-don't watch for changes, just print the log once:
-
-```bash
-fmrl --no-watch
-```
-
-generate an auto-completion script (store somewhere in your $fpath):
-
-```bash
-# zsh example. Omit "zsh" to see shell options.
-fmrl --completion zsh
-
-# here's where I put it
-fmrl --completion zsh > ~/.oh-my-zsh/completions/_fm_rainbow_log
 ```
 
 ### Customize with `config.json` (recommended)
@@ -197,13 +145,17 @@ either:
 - Windows: `{FOLDERID_RoamingAppData}\fm_rainbow_log\config.json`
   - example: `C:\Users\Alice\AppData\Roaming\fm_rainbow_log\config.json`
 
-_If you have a default config.json, you can override it by passing a different path to the `-c` option._
+_If you have a default config.json, you can override it by passing a different path to the `--config` option._
 
-#### Colors
+## Handy Opener Tool for MacOS!
+
+When working with local fmp12 files, please also see [this nice opener tool](https://github.com/DanShockley/FM_Rainbow_Log-Opener-applet). You can copy it into a local project folder and double click any time to open `fmrl` for that project.
+
+## Colors
 
 `fmrl` supports both ANSI and truecolor. ANSI colors are the standard 16 colors supported by most terminals, whereas truecolor is a newer standard. Some terminals including macOS Terminal.app _do not_ support truecolor, but modern terminals like iTerm2, Alacritty, and Warp do. You can define truecolors as rgb or hex (see below).
 
-##### ANSI format
+### ANSI format
 
 | color   | bright version |
 | ------- | -------------- |
@@ -216,11 +168,63 @@ _If you have a default config.json, you can override it by passing a different p
 | cyan    | bright cyan    |
 | white   | bright white   |
 
-##### Truecolor format
+### Truecolor format
 
 rgb: `rgb(255, 0, 255)`
 
 hex: `#ff00ff`
+
+## Additional Usage Examples
+
+print a separator between each import operation:
+
+```bash
+fmrl -s
+```
+
+watch for only errors and warnings:
+
+```bash
+fmrl  --errors-only --warnings-only
+# fmrl -e -w
+# fmrl -ew
+```
+
+show desktop notifications for errors and warnings:
+
+```bash
+fmrl --notifications
+```
+
+play sound! (mac only)
+
+```bash
+fmrl --beep
+# or make it fancier!
+fmrl --notifications --beep --beep-volume 0.8 --beep-path /System/Library/Sounds/Frog.aiff
+```
+
+specify custom config/colors file:
+
+```bash
+fmrl -c path/to/config.json
+```
+
+don't watch for changes, just print the log once:
+
+```bash
+fmrl --no-watch
+```
+
+generate an auto-completion script (store somewhere in your $fpath):
+
+```bash
+# zsh example. Omit "zsh" to see shell options.
+fmrl --completion zsh
+
+# here's where I put it
+fmrl --completion zsh > ~/.oh-my-zsh/completions/_fm_rainbow_log
+```
 
 ## Notes
 
