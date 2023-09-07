@@ -19,7 +19,7 @@ Furthermore, FileMaker calcs don't play nice with other CLI utilities like `tail
 
 ## Installation
 
-### Via 🦀 cargo (recommended)
+### 🦀 Via cargo (recommended)
 
 ```bash
 cargo install --git https://github.com/jwillinghalpern/fm_rainbow_log.git
@@ -29,7 +29,7 @@ To update fmrl, re-run the above command any time. If you get a warning that `ru
 
 If you don't have cargo, [follow this one easy step](https://doc.rust-lang.org/cargo/getting-started/installation.html)
 
-### Via pre-compiled binary
+### 🤖 Via pre-compiled binary
 
 I prefer using cargo (described above), because it streamlines updates and avoids permission issues. But pre-compiled binaries are also available.
 
@@ -38,10 +38,6 @@ I prefer using cargo (described above), because it streamlines updates and avoid
 2. Restart your terminal and type `fmrl --help`.
 
 NOTE: On macOS, the first time you run the program you'll encounter a security warning. [See here](./readme-files/macos-security.md)
-
-### Development/contribution
-
-Fork to your own Github account, clone this repo to your desktop, cd to the directory, and run `cargo run` to test in debug mode. If you are planning a big feature or change, please open an issue first to discuss. It's best to create a new branch for the specific feature/issue you're working on.
 
 ## Basic Usage
 
@@ -147,7 +143,7 @@ either:
 
 _If you have a default config.json, you can override it by passing a different path to the `--config` option._
 
-## Handy Opener Tool for MacOS!
+## 🖐️ Handy Opener Tool for MacOS!
 
 When working with local fmp12 files, please also see [this nice opener tool](https://github.com/DanShockley/FM_Rainbow_Log-Opener-applet). You can copy it into a local project folder and double click any time to open `fmrl` for that project.
 
@@ -225,6 +221,10 @@ fmrl --completion zsh
 # here's where I put it
 fmrl --completion zsh > ~/.oh-my-zsh/completions/_fm_rainbow_log
 ```
+
+## Development/contribution
+
+Fork to your own Github account, clone this repo to your desktop, cd to the directory, and run `cargo run` to test in debug mode. If you are planning a big feature or change, please open an issue first to discuss. It's best to create a new branch for the specific feature/issue you're working on.
 
 ## Notes
 
