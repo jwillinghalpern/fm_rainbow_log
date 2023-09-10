@@ -50,7 +50,7 @@ where
         .collect())
 }
 
-fn get_default_config_path() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
+pub(crate) fn get_default_config_path() -> Result<std::path::PathBuf, Box<dyn std::error::Error>> {
     Ok(dirs::config_dir()
         .ok_or("couldn't find config directory")?
         .join("fm_rainbow_log")
