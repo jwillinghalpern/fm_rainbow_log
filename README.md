@@ -135,7 +135,15 @@ either:
    fmrl -c path/to/config.json
    ```
 
-2. or... (recommended for default config) save the file in one of these locations and then fmrl will use that by default:
+2. (recommended) save the file in this location, and then fmrl will use that by default:
+
+   To see the location `fmrl` will look for a default config file, run this command:
+
+   ```bash
+   fmrl --print-config-path
+   ```
+
+Here are the default locations
 
 - Mac: `$HOME/Library/Application Support/fm_rainbow_log/config.json`
   - example: `/Users/Alice/Library/Application Support/fm_rainbow_log/config.json`

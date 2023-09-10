@@ -8,7 +8,7 @@ mod utils;
 
 use beeper::beep;
 use color_type::ColorType;
-use config_file::{get_config, update_args_from_config, ConfigColor};
+use config_file::{get_config, get_default_config_path, update_args_from_config, ConfigColor};
 use error_rule::{apply_error_rules, ErrorRule, ErrorRuleAction};
 use notifications::NotificationType;
 use rules::{contains_warning_text, is_header, is_operation_start};
@@ -141,6 +141,9 @@ pub struct Args {
         value_name = "PATH"
     )]
     config_path: Option<String>,
+
+    #[arg(long, help = "print the default config path")]
+    print_config_path: bool,
 
     #[arg(long, help = "generate completion script")]
     completion: Option<Shell>,
@@ -389,6 +392,11 @@ pub fn run() -> CustomResult {
     if let Some(gen) = args.completion {
         let mut cmd = Args::command();
         generate_completion_script(gen, &mut cmd);
+        return Ok(());
+    }
+    if args.print_config_path {
+        let path = get_default_config_path()?;
+        println!("{}", path.to_string_lossy());
         return Ok(());
     }
 
