@@ -74,7 +74,8 @@ pub(crate) fn get_config(config_path: Option<&str>) -> Result<Config, Box<dyn st
             "{} {}",
             "Loaded custom config from".bright_blue().underline().bold(),
             config_path
-                .to_string_lossy()
+                .display()
+                .to_string()
                 .bright_blue()
                 .underline()
                 .bold()

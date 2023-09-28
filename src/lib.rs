@@ -402,7 +402,7 @@ pub fn run() -> CustomResult {
     }
     if args.print_config_path {
         let path = get_default_config_path()?;
-        println!("{}", path.to_string_lossy());
+        println!("{}", path.display());
         return Ok(());
     }
 
