@@ -155,18 +155,19 @@ fn parse_error_rule_array(val: &str) -> Result<Vec<ErrorRule>, String> {
 }
 
 #[derive(Clone, Default)]
-struct ImportLogLine {
-    timestamp: String,
-    filename: String,
-    code: String,
-    message: String,
+struct ImportLogLine<'a> {
+    timestamp: &'a str,
+    filename: &'a str,
+    code: &'a str,
+    message: &'a str,
 }
-impl ImportLogLine {
+
+impl ImportLogLine<'_> {
     fn is_error(&self) -> bool {
         self.code != "0"
     }
 }
-impl ToString for ImportLogLine {
+impl ToString for ImportLogLine<'_> {
     fn to_string(&self) -> String {
         format!(
             "{}\t{}\t{}\t{}",
@@ -175,14 +176,14 @@ impl ToString for ImportLogLine {
     }
 }
 
-enum LineType {
-    Success(ImportLogLine),
-    Error(ImportLogLine),
-    Warning(ImportLogLine),
-    Header(ImportLogLine),
-    Other(String),
+enum LineType<'a> {
+    Success(ImportLogLine<'a>),
+    Error(ImportLogLine<'a>),
+    Warning(ImportLogLine<'a>),
+    Header(ImportLogLine<'a>),
+    Other(&'a str),
 }
-impl LineType {
+impl LineType<'_> {
     fn is_header(&self) -> bool {
         matches!(self, LineType::Header(_))
     }
@@ -201,7 +202,8 @@ impl LineType {
         matches!(self, LineType::Other(_))
     }
 }
-impl ToString for LineType {
+
+impl ToString for LineType<'_> {
     fn to_string(&self) -> String {
         match self {
             LineType::Error(line) => line.to_string(),
@@ -212,20 +214,21 @@ impl ToString for LineType {
         }
     }
 }
+
 fn parse_line(line: &str) -> LineType {
     let v = line.splitn(4, '\t').collect::<Vec<&str>>();
-    let timestamp = v.first().unwrap_or(&"").to_string();
+    let timestamp = v.first().unwrap_or(&"");
     // check timestamp before header because it's much more common
     let found_timestamp = is_timestamp(&timestamp);
     let found_header = !found_timestamp && is_header(line);
     if !found_timestamp && !found_header {
-        return LineType::Other(line.to_string());
+        return LineType::Other(line);
     }
 
-    let filename = v.get(1).unwrap_or(&"").to_string();
-    let code = v.get(2).unwrap_or(&"").to_string();
-    let message = v.get(3).unwrap_or(&"").to_string();
-    let mut line = ImportLogLine {
+    let filename = *v.get(1).unwrap_or(&"");
+    let code = *v.get(2).unwrap_or(&"");
+    let message = v.get(3).unwrap_or(&"");
+    let line = ImportLogLine {
         timestamp,
         filename,
         code,
@@ -234,7 +237,10 @@ fn parse_line(line: &str) -> LineType {
     if found_header {
         LineType::Header(line)
     } else if line.is_error() {
-        replace_trailing_cr_with_crlf(&mut line.message);
+        // TODO: we can't/shouldn't mutate a &str. Instead,
+        //   maybe we dynamically write linefeeds into the output
+        //   as we're writing it
+        // replace_trailing_cr_with_crlf(&mut line.message);
         LineType::Error(line)
     } else if contains_warning_text(&line) {
         LineType::Warning(line)
@@ -523,7 +529,13 @@ pub fn run() -> CustomResult {
                         );
                     };
 
-                    if send_notif && !args.quiet_errors.contains(&line.code) && !rule_blocks_notif {
+                    // if send_notif && !args.quiet_errors.contains(line.code) && !rule_blocks_notif {
+                    //     notif_tx.send(NotificationType::Error).unwrap();
+                    // }
+                    if send_notif
+                        && !args.quiet_errors.iter().any(|s| s.as_str() == line.code)
+                        && !rule_blocks_notif
+                    {
                         notif_tx.send(NotificationType::Error).unwrap();
                     }
                 }
@@ -624,7 +636,8 @@ mod tests {
         let message = "Imported file";
 
         // regular
-        let line = parse_line(format!("{}\t{}\t{}\t{}", ts, filename, code, message).as_str());
+        let x = format!("{}\t{}\t{}\t{}", ts, filename, code, message);
+        let line = parse_line(&x);
         let LineType::Success(val) = line else {
             panic!("expected regular line");
         };
@@ -637,7 +650,8 @@ mod tests {
 
         // error
         let code = "123";
-        let line = parse_line(format!("{}\t{}\t{}\t{}", ts, filename, code, message).as_str());
+        let x = format!("{}\t{}\t{}\t{}", ts, filename, code, message);
+        let line = parse_line(&x);
         let LineType::Error(val) = line else {
             panic!("expected Error line");
         };
@@ -651,7 +665,8 @@ mod tests {
         // warning
         let code = "0";
         let message = "something something ... already exists.";
-        let line = parse_line(format!("{}\t{}\t{}\t{}", ts, filename, code, message).as_str());
+        let x = format!("{}\t{}\t{}\t{}", ts, filename, code, message);
+        let line = parse_line(&x);
         let LineType::Warning(val) = line else {
             panic!("expected Warning line");
         };
@@ -681,7 +696,8 @@ mod tests {
         let filename = "/Users/username/Downloads/Import.log";
         let code = "123";
         let message = "Imported file\ranother line\r a third line\r";
-        let line = parse_line(format!("{}\t{}\t{}\t{}", ts, filename, code, message).as_str());
+        let x = format!("{}\t{}\t{}\t{}", ts, filename, code, message);
+        let line = parse_line(&x);
         let LineType::Error(val) = line else {
             panic!("expected Error line");
         };

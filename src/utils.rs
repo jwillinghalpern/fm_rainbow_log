@@ -1,5 +1,6 @@
 use iso8601::parsers::parse_datetime;
 
+// TODO: take &mut str
 pub(crate) fn replace_trailing_cr_with_crlf(buf: &mut String) {
     let mut prev_byte = 0;
     let mut new_buf = String::new();

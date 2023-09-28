@@ -335,15 +335,15 @@ mod tests {
         };
 
         let line = ImportLogLine {
-            code: "123".to_string(),
-            message: "HELLO_abc_WORLD".to_string(),
+            code: "123",
+            message: "HELLO_abc_WORLD",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::Quiet));
 
         let line = ImportLogLine {
-            code: "123".to_string(),
-            message: "does not match".to_string(),
+            code: "123",
+            message: "does not match",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), None);
@@ -357,13 +357,13 @@ mod tests {
             ..ErrorRule::default()
         };
         let line = ImportLogLine {
-            message: "HELLO_abc_WORLD".to_string(),
+            message: "HELLO_abc_WORLD",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
 
         let line = ImportLogLine {
-            message: "HELLO_def_WORLD".to_string(),
+            message: "HELLO_def_WORLD",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), None);
@@ -375,13 +375,13 @@ mod tests {
             ..ErrorRule::default()
         };
         let mut line = ImportLogLine {
-            message: "HELLO_abc_WORLD".to_string(),
+            message: "HELLO_abc_WORLD",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), None);
-        line.message = "HELLO_def_WORLD".to_string();
+        line.message = "HELLO_def_WORLD";
         assert_eq!(rule.get_action(&line), None);
-        line.message = "HELLO_abc_def_WORLD".to_string();
+        line.message = "HELLO_abc_def_WORLD";
         assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
     }
 
@@ -393,13 +393,13 @@ mod tests {
             ..ErrorRule::default()
         };
         let line = ImportLogLine {
-            filename: "HELLO_abc_WORLD".to_string(),
+            filename: "HELLO_abc_WORLD",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
 
         let line = ImportLogLine {
-            filename: "HELLO_def_WORLD".to_string(),
+            filename: "HELLO_def_WORLD",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), None);
@@ -411,13 +411,13 @@ mod tests {
             ..ErrorRule::default()
         };
         let mut line = ImportLogLine {
-            filename: "HELLO_abc_WORLD".to_string(),
+            filename: "HELLO_abc_WORLD",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), None);
-        line.filename = "HELLO_def_WORLD".to_string();
+        line.filename = "HELLO_def_WORLD";
         assert_eq!(rule.get_action(&line), None);
-        line.filename = "HELLO_abc_def_WORLD".to_string();
+        line.filename = "HELLO_abc_def_WORLD";
         assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::default()));
     }
 
@@ -431,15 +431,15 @@ mod tests {
         };
 
         let line = ImportLogLine {
-            code: "123".to_string(),
-            message: "HELLO_abc_WORLD".to_string(),
+            code: "123",
+            message: "HELLO_abc_WORLD",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::Quiet));
 
         let line = ImportLogLine {
-            code: "456".to_string(),
-            message: "HELLO_abc_WORLD".to_string(),
+            code: "456",
+            message: "HELLO_abc_WORLD",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), Some(ErrorRuleAction::Quiet));
@@ -455,8 +455,8 @@ mod tests {
             ..ErrorRule::default()
         };
         let line = ImportLogLine {
-            code: "0".to_string(),
-            message: "HELLO_abc_WORLD".to_string(),
+            code: "0",
+            message: "HELLO_abc_WORLD",
             ..ImportLogLine::default()
         };
         assert_eq!(rule.get_action(&line), None);
@@ -480,16 +480,16 @@ mod tests {
         ];
 
         let line = ImportLogLine {
-            code: "123".to_string(),
-            message: "HELLO_abc_WORLD".to_string(),
+            code: "123",
+            message: "HELLO_abc_WORLD",
             ..ImportLogLine::default()
         };
         let res = apply_error_rules(&rules, &line);
         assert_eq!(res, Some(ErrorRuleAction::Quiet));
 
         let line = ImportLogLine {
-            code: "456".to_string(),
-            message: "HELLO_def_WORLD".to_string(),
+            code: "456",
+            message: "HELLO_def_WORLD",
             ..ImportLogLine::default()
         };
         let res = apply_error_rules(&rules, &line);
