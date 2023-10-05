@@ -13,20 +13,20 @@ mod pt;
 mod sv;
 mod zh;
 
-fn get_rules_impls() -> Vec<Box<dyn Rules>> {
+fn get_rules_impls() -> &'static [&'static dyn Rules] {
     // be sure to add each language's RulesImpl:
-    vec![
-        Box::new(en::RulesImpl),
-        Box::new(de::RulesImpl),
-        Box::new(es::RulesImpl),
-        Box::new(fr::RulesImpl),
-        Box::new(it::RulesImpl),
-        Box::new(ja::RulesImpl),
-        Box::new(ko::RulesImpl),
-        Box::new(nl::RulesImpl),
-        Box::new(pt::RulesImpl),
-        Box::new(sv::RulesImpl),
-        Box::new(zh::RulesImpl),
+    &[
+        &en::RulesImpl,
+        &de::RulesImpl,
+        &es::RulesImpl,
+        &fr::RulesImpl,
+        &it::RulesImpl,
+        &ja::RulesImpl,
+        &ko::RulesImpl,
+        &nl::RulesImpl,
+        &pt::RulesImpl,
+        &sv::RulesImpl,
+        &zh::RulesImpl,
     ]
 }
 
