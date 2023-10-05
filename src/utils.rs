@@ -1,5 +1,24 @@
 use iso8601::parsers::parse_datetime;
 
+// NOTE: in some quick benchmarks, this fn is about twice as fast as `replace_trailing_cr_with_crlf`
+// TODO: try operating on .bytes() instead of .chars()
+// TODO: take &mut str
+pub(crate) fn replace_trailing_cr_with_crlf_bytes(buf: &mut String) {
+    let mut prev_byte = 0;
+    let mut new_buf = Vec::with_capacity(buf.len() + 8);
+    // I ended up having to use buf.chars() instead of buf.bytes() to preserve "smart" quotes, ugh
+    for c in buf.bytes() {
+        let curr_byte = c;
+        if prev_byte == 13 && curr_byte != 10 {
+            new_buf.push(10);
+        }
+        new_buf.push(c);
+        prev_byte = curr_byte;
+    }
+    *buf = unsafe { String::from_utf8_unchecked(new_buf) };
+}
+
+// TODO: try operating on .bytes() instead of .chars()
 // TODO: take &mut str
 pub(crate) fn replace_trailing_cr_with_crlf(buf: &mut String) {
     let mut prev_byte = 0;

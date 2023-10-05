@@ -364,6 +364,7 @@ fn colorize_columns(
     let ts = timestamp_colorizer(&line.timestamp);
     let filename = filename_colorizer(&line.filename);
     let error = error_colorizer(&line.code);
+    // TODO: this might not be the best place, but if this is allocating a String anyway, maybe it should do the \r to \r\n replacement here
     let msg = message_colorizer(&line.message);
     [ts, filename, error, msg]
 }
