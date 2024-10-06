@@ -29,6 +29,8 @@ To update fmrl, re-run the above command any time. If you get a warning that `ru
 
 If you don't have cargo, [follow this one easy step](https://doc.rust-lang.org/cargo/getting-started/installation.html)
 
+Please note, [installing the rust compiler on mac/linux](https://doc.rust-lang.org/book/ch01-01-installation.html#installing-rustup-on-linux-or-macos) also involves installing a linker and/or C compiler, which is most easily done via `xcode-select --install`. Please see the previous link for installation instructions.
+
 ### 🤖 Via pre-compiled binary
 
 I prefer using cargo (described above), because it streamlines updates and avoids permission issues. But pre-compiled binaries are also available.
